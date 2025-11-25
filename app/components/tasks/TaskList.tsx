@@ -368,7 +368,7 @@ export default function TaskList() {
             minHeight: 400,
           }}
         >
-          {(['todo', 'in-progress', 'blocked', 'done'] as TaskStatus[]).map((status) => (
+          {(['todo', 'in-progress', 'blocked', 'done'] as const).map((status) => (
             <Box
               key={status}
               sx={{
