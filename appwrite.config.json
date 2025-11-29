@@ -56,6 +56,7 @@
             "enabled": true
         },
         {
+            "$id": "whisperrflow",
             "name": "whisperrflow",
             "enabled": true
         }
@@ -6036,34 +6037,35 @@
             ]
         },
         {
-            "databaseName": "whisperrflow",
+            "$id": "calendars",
+            "databaseId": "whisperrflow",
             "name": "calendars",
             "enabled": true,
             "rowSecurity": true,
             "columns": [
                 {
-                    "name": "name",
+                    "key": "name",
                     "type": "string",
                     "size": 100,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "color",
+                    "key": "color",
                     "type": "string",
                     "size": 7,
-                    "required": true,
+                    "required": false,
                     "default": "#3b82f6",
                     "encrypt": false
                 },
                 {
-                    "name": "isDefault",
+                    "key": "isDefault",
                     "type": "boolean",
-                    "required": true,
+                    "required": false,
                     "default": false
                 },
                 {
-                    "name": "userId",
+                    "key": "userId",
                     "type": "string",
                     "size": 36,
                     "required": true,
@@ -6075,55 +6077,56 @@
             ]
         },
         {
-            "databaseName": "whisperrflow",
+            "$id": "tasks",
+            "databaseId": "whisperrflow",
             "name": "tasks",
             "enabled": true,
             "rowSecurity": true,
             "columns": [
                 {
-                    "name": "title",
+                    "key": "title",
                     "type": "string",
                     "size": 255,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "description",
+                    "key": "description",
                     "type": "string",
                     "size": 65535,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "status",
+                    "key": "status",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "todo",
                     "encrypt": false
                 },
                 {
-                    "name": "priority",
+                    "key": "priority",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "medium",
                     "encrypt": false
                 },
                 {
-                    "name": "dueDate",
+                    "key": "dueDate",
                     "type": "datetime",
                     "required": false
                 },
                 {
-                    "name": "recurrenceRule",
+                    "key": "recurrenceRule",
                     "type": "string",
                     "size": 255,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "tags",
+                    "key": "tags",
                     "type": "string",
                     "array": true,
                     "size": 50,
@@ -6131,7 +6134,7 @@
                     "encrypt": false
                 },
                 {
-                    "name": "assigneeIds",
+                    "key": "assigneeIds",
                     "type": "string",
                     "array": true,
                     "size": 36,
@@ -6139,7 +6142,7 @@
                     "encrypt": false
                 },
                 {
-                    "name": "attachmentIds",
+                    "key": "attachmentIds",
                     "type": "string",
                     "array": true,
                     "size": 36,
@@ -6147,21 +6150,21 @@
                     "encrypt": false
                 },
                 {
-                    "name": "eventId",
+                    "key": "eventId",
                     "type": "string",
                     "size": 36,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "userId",
+                    "key": "userId",
                     "type": "string",
                     "size": 36,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "parentId",
+                    "key": "parentId",
                     "type": "string",
                     "size": 36,
                     "required": false,
@@ -6173,94 +6176,95 @@
             ]
         },
         {
-            "databaseName": "whisperrflow",
+            "$id": "events",
+            "databaseId": "whisperrflow",
             "name": "events",
             "enabled": true,
             "rowSecurity": true,
             "columns": [
                 {
-                    "name": "title",
+                    "key": "title",
                     "type": "string",
                     "size": 255,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "description",
+                    "key": "description",
                     "type": "string",
                     "size": 65535,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "startTime",
+                    "key": "startTime",
                     "type": "datetime",
                     "required": true
                 },
                 {
-                    "name": "endTime",
+                    "key": "endTime",
                     "type": "datetime",
                     "required": true
                 },
                 {
-                    "name": "location",
+                    "key": "location",
                     "type": "string",
                     "size": 255,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "meetingUrl",
+                    "key": "meetingUrl",
                     "type": "string",
                     "size": 2048,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "visibility",
+                    "key": "visibility",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "private",
                     "encrypt": false
                 },
                 {
-                    "name": "status",
+                    "key": "status",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "scheduled",
                     "encrypt": false
                 },
                 {
-                    "name": "coverImageId",
+                    "key": "coverImageId",
                     "type": "string",
                     "size": 36,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "maxAttendees",
+                    "key": "maxAttendees",
                     "type": "integer",
                     "required": false,
                     "default": 0
                 },
                 {
-                    "name": "recurrenceRule",
+                    "key": "recurrenceRule",
                     "type": "string",
                     "size": 255,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "calendarId",
+                    "key": "calendarId",
                     "type": "string",
                     "size": 36,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "userId",
+                    "key": "userId",
                     "type": "string",
                     "size": 36,
                     "required": true,
@@ -6272,45 +6276,46 @@
             ]
         },
         {
-            "databaseName": "whisperrflow",
+            "$id": "eventGuests",
+            "databaseId": "whisperrflow",
             "name": "eventGuests",
             "enabled": true,
             "rowSecurity": true,
             "columns": [
                 {
-                    "name": "eventId",
+                    "key": "eventId",
                     "type": "string",
                     "size": 36,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "userId",
+                    "key": "userId",
                     "type": "string",
                     "size": 36,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "email",
+                    "key": "email",
                     "type": "string",
                     "size": 255,
                     "required": false,
                     "encrypt": true
                 },
                 {
-                    "name": "status",
+                    "key": "status",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "pending",
                     "encrypt": false
                 },
                 {
-                    "name": "role",
+                    "key": "role",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "guest",
                     "encrypt": false
                 }
@@ -6320,46 +6325,47 @@
             ]
         },
         {
-            "databaseName": "whisperrflow",
+            "$id": "focusSessions",
+            "databaseId": "whisperrflow",
             "name": "focusSessions",
             "enabled": true,
             "rowSecurity": true,
             "columns": [
                 {
-                    "name": "userId",
+                    "key": "userId",
                     "type": "string",
                     "size": 36,
                     "required": true,
                     "encrypt": false
                 },
                 {
-                    "name": "taskId",
+                    "key": "taskId",
                     "type": "string",
                     "size": 36,
                     "required": false,
                     "encrypt": false
                 },
                 {
-                    "name": "startTime",
+                    "key": "startTime",
                     "type": "datetime",
                     "required": true
                 },
                 {
-                    "name": "endTime",
+                    "key": "endTime",
                     "type": "datetime",
                     "required": false
                 },
                 {
-                    "name": "duration",
+                    "key": "duration",
                     "type": "integer",
-                    "required": true,
+                    "required": false,
                     "default": 0
                 },
                 {
-                    "name": "status",
+                    "key": "status",
                     "type": "string",
                     "size": 20,
-                    "required": true,
+                    "required": false,
                     "default": "completed",
                     "encrypt": false
                 }
@@ -6758,6 +6764,7 @@
             "antivirus": true
         },
         {
+            "$id": "task_attachments",
             "name": "task_attachments",
             "enabled": true,
             "fileSecurity": true,
@@ -6774,6 +6781,7 @@
             ]
         },
         {
+            "$id": "event_covers",
             "name": "event_covers",
             "enabled": true,
             "fileSecurity": false,
