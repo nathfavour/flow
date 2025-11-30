@@ -64,7 +64,6 @@ export default function FocusMode() {
              duration: duration,
              taskId: selectedTask.id,
              status: 'completed',
-             notes: '',
          }).catch(console.error);
       }
     }
@@ -99,7 +98,6 @@ export default function FocusMode() {
                     duration: duration,
                     taskId: selectedTask.id,
                     status: 'interrupted',
-                    notes: '',
                 });
             } catch (e) {
                 console.error('Failed to save focus session', e);

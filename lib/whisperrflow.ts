@@ -5,13 +5,20 @@ import { Calendar, Task, Event, EventGuest, FocusSession } from "../types/whispe
 
 const { DATABASE_ID, TABLES } = APPWRITE_CONFIG;
 
-type TableData<T extends Models.Row> = Omit<T, keyof Models.Row>;
+type TableCreateData<T extends Models.Row> =
+    T extends Models.DefaultRow
+        ? Partial<Models.Row> & Record<string, unknown>
+        : Partial<Models.Row> & Omit<T, keyof Models.Row>;
+type TableUpdateData<T extends Models.Row> =
+    T extends Models.DefaultRow
+        ? Partial<Models.Row> & Record<string, unknown>
+        : Partial<Models.Row> & Partial<Omit<T, keyof Models.Row>>;
 
 async function listRows<T extends Models.Row>(tableId: string, queries?: string[]): Promise<Models.RowList<T>> {
     return await tablesDB.listRows<T>({ databaseId: DATABASE_ID, tableId, queries });
 }
 
-async function createRow<T extends Models.Row>(tableId: string, data: TableData<T>, rowId: string = ID.unique()): Promise<T> {
+async function createRow<T extends Models.Row>(tableId: string, data: TableCreateData<T>, rowId: string = ID.unique()): Promise<T> {
     return await tablesDB.createRow<T>({
         databaseId: DATABASE_ID,
         tableId,
@@ -28,7 +35,7 @@ async function getRow<T extends Models.Row>(tableId: string, rowId: string): Pro
     });
 }
 
-async function updateRow<T extends Models.Row>(tableId: string, rowId: string, data: Partial<TableData<T>>): Promise<T> {
+async function updateRow<T extends Models.Row>(tableId: string, rowId: string, data: TableUpdateData<T>): Promise<T> {
     return await tablesDB.updateRow<T>({
         databaseId: DATABASE_ID,
         tableId,
@@ -49,9 +56,9 @@ async function deleteRow(tableId: string, rowId: string): Promise<void> {
 
 export const calendars = {
     list: (queries?: string[]) => listRows<Calendar>(TABLES.CALENDARS, queries),
-    create: (data: TableData<Calendar>) => createRow<Calendar>(TABLES.CALENDARS, data),
+    create: (data: TableCreateData<Calendar>) => createRow<Calendar>(TABLES.CALENDARS, data),
     get: (id: string) => getRow<Calendar>(TABLES.CALENDARS, id),
-    update: (id: string, data: Partial<TableData<Calendar>>) => updateRow<Calendar>(TABLES.CALENDARS, id, data),
+    update: (id: string, data: TableUpdateData<Calendar>) => updateRow<Calendar>(TABLES.CALENDARS, id, data),
     delete: (id: string) => deleteRow(TABLES.CALENDARS, id)
 };
 
@@ -59,9 +66,9 @@ export const calendars = {
 
 export const tasks = {
     list: (queries?: string[]) => listRows<Task>(TABLES.TASKS, queries),
-    create: (data: TableData<Task>) => createRow<Task>(TABLES.TASKS, data),
+    create: (data: TableCreateData<Task>) => createRow<Task>(TABLES.TASKS, data),
     get: (id: string) => getRow<Task>(TABLES.TASKS, id),
-    update: (id: string, data: Partial<TableData<Task>>) => updateRow<Task>(TABLES.TASKS, id, data),
+    update: (id: string, data: TableUpdateData<Task>) => updateRow<Task>(TABLES.TASKS, id, data),
     delete: (id: string) => deleteRow(TABLES.TASKS, id)
 };
 
@@ -69,9 +76,9 @@ export const tasks = {
 
 export const events = {
     list: (queries?: string[]) => listRows<Event>(TABLES.EVENTS, queries),
-    create: (data: TableData<Event>) => createRow<Event>(TABLES.EVENTS, data),
+    create: (data: TableCreateData<Event>) => createRow<Event>(TABLES.EVENTS, data),
     get: (id: string) => getRow<Event>(TABLES.EVENTS, id),
-    update: (id: string, data: Partial<TableData<Event>>) => updateRow<Event>(TABLES.EVENTS, id, data),
+    update: (id: string, data: TableUpdateData<Event>) => updateRow<Event>(TABLES.EVENTS, id, data),
     delete: (id: string) => deleteRow(TABLES.EVENTS, id)
 };
 
@@ -79,9 +86,9 @@ export const events = {
 
 export const eventGuests = {
     list: (queries?: string[]) => listRows<EventGuest>(TABLES.EVENT_GUESTS, queries),
-    create: (data: TableData<EventGuest>) => createRow<EventGuest>(TABLES.EVENT_GUESTS, data),
+    create: (data: TableCreateData<EventGuest>) => createRow<EventGuest>(TABLES.EVENT_GUESTS, data),
     get: (id: string) => getRow<EventGuest>(TABLES.EVENT_GUESTS, id),
-    update: (id: string, data: Partial<TableData<EventGuest>>) => updateRow<EventGuest>(TABLES.EVENT_GUESTS, id, data),
+    update: (id: string, data: TableUpdateData<EventGuest>) => updateRow<EventGuest>(TABLES.EVENT_GUESTS, id, data),
     delete: (id: string) => deleteRow(TABLES.EVENT_GUESTS, id)
 };
 
@@ -89,8 +96,8 @@ export const eventGuests = {
 
 export const focusSessions = {
     list: (queries?: string[]) => listRows<FocusSession>(TABLES.FOCUS_SESSIONS, queries),
-    create: (data: TableData<FocusSession>) => createRow<FocusSession>(TABLES.FOCUS_SESSIONS, data),
+    create: (data: TableCreateData<FocusSession>) => createRow<FocusSession>(TABLES.FOCUS_SESSIONS, data),
     get: (id: string) => getRow<FocusSession>(TABLES.FOCUS_SESSIONS, id),
-    update: (id: string, data: Partial<TableData<FocusSession>>) => updateRow<FocusSession>(TABLES.FOCUS_SESSIONS, id, data),
+    update: (id: string, data: TableUpdateData<FocusSession>) => updateRow<FocusSession>(TABLES.FOCUS_SESSIONS, id, data),
     delete: (id: string) => deleteRow(TABLES.FOCUS_SESSIONS, id)
 };

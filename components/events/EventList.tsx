@@ -27,7 +27,7 @@ export default function EventList() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { projects } = useTask();
+  const { projects, userId } = useTask();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -69,6 +69,7 @@ export default function EventList() {
       // Use first project as calendar or default
       // In a real app, user should select a calendar
       const calendarId = projects[0]?.id || 'default';
+      const currentUserId = userId || 'guest';
       
       const newDoc = await eventApi.create({
         title: eventData.title,
@@ -76,7 +77,14 @@ export default function EventList() {
         startTime: eventData.startTime.toISOString(),
         endTime: eventData.endTime.toISOString(),
         location: eventData.location || '',
+        meetingUrl: eventData.url || '',
+        visibility: 'private',
+        status: 'confirmed',
+        coverImageId: eventData.coverImage || '',
+        maxAttendees: 0,
+        recurrenceRule: '',
         calendarId: calendarId,
+        userId: currentUserId,
       });
 
       const newEvent: Event = {
