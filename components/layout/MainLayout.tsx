@@ -6,7 +6,7 @@ import AppBar from '@/components/layout/AppBar';
 import Sidebar from '@/components/layout/Sidebar';
 import BottomNav from '@/components/layout/BottomNav';
 import { useTask } from '@/context/TaskContext';
-import { TaskDialog, NoteDialog } from '@/components';
+import { TaskDialog } from '@/components';
 
 const DRAWER_WIDTH = 280;
 
@@ -43,7 +43,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
       
       {/* Global Dialogs */}
       <TaskDialog />
-      <NoteDialog />
     </Box>
   );
 }
