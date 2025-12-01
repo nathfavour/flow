@@ -25,10 +25,6 @@ import {
   ChecklistRtl as SubtaskIcon,
   Comment as CommentIcon,
   Attachment as AttachmentIcon,
-  Star as StarIcon,
-  StarBorder as StarBorderIcon,
-  PlayArrow as PlayIcon,
-  Pause as PauseIcon,
   Archive as ArchiveIcon,
   ContentCopy as CopyIcon,
 } from '@mui/icons-material';
@@ -111,7 +107,7 @@ export default function TaskItem({ task, onClick, compact = false }: TaskItemPro
   return (
     <>
       <Paper
-        elevation={isHovered ? 2 : 0}
+        elevation={0}
         onClick={() => {
           selectTask(task.id);
           openSecondarySidebar('task', task.id);
@@ -120,18 +116,21 @@ export default function TaskItem({ task, onClick, compact = false }: TaskItemPro
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         sx={{
-          p: compact ? 1 : 1.5,
+          p: compact ? 1.25 : 1.75,
           mb: 1,
           cursor: 'pointer',
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 2.5,
+          border: `1px solid ${isHovered ? alpha(theme.palette.primary.main, 0.4) : theme.palette.divider}`,
           backgroundColor: isHovered
-            ? alpha(theme.palette.primary.main, 0.02)
+            ? alpha(theme.palette.primary.main, 0.04)
             : theme.palette.background.paper,
-          opacity: task.status === 'done' ? 0.7 : 1,
-          transition: 'all 0.2s ease',
+          opacity: task.status === 'done' ? 0.65 : 1,
+          transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: isHovered 
+            ? `0 4px 12px ${alpha(theme.palette.primary.main, 0.1)}`
+            : 'none',
           '&:hover': {
-            borderColor: theme.palette.primary.main,
+            transform: 'translateX(4px)',
           },
         }}
       >

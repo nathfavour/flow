@@ -54,27 +54,43 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
         p: 2.5,
         borderRadius: 3,
         cursor: onClick ? 'pointer' : 'default',
-        border: `1px solid ${theme.palette.divider}`,
-        transition: 'all 0.2s',
+        border: `1px solid ${alpha(color, 0.2)}`,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: `linear-gradient(90deg, ${color}, ${alpha(color, 0.5)})`,
+          opacity: 0,
+          transition: 'opacity 0.3s ease',
+        },
         '&:hover': onClick
           ? {
-              borderColor: color,
-              transform: 'translateY(-2px)',
-              boxShadow: `0 8px 24px ${alpha(color, 0.15)}`,
+              borderColor: alpha(color, 0.5),
+              transform: 'translateY(-4px)',
+              boxShadow: `0 12px 28px ${alpha(color, 0.18)}`,
+              '&::before': {
+                opacity: 1,
+              },
             }
           : {},
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
             {title}
           </Typography>
           <Typography variant="h4" fontWeight={700} sx={{ color }}>
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.8 }}>
               {subtitle}
             </Typography>
           )}
@@ -87,7 +103,7 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
               )}
               <Typography
                 variant="caption"
-                sx={{ color: trend.isPositive ? 'success.main' : 'error.main' }}
+                sx={{ color: trend.isPositive ? 'success.main' : 'error.main', fontWeight: 500 }}
               >
                 {trend.value}% from last week
               </Typography>
@@ -96,14 +112,15 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
         </Box>
         <Box
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: 2,
-            backgroundColor: alpha(color, 0.12),
+            width: 52,
+            height: 52,
+            borderRadius: 2.5,
+            background: `linear-gradient(135deg, ${alpha(color, 0.15)}, ${alpha(color, 0.08)})`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color,
+            boxShadow: `0 4px 12px ${alpha(color, 0.15)}`,
           }}
         >
           {icon}

@@ -1,27 +1,27 @@
 'use client';
 
-import React from 'react';
 import {
   Card,
   CardContent,
   CardMedia,
   Typography,
   Box,
-  Chip,
   Avatar,
   AvatarGroup,
   IconButton,
+  Chip,
   useTheme,
+  alpha,
 } from '@mui/material';
 import {
-  CalendarToday,
   LocationOn,
   Share,
-  MoreVert,
   AccessTime,
+  People,
 } from '@mui/icons-material';
 import { Event } from '@/types';
-import { format } from 'date-fns';
+import { format, isToday, isTomorrow } from 'date-fns';
+import { generateEventPattern as generatePattern } from '@/utils/patternGenerator';
 
 interface EventCardProps {
   event: Event;
@@ -30,88 +30,203 @@ interface EventCardProps {
 
 export default function EventCard({ event, onClick }: EventCardProps) {
   const theme = useTheme();
+  const pattern = generatePattern(event.id);
+  
+  const getDateLabel = () => {
+    const date = new Date(event.startTime);
+    if (isToday(date)) return 'Today';
+    if (isTomorrow(date)) return 'Tomorrow';
+    return null;
+  };
+  
+  const dateLabel = getDateLabel();
 
   return (
     <Card
       elevation={0}
       sx={{
-        border: `1px solid ${theme.palette.divider}`,
-        borderRadius: 3,
+        border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+        borderRadius: 4,
         cursor: 'pointer',
-        transition: 'transform 0.2s, box-shadow 0.2s',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        overflow: 'hidden',
         '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: theme.shadows[4],
+          transform: 'translateY(-6px)',
+          boxShadow: `0 20px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
+          borderColor: alpha(theme.palette.primary.main, 0.4),
+          '& .event-image': {
+            transform: 'scale(1.05)',
+          },
+          '& .event-overlay': {
+            opacity: 0.4,
+          },
         },
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        background: theme.palette.mode === 'light' 
+          ? 'linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.92))'
+          : 'linear-gradient(180deg, rgba(32,32,32,0.98), rgba(24,24,24,0.92))',
+        backdropFilter: 'blur(10px)',
       }}
       onClick={onClick}
     >
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
         <CardMedia
           component="img"
-          height="160"
-          image={event.coverImage || 'https://source.unsplash.com/random/800x600?event'}
+          height="140"
+          image={event.coverImage || undefined}
           alt={event.title}
+          className="event-image"
+          sx={{
+            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            background: !event.coverImage ? pattern : undefined,
+            objectFit: 'cover',
+          }}
         />
+        {/* Gradient overlay */}
+        <Box
+          className="event-overlay"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background: `linear-gradient(180deg, transparent 40%, ${alpha(theme.palette.background.paper, 0.9)} 100%)`,
+            opacity: 0.6,
+            transition: 'opacity 0.3s ease',
+          }}
+        />
+        {/* Date badge */}
         <Box
           sx={{
             position: 'absolute',
             top: 12,
             left: 12,
-            bgcolor: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: 2,
+            bgcolor: theme.palette.mode === 'light' 
+              ? 'rgba(255, 255, 255, 0.95)' 
+              : 'rgba(32, 32, 32, 0.95)',
+            borderRadius: 2.5,
             px: 1.5,
-            py: 0.5,
-            boxShadow: theme.shadows[2],
+            py: 0.75,
+            boxShadow: `0 4px 12px ${alpha('#000', 0.15)}`,
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            minWidth: 48,
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
           }}
         >
-          <Typography variant="caption" fontWeight="bold" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
+          <Typography 
+            variant="caption" 
+            fontWeight="700" 
+            sx={{ 
+              textTransform: 'uppercase',
+              color: theme.palette.primary.main,
+              fontSize: '0.65rem',
+              letterSpacing: '0.05em',
+            }}
+          >
             {format(new Date(event.startTime), 'MMM')}
           </Typography>
-          <Typography variant="h6" fontWeight="bold" sx={{ lineHeight: 1 }}>
+          <Typography 
+            variant="h5" 
+            fontWeight="800" 
+            sx={{ 
+              lineHeight: 1,
+              color: theme.palette.text.primary,
+            }}
+          >
             {format(new Date(event.startTime), 'd')}
           </Typography>
         </Box>
+        {/* Today/Tomorrow chip */}
+        {dateLabel && (
+          <Chip
+            label={dateLabel}
+            size="small"
+            sx={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              bgcolor: dateLabel === 'Today' 
+                ? alpha(theme.palette.success.main, 0.9)
+                : alpha(theme.palette.info.main, 0.9),
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '0.7rem',
+              height: 24,
+              backdropFilter: 'blur(4px)',
+            }}
+          />
+        )}
       </Box>
 
-      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1.5, p: 2.5 }}>
         <Box>
-          <Typography variant="h6" fontWeight="bold" gutterBottom noWrap>
+          <Typography 
+            variant="h6" 
+            fontWeight="700" 
+            gutterBottom 
+            noWrap
+            sx={{
+              fontSize: '1.05rem',
+              lineHeight: 1.3,
+            }}
+          >
             {event.title}
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', mb: 0.5 }}>
-            <AccessTime sx={{ fontSize: 16 }} />
-            <Typography variant="body2">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: 'text.secondary', mb: 0.75 }}>
+            <AccessTime sx={{ fontSize: 15, color: theme.palette.primary.main }} />
+            <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
               {format(new Date(event.startTime), 'h:mm a')} - {format(new Date(event.endTime), 'h:mm a')}
             </Typography>
           </Box>
           {event.location && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-              <LocationOn sx={{ fontSize: 16 }} />
-              <Typography variant="body2" noWrap>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: 'text.secondary' }}>
+              <LocationOn sx={{ fontSize: 15, color: theme.palette.secondary.main }} />
+              <Typography variant="body2" noWrap sx={{ fontSize: '0.8rem' }}>
                 {event.location}
               </Typography>
             </Box>
           )}
         </Box>
 
-        <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <AvatarGroup max={3} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 12 } }}>
-            {event.attendees.map((id) => (
-              <Avatar key={id} alt="User" src={`https://i.pravatar.cc/150?u=${id}`} />
-            ))}
-          </AvatarGroup>
-          <Box>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); }}>
-              <Share fontSize="small" />
-            </IconButton>
-          </Box>
+        <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', pt: 1 }}>
+          {event.attendees.length > 0 ? (
+            <AvatarGroup 
+              max={4} 
+              sx={{ 
+                '& .MuiAvatar-root': { 
+                  width: 28, 
+                  height: 28, 
+                  fontSize: 11,
+                  border: `2px solid ${theme.palette.background.paper}`,
+                  boxShadow: `0 2px 8px ${alpha('#000', 0.1)}`,
+                } 
+              }}
+            >
+              {event.attendees.map((id) => (
+                <Avatar key={id} alt="User" src={`https://i.pravatar.cc/150?u=${id}`} />
+              ))}
+            </AvatarGroup>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+              <People sx={{ fontSize: 16 }} />
+              <Typography variant="caption">No attendees yet</Typography>
+            </Box>
+          )}
+          <IconButton 
+            size="small" 
+            onClick={(e) => { e.stopPropagation(); }}
+            sx={{
+              bgcolor: alpha(theme.palette.primary.main, 0.1),
+              '&:hover': {
+                bgcolor: alpha(theme.palette.primary.main, 0.2),
+              },
+            }}
+          >
+            <Share fontSize="small" sx={{ fontSize: 16 }} />
+          </IconButton>
         </Box>
       </CardContent>
     </Card>
