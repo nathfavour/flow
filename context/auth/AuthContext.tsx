@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { Models } from 'appwrite';
 import { account } from '@/lib/appwrite';
 import { APPWRITE_CONFIG } from '@/lib/config';
@@ -17,11 +18,21 @@ interface AuthState {
 interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
+  openLoginPopup: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_URL = `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}/login`;
+
+// Routes that don't require authentication (public routes)
+const PUBLIC_ROUTES = [
+  /^\/events\/[^/]+$/, // /events/[eventId] - public event pages
+];
+
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.some(pattern => pattern.test(pathname));
+}
 
 export function useAuth() {
   const context = useContext(AuthContext);
@@ -36,10 +47,14 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const pathname = usePathname();
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
+
+  // Check if current route is public
+  const isOnPublicRoute = isPublicRoute(pathname);
 
   const checkSession = useCallback(async () => {
     try {
@@ -53,15 +68,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.warn('No active session found', error);
       setUser(null);
-      setShowAuthOverlay(true);
+      // Only show auth overlay if NOT on a public route
+      if (!isPublicRoute(pathname)) {
+        setShowAuthOverlay(true);
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [authWindow]);
+  }, [authWindow, pathname]);
 
   useEffect(() => {
     checkSession();
   }, [checkSession]);
+
+  // Update overlay visibility when route changes
+  useEffect(() => {
+    if (!user && !isLoading) {
+      setShowAuthOverlay(!isOnPublicRoute);
+    }
+  }, [pathname, user, isLoading, isOnPublicRoute]);
 
   // Poll for session when overlay is active
   useEffect(() => {
@@ -87,7 +112,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => clearInterval(interval);
   }, [showAuthOverlay, authWindow]);
 
-  const handleLogin = () => {
+  const openLoginPopup = useCallback(() => {
     // Open the auth app in a popup
     const width = 500;
     const height = 600;
@@ -100,13 +125,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
     );
     setAuthWindow(win);
-  };
+  }, []);
 
   const logout = async () => {
     try {
       await account.deleteSession('current');
       setUser(null);
-      setShowAuthOverlay(true);
+      // Only show overlay if not on public route
+      if (!isOnPublicRoute) {
+        setShowAuthOverlay(true);
+      }
     } catch (error) {
       console.error('Logout failed', error);
     }
