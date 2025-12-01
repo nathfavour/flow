@@ -42,21 +42,37 @@ export default function EventPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPrivateEvent, setIsPrivateEvent] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [shareTooltipOpen, setShareTooltipOpen] = useState(false);
 
-  // Fetch event details
+  // Fetch event details - this works for public/unlisted events without auth
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         setLoading(true);
+        setIsPrivateEvent(false);
         const eventData = await eventApi.get(eventId);
+        
+        // Check if event is private and user doesn't have access
+        if (eventData.visibility === 'private' && (!user || eventData.userId !== user.$id)) {
+          setIsPrivateEvent(true);
+          setError('This event is private.');
+          return;
+        }
+        
         setEvent(eventData);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to fetch event:', err);
-        setError('Event not found or failed to load.');
+        // Check if it's a permission error (private event)
+        if (err?.code === 401 || err?.code === 404) {
+          setIsPrivateEvent(true);
+          setError('This event is private or does not exist.');
+        } else {
+          setError('Event not found or failed to load.');
+        }
       } finally {
         setLoading(false);
       }
@@ -65,7 +81,7 @@ export default function EventPage() {
     if (eventId) {
       fetchEvent();
     }
-  }, [eventId]);
+  }, [eventId, user]);
 
   // Check registration status if user is logged in
   useEffect(() => {
@@ -156,15 +172,52 @@ export default function EventPage() {
   if (error || !event) {
     return (
       <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom>
-          Oops!
-        </Typography>
-        <Typography color="text.secondary" sx={{ mb: 4 }}>
-          {error || "We couldn't find that event."}
-        </Typography>
-        <Button variant="outlined" href="/events">
-          Browse Events
-        </Button>
+        {isPrivateEvent ? (
+          <>
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                backgroundColor: alpha(theme.palette.warning.main, 0.1),
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 3,
+              }}
+            >
+              <LockIcon sx={{ fontSize: 40, color: theme.palette.warning.main }} />
+            </Box>
+            <Typography variant="h4" gutterBottom>
+              Private Event
+            </Typography>
+            <Typography color="text.secondary" sx={{ mb: 4, maxWidth: 400, mx: 'auto' }}>
+              This event is private and only visible to the organizer. 
+              {!isAuthenticated && ' Sign in to check if you have access.'}
+            </Typography>
+            {!isAuthenticated ? (
+              <Button variant="contained" onClick={() => checkSession()} sx={{ mr: 2 }}>
+                Sign In
+              </Button>
+            ) : null}
+            <Button variant="outlined" href="/events">
+              Browse Public Events
+            </Button>
+          </>
+        ) : (
+          <>
+            <Typography variant="h4" gutterBottom>
+              Oops!
+            </Typography>
+            <Typography color="text.secondary" sx={{ mb: 4 }}>
+              {error || "We couldn't find that event."}
+            </Typography>
+            <Button variant="outlined" href="/events">
+              Browse Events
+            </Button>
+          </>
+        )}
       </Container>
     );
   }
@@ -240,9 +293,10 @@ export default function EventPage() {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
                   <Chip
-                    label={event.visibility || 'Public'}
+                    icon={eventPermissions.isPublic(event.visibility) ? <PublicIcon /> : <LockIcon />}
+                    label={event.visibility === 'unlisted' ? 'Unlisted' : event.visibility === 'private' ? 'Private' : 'Public'}
                     size="small"
-                    color="primary"
+                    color={eventPermissions.isPublic(event.visibility) ? 'success' : 'default'}
                     variant="outlined"
                   />
                   {event.status === 'cancelled' && (
