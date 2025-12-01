@@ -70,25 +70,31 @@ export default function EventList() {
   const handleCreateEvent = async (eventData: any) => {
     try {
       // Use first project as calendar or default
-      // In a real app, user should select a calendar
       const calendarId = projects[0]?.id || 'default';
       const currentUserId = userId || 'guest';
+      const visibility: EventVisibility = eventData.visibility || 'public';
       
-      const newDoc = await eventApi.create({
-        title: eventData.title,
-        description: eventData.description || '',
-        startTime: eventData.startTime.toISOString(),
-        endTime: eventData.endTime.toISOString(),
-        location: eventData.location || '',
-        meetingUrl: eventData.url || '',
-        visibility: 'private',
-        status: 'confirmed',
-        coverImageId: eventData.coverImage || '',
-        maxAttendees: 0,
-        recurrenceRule: '',
-        calendarId: calendarId,
-        userId: currentUserId,
-      });
+      // Get appropriate permissions based on visibility
+      const eventPermissions = permissions.forVisibility(visibility, currentUserId);
+      
+      const newDoc = await eventApi.create(
+        {
+          title: eventData.title,
+          description: eventData.description || '',
+          startTime: eventData.startTime.toISOString(),
+          endTime: eventData.endTime.toISOString(),
+          location: eventData.location || '',
+          meetingUrl: eventData.url || '',
+          visibility: visibility,
+          status: 'confirmed',
+          coverImageId: eventData.coverImage || '',
+          maxAttendees: 0,
+          recurrenceRule: '',
+          calendarId: calendarId,
+          userId: currentUserId,
+        },
+        eventPermissions
+      );
 
       const newEvent: Event = {
         id: newDoc.$id,
@@ -100,8 +106,8 @@ export default function EventList() {
         url: '',
         coverImage: '',
         attendees: [],
-        isPublic: false,
-        creatorId: '',
+        isPublic: visibility === 'public',
+        creatorId: currentUserId,
         createdAt: new Date(newDoc.$createdAt),
         updatedAt: new Date(newDoc.$updatedAt),
       };

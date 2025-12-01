@@ -18,12 +18,18 @@ async function listRows<T extends Models.Row>(tableId: string, queries?: string[
     return await tablesDB.listRows<T>({ databaseId: DATABASE_ID, tableId, queries });
 }
 
-async function createRow<T extends Models.Row>(tableId: string, data: TableCreateData<T>, rowId: string = ID.unique()): Promise<T> {
+async function createRow<T extends Models.Row>(
+    tableId: string, 
+    data: TableCreateData<T>, 
+    permissions?: string[],
+    rowId: string = ID.unique()
+): Promise<T> {
     return await tablesDB.createRow<T>({
         databaseId: DATABASE_ID,
         tableId,
         rowId,
-        data
+        data,
+        permissions
     });
 }
 
