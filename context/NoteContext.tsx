@@ -4,8 +4,8 @@ import React, { createContext, useContext, useReducer, useCallback, ReactNode, u
 import { ID } from 'appwrite';
 import { notes as noteApi } from '@/lib/whisperrflow';
 import { account } from '@/lib/appwrite';
-import { Note as AppwriteNote } from '@/types/whisperrflow';
-import { Note, NotesStatus } from '@/types/appwrite';
+import { APPWRITE_CONFIG } from '@/lib/config';
+import { Note, NotesStatus } from '@/types/notes';
 
 // State
 interface NoteState {
@@ -110,6 +110,7 @@ interface NoteProviderProps {
 
 export function NoteProvider({ children }: NoteProviderProps) {
   const [state, dispatch] = useReducer(noteReducer, initialState);
+  const notesTableConfigured = Boolean(APPWRITE_CONFIG.TABLES.NOTES);
 
   // Initial Data Fetch
   useEffect(() => {
@@ -125,6 +126,11 @@ export function NoteProvider({ children }: NoteProviderProps) {
           dispatch({ type: 'SET_USER', payload: userId });
         } catch (e) {
           console.warn('Not logged in', e);
+        }
+
+        if (!notesTableConfigured) {
+          dispatch({ type: 'SET_LOADING', payload: false });
+          return;
         }
 
         // Fetch notes
@@ -146,16 +152,28 @@ export function NoteProvider({ children }: NoteProviderProps) {
   const addNote = useCallback(
     async (noteData: { title: string; content: string; tags?: string[] }) => {
       try {
+        if (!notesTableConfigured) {
+          console.warn('Notes table is not configured.');
+          return;
+        }
         const userId = state.userId || 'guest';
         const newNote = await noteApi.create({
           title: noteData.title,
           content: noteData.content,
           tags: noteData.tags || [],
-          userId: userId,
+          userId,
           status: NotesStatus.PUBLISHED,
           isPublic: false,
+          parentNoteId: null,
+          id: null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          comments: [],
+          extensions: [],
+          collaborators: [],
+          metadata: null,
+          attachments: null,
+          format: null,
         });
 
         dispatch({ type: 'ADD_NOTE', payload: newNote as unknown as Note });
@@ -169,6 +187,10 @@ export function NoteProvider({ children }: NoteProviderProps) {
 
   const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {
     try {
+      if (!notesTableConfigured) {
+        console.warn('Notes table is not configured.');
+        return;
+      }
       dispatch({ type: 'UPDATE_NOTE', payload: { id, updates } });
       
       // Filter out fields that shouldn't be sent to update
@@ -182,6 +204,10 @@ export function NoteProvider({ children }: NoteProviderProps) {
 
   const deleteNote = useCallback(async (id: string) => {
     try {
+      if (!notesTableConfigured) {
+        console.warn('Notes table is not configured.');
+        return;
+      }
       await noteApi.delete(id);
       dispatch({ type: 'DELETE_NOTE', payload: id });
     } catch (error) {
