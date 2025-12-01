@@ -36,17 +36,8 @@ import {
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useThemeMode } from '@/theme';
-
-// Whisperr ecosystem apps
-const ecosystemApps = [
-  { name: 'WhisperrNote', icon: '📝', color: '#6366f1', description: 'Smart notes' },
-  { name: 'WhisperrFlow', icon: '✅', color: '#10b981', description: 'Flow-based task navigation', active: true },
-  { name: 'WhisperrMeet', icon: '🎥', color: '#ec4899', description: 'Video meetings' },
-  { name: 'WhisperrEvents', icon: '🎉', color: '#f59e0b', description: 'Event planning' },
-  { name: 'WhisperrCal', icon: '📅', color: '#3b82f6', description: 'Calendar' },
-  { name: 'WhisperrPass', icon: '🔐', color: '#8b5cf6', description: 'Password manager' },
-  { name: 'WhisperrAuth', icon: '🛡️', color: '#ef4444', description: 'Authentication' },
-];
+import { Logo } from '@/components/common';
+import { ECOSYSTEM_APPS } from '@/lib/constants';
 
 function getInitials(user: { name?: string | null; email?: string | null } | null) {
   const text = user?.name?.trim() || user?.email?.split('@')[0] || '';
@@ -113,33 +104,11 @@ export default function AppBar() {
         </IconButton>
 
         {/* Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: { xs: 0, md: 2 } }}>
-          <Box
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: 1.5,
-              background: 'linear-gradient(135deg, #F59E0B 0%, #8B5CF6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.2rem',
-            }}
-          >
-            ✅
-          </Box>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{
-              fontWeight: 700,
-              color: theme.palette.text.primary,
-              display: { xs: 'none', sm: 'block' },
-            }}
-          >
-            WhisperrFlow
-          </Typography>
+        <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
+          <Logo size="medium" showText={true} />
+        </Box>
+        <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
+          <Logo size="small" showText={false} />
         </Box>
 
         {/* Search */}
@@ -336,7 +305,7 @@ export default function AppBar() {
               mt: 1,
             }}
           >
-            {ecosystemApps.map((app) => (
+            {ECOSYSTEM_APPS.map((app) => (
               <Box
                 key={app.name}
                 sx={{
@@ -379,7 +348,7 @@ export default function AppBar() {
                     textAlign: 'center',
                   }}
                 >
-                  {app.name.replace('Whisperr', '')}
+                  {app.shortName}
                 </Typography>
               </Box>
             ))}

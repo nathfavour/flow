@@ -5,6 +5,8 @@ import { Models } from 'appwrite';
 import { account } from '@/lib/appwrite';
 import { APPWRITE_CONFIG } from '@/lib/config';
 import { Backdrop, CircularProgress, Typography, Box, Button } from '@mui/material';
+import Image from 'next/image';
+import { APP_CONFIG } from '@/lib/constants';
 
 interface AuthState {
   user: Models.User<Models.Preferences> | null;
@@ -133,16 +135,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
             sx={{
               zIndex: (theme) => theme.zIndex.drawer + 9999,
               color: '#fff',
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
               display: 'flex',
               flexDirection: 'column',
               gap: 3,
             }}
           >
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                borderRadius: 3,
+                overflow: 'hidden',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                mb: 1,
+              }}
+            >
+              <Image
+                src={APP_CONFIG.logo.url}
+                alt={APP_CONFIG.logo.alt}
+                width={80}
+                height={80}
+                style={{ objectFit: 'cover' }}
+                priority
+              />
+            </Box>
             <Typography variant="h4" fontWeight="bold">
-              Welcome to WhisperrFlow
+              Welcome to {APP_CONFIG.name}
             </Typography>
-            <Typography variant="body1" align="center" sx={{ maxWidth: 400 }}>
+            <Typography variant="body1" align="center" sx={{ maxWidth: 400, opacity: 0.9 }}>
               Please sign in with your Whisperr account to access your tasks and workflows.
             </Typography>
             <Button
