@@ -244,14 +244,16 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     },
     MuiDrawer: {
       styleOverrides: {
-        paper: {
+        paper: ({ theme }) => ({
           borderRight: 'none',
           boxShadow: '0px 35px 80px rgba(0, 0, 0, 0.15)',
           background:
-            'linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88))',
+            theme.palette.mode === 'light'
+              ? 'linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88))'
+              : 'linear-gradient(180deg, rgba(32,32,32,0.95), rgba(24,24,24,0.90))',
           backdropFilter: 'blur(20px)',
           borderRadius: '0 24px 24px 0',
-        },
+        }),
       },
     },
     MuiListItemButton: {
