@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['pino', 'thread-stream', '@walletconnect/logger'],
   reactCompiler: true,
   images: {
     remotePatterns: [
