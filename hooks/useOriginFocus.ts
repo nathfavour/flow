@@ -1,24 +1,24 @@
-import { SpotifyAPI } from "@campnetwork/origin";
+'use client';
+
 import { useAuth } from "@campnetwork/origin/react";
 import { useState } from "react";
 
 export const useOriginFocus = () => {
-  // @ts-ignore
   const { isAuthenticated } = useAuth();
   const [playlists, setPlaylists] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const spotify = new SpotifyAPI({ apiKey: process.env.NEXT_PUBLIC_ORIGIN_API_KEY || '' });
 
   const fetchPlaylists = async () => {
     if (!isAuthenticated) return;
     setLoading(true);
     try {
-      // @ts-ignore - Hypothetical method based on instructions
-      const results = await spotify.getUserPlaylists(); 
-      setPlaylists(results || []);
+      const placeholder = [
+        { id: "origin-demo-deep-work", name: "Origin Deep Work" },
+        { id: "origin-demo-chill", name: "Origin Chill Focus" },
+      ];
+      setPlaylists(placeholder);
     } catch (e) {
-      console.error("Failed to fetch Spotify playlists", e);
+      console.error("Origin focus placeholder failed", e);
     } finally {
       setLoading(false);
     }
@@ -28,6 +28,6 @@ export const useOriginFocus = () => {
     isAuthenticated,
     playlists,
     loading,
-    fetchPlaylists
+    fetchPlaylists,
   };
 };

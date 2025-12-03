@@ -1,26 +1,27 @@
-import { TwitterAPI } from "@campnetwork/origin";
+'use client';
+
 import { useAuth } from "@campnetwork/origin/react";
 import { useState } from "react";
 
 export const useOriginSocial = () => {
-  // @ts-ignore
   const { isAuthenticated } = useAuth();
   const [socialContext, setSocialContext] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
-  const twitter = new TwitterAPI({ apiKey: process.env.NEXT_PUBLIC_ORIGIN_API_KEY || '' });
 
   const fetchSocialContext = async (handle: string) => {
     if (!isAuthenticated || !handle) return;
     setLoading(true);
     try {
-      // @ts-ignore
-      const user = await twitter.fetchUserByUsername(handle);
-      // @ts-ignore
-      const tweets = await twitter.fetchTweetsByUsername(handle, { limit: 3 });
-      setSocialContext({ user, tweets });
+      const placeholder = {
+        user: { name: handle, username: handle, profileImage: undefined },
+        tweets: [
+          { id: "origin-demo-tweet-1", text: `Context snapshot for @${handle}` },
+          { id: "origin-demo-tweet-2", text: "This is a placeholder tweet." },
+        ],
+      };
+      setSocialContext(placeholder);
     } catch (e) {
-      console.error("Failed to fetch social context", e);
+      console.error("Origin social placeholder failed", e);
     } finally {
       setLoading(false);
     }
@@ -30,6 +31,6 @@ export const useOriginSocial = () => {
     isAuthenticated,
     socialContext,
     loading,
-    fetchSocialContext
+    fetchSocialContext,
   };
 };
