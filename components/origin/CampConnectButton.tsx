@@ -1,37 +1,34 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@mui/material';
 // We'll use a try-catch import or just assume it works. 
 // Since I can't verify the exports, I'll write what's most likely correct based on instructions.
-import { CampModal, useAuth } from '@campnetwork/origin/react';
+import { CampModal, useAuth, useModal } from '@campnetwork/origin/react';
 
 export const CampConnectButton = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, walletAddress } = useAuth();
+  const { openModal } = useModal();
 
   useEffect(() => {
-    if (isAuthenticated && user?.walletAddress) {
-      console.log('Origin Connected:', user.walletAddress);
+    if (isAuthenticated && walletAddress) {
+      console.log('Origin Connected:', walletAddress);
       // TODO: Sync with Appwrite User Preferences
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, walletAddress]);
 
   return (
     <>
       <Button 
         variant="outlined" 
         color="inherit" 
-        onClick={() => setIsOpen(true)}
+        onClick={openModal}
         sx={{ ml: 1 }}
       >
         {isAuthenticated ? 'Origin Connected' : 'Connect Origin'}
       </Button>
       
-      <CampModal 
-        open={isOpen} 
-        onClose={() => setIsOpen(false)} 
-      />
+      <CampModal />
     </>
   );
 };
