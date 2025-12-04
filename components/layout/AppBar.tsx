@@ -22,18 +22,18 @@ import {
 import {
   Menu as MenuIcon,
   Search as SearchIcon,
-  Add as AddIcon,
-  Notifications as NotificationsIcon,
+  Plus as AddIcon,
+  Bell as NotificationsIcon,
   Settings as SettingsIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
-  Logout as LogoutIcon,
-  Person as PersonIcon,
-  Help as HelpIcon,
+  Moon as DarkModeIcon,
+  Sun as LightModeIcon,
+  LogOut as LogoutIcon,
+  User as PersonIcon,
+  CircleHelp as HelpIcon,
   Keyboard as KeyboardIcon,
-  Apps as AppsIcon,
-  AutoAwesome as AutoAwesomeIcon,
-} from '@mui/icons-material';
+  Grid as AppsIcon,
+  Wand2 as AutoAwesomeIcon,
+} from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useThemeMode } from '@/theme';
@@ -139,7 +139,7 @@ export default function AppBar() {
               justifyContent: 'center',
             }}
           >
-            <SearchIcon sx={{ color: theme.palette.text.secondary }} />
+            <SearchIcon color={theme.palette.text.secondary} />
           </Box>
           <InputBase
             placeholder="Search tasks... (Ctrl+K)"
@@ -270,32 +270,32 @@ export default function AppBar() {
           <Divider />
           <MenuItem>
             <ListItemIcon>
-              <PersonIcon fontSize="small" />
+              <PersonIcon size={20} />
             </ListItemIcon>
             <ListItemText>Profile</ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
-              <SettingsIcon fontSize="small" />
+              <SettingsIcon size={20} />
             </ListItemIcon>
             <ListItemText>Settings</ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
-              <KeyboardIcon fontSize="small" />
+              <KeyboardIcon size={20} />
             </ListItemIcon>
             <ListItemText>Keyboard shortcuts</ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
-              <HelpIcon fontSize="small" />
+              <HelpIcon size={20} />
             </ListItemIcon>
             <ListItemText>Help & Support</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem sx={{ color: 'error.main' }} onClick={() => logout()}>
             <ListItemIcon>
-              <LogoutIcon fontSize="small" color="error" />
+              <LogoutIcon size={20} color={theme.palette.error.main} />
             </ListItemIcon>
             <ListItemText>Sign out</ListItemText>
           </MenuItem>

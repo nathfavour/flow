@@ -18,15 +18,15 @@ import {
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  CheckCircle as CheckIcon,
-  Schedule as ScheduleIcon,
-  Warning as WarningIcon,
+  CheckCircle2 as CheckIcon,
+  Clock as ScheduleIcon,
+  AlertTriangle as WarningIcon,
   Flag as FlagIcon,
-  ArrowForward as ArrowIcon,
+  ArrowRight as ArrowIcon,
   Lightbulb as TipIcon,
-  LocalFireDepartment as StreakIcon,
-  EmojiEvents as TrophyIcon,
-} from '@mui/icons-material';
+  Flame as StreakIcon,
+  Trophy as TrophyIcon,
+} from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 import { format, isToday, isTomorrow, isPast, startOfWeek, endOfWeek, isWithinInterval } from 'date-fns';
 import TaskItem from '@/components/tasks/TaskItem';
@@ -97,9 +97,9 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
           {trend && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
               {trend.isPositive ? (
-                <TrendingUpIcon sx={{ fontSize: 16, color: 'success.main' }} />
+                <TrendingUpIcon size={16} color={theme.palette.success.main} />
               ) : (
-                <TrendingDownIcon sx={{ fontSize: 16, color: 'error.main' }} />
+                <TrendingDownIcon size={16} color={theme.palette.error.main} />
               )}
               <Typography
                 variant="caption"
@@ -303,14 +303,14 @@ export default function Dashboard() {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <FlagIcon color="error" />
+                  <FlagIcon color={theme.palette.error.main} />
                   <Typography variant="h6" fontWeight={600}>
                     Priority Tasks
                   </Typography>
                   <Chip label={urgentTasks.length + highPriorityTasks.length} size="small" color="error" />
                 </Box>
                 <Button
-                  endIcon={<ArrowIcon />}
+                  endIcon={<ArrowIcon size={16} />}
                   onClick={() => handleViewTasks('urgent')}
                 >
                   View All

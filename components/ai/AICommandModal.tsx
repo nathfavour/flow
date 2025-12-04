@@ -19,13 +19,13 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  AutoAwesome as AutoAwesomeIcon,
-  Close as CloseIcon,
-  Event as EventIcon,
-  CheckCircle as CheckCircleIcon,
-  Schedule as ScheduleIcon,
-  Description as DescriptionIcon,
-} from '@mui/icons-material';
+  Wand2 as AutoAwesomeIcon,
+  X as CloseIcon,
+  Calendar as EventIcon,
+  CheckCircle2 as CheckCircleIcon,
+  Clock as ScheduleIcon,
+  FileText as DescriptionIcon,
+} from 'lucide-react';
 import { useAI } from '@/hooks/useAI';
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
@@ -208,7 +208,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
       }}
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <AutoAwesomeIcon sx={{ color: theme.palette.secondary.main }} />
+        <AutoAwesomeIcon color={theme.palette.secondary.main} />
         <Typography variant="h6" fontWeight={600}>
           AI Assistant
         </Typography>

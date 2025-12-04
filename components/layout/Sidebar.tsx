@@ -23,24 +23,24 @@ import {
 } from '@mui/material';
 import {
   Inbox as InboxIcon,
-  Today as TodayIcon,
-  CalendarMonth as CalendarIcon,
-  Schedule as ScheduleIcon,
-  CheckCircle as CompletedIcon,
-  Label as LabelIcon,
-  Add as AddIcon,
-  ExpandLess,
-  ExpandMore,
+  CalendarDays as TodayIcon,
+  Calendar as CalendarIcon,
+  Clock as ScheduleIcon,
+  CheckCircle2 as CompletedIcon,
+  Tag as LabelIcon,
+  Plus as AddIcon,
+  ChevronUp as ExpandLess,
+  ChevronDown as ExpandMore,
   Star as StarIcon,
-  ViewKanban as KanbanIcon,
-  GridView as MatrixIcon,
-  Timeline as TimelineIcon,
+  Kanban as KanbanIcon,
+  LayoutGrid as MatrixIcon,
+  Activity as TimelineIcon,
   Settings as SettingsIcon,
-  Dashboard as DashboardIcon,
-  ChecklistRtl as TasksIcon,
-  Event as EventIcon,
-  CenterFocusStrong as FocusIcon,
-} from '@mui/icons-material';
+  LayoutDashboard as DashboardIcon,
+  ListTodo as TasksIcon,
+  CalendarRange as EventIcon,
+  Target as FocusIcon,
+} from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 
 const DRAWER_WIDTH = 280;
@@ -381,7 +381,7 @@ export default function Sidebar() {
                       }}
                       sx={{ color: theme.palette.warning.main }}
                     >
-                      <StarIcon fontSize="small" />
+                      <StarIcon size={16} />
                     </IconButton>
                   </ListItemButton>
                 </ListItem>
@@ -408,11 +408,11 @@ export default function Sidebar() {
             Projects
           </Typography>
           <IconButton size="small" onClick={() => setProjectsOpen(!projectsOpen)}>
-            {projectsOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            {projectsOpen ? <ExpandLess size={20} /> : <ExpandMore size={20} />}
           </IconButton>
           <Tooltip title="Add project">
             <IconButton size="small">
-              <AddIcon fontSize="small" />
+              <AddIcon size={20} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -488,11 +488,11 @@ export default function Sidebar() {
             Labels
           </Typography>
           <IconButton size="small" onClick={() => setLabelsOpen(!labelsOpen)}>
-            {labelsOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            {labelsOpen ? <ExpandLess size={20} /> : <ExpandMore size={20} />}
           </IconButton>
           <Tooltip title="Add label">
             <IconButton size="small">
-              <AddIcon fontSize="small" />
+              <AddIcon size={20} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -519,7 +519,7 @@ export default function Sidebar() {
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <LabelIcon sx={{ color: label.color }} fontSize="small" />
+                    <LabelIcon color={label.color} size={20} />
                   </ListItemIcon>
                   <ListItemText primary={label.name} />
                 </ListItemButton>
@@ -540,7 +540,7 @@ export default function Sidebar() {
                 sx={{ borderRadius: 2, mx: 1 }}
               >
                 <ListItemIcon sx={{ minWidth: 36 }}>
-                  <SettingsIcon fontSize="small" />
+                  <SettingsIcon size={20} />
                 </ListItemIcon>
                 <ListItemText primary="Settings" />
               </ListItemButton>

@@ -11,12 +11,12 @@ import {
   alpha,
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
-  ChecklistRtl as TasksIcon,
-  CalendarMonth as CalendarIcon,
-  CenterFocusStrong as FocusIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+  LayoutDashboard as DashboardIcon,
+  ListTodo as TasksIcon,
+  Calendar as CalendarIcon,
+  Target as FocusIcon,
+  Plus as AddIcon,
+} from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 
 export default function BottomNav() {
