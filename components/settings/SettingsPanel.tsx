@@ -61,57 +61,6 @@ function TabPanel({ children, value, index }: TabPanelProps) {
   );
 }
 
-const ecosystemApps = [
-  {
-    id: 'whisperrnote',
-    name: 'WhisperrNote',
-    description: 'Link tasks to notes and documentation',
-    icon: '📝',
-    color: '#6366f1',
-    connected: true,
-  },
-  {
-    id: 'whisperrmeet',
-    name: 'WhisperrMeet',
-    description: 'Create tasks from meetings and action items',
-    icon: '🎥',
-    color: '#ec4899',
-    connected: false,
-  },
-  {
-    id: 'whisperrevents',
-    name: 'WhisperrEvents',
-    description: 'Sync tasks with events and milestones',
-    icon: '🎉',
-    color: '#f59e0b',
-    connected: false,
-  },
-  {
-    id: 'whisperrcal',
-    name: 'WhisperrCal',
-    description: 'View tasks in calendar and schedule time blocks',
-    icon: '📅',
-    color: '#3b82f6',
-    connected: true,
-  },
-  {
-    id: 'whisperrpass',
-    name: 'WhisperrPass',
-    description: 'Secure credential storage for task-related accounts',
-    icon: '🔐',
-    color: '#8b5cf6',
-    connected: false,
-  },
-  {
-    id: 'whisperrauth',
-    name: 'WhisperrAuth',
-    description: 'Single sign-on and multi-factor authentication',
-    icon: '🛡️',
-    color: '#ef4444',
-    connected: true,
-  },
-];
-
 const shortcuts = [
   { action: 'Create new task', keys: ['Ctrl', 'N'] },
   { action: 'Search tasks', keys: ['Ctrl', 'K'] },
@@ -398,90 +347,11 @@ export default function SettingsPanel() {
                 Whisperr Ecosystem
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Connect WhisperrFlow with other apps in the Whisperr ecosystem for a seamless
-                experience.
+                All Whisperr apps are part of a unified ecosystem—nothing to toggle, just a seamless
+                trust boundary and data-sharing guarantee via WhisperrAuth.
               </Typography>
-              <Grid container spacing={2}>
-                {ecosystemApps.map((app) => (
-                  <Grid size={{ xs: 12, sm: 6 }} key={app.id}>
-                    <Paper
-                      sx={{
-                        p: 2.5,
-                        borderRadius: 2,
-                        border: `1px solid ${
-                          app.connected
-                            ? alpha(app.color, 0.5)
-                            : theme.palette.divider
-                        }`,
-                        backgroundColor: app.connected
-                          ? alpha(app.color, 0.05)
-                          : 'transparent',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: 2,
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 2,
-                            backgroundColor: alpha(app.color, 0.15),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1.5rem',
-                          }}
-                        >
-                          {app.icon}
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 1,
-                              mb: 0.5,
-                            }}
-                          >
-                            <Typography variant="subtitle1" fontWeight={600}>
-                              {app.name}
-                            </Typography>
-                            {app.connected && (
-                              <Chip
-                                label="Connected"
-                                size="small"
-                                color="success"
-                                icon={<CheckIcon size={14} />}
-                                sx={{ height: 20, fontSize: '0.7rem' }}
-                              />
-                            )}
-                          </Box>
-                          <Typography variant="body2" color="text.secondary">
-                            {app.description}
-                          </Typography>
-                          <Button
-                            variant={app.connected ? 'text' : 'outlined'}
-                            size="small"
-                            sx={{ mt: 1.5 }}
-                            startIcon={app.connected ? <Settings size={16} /> : <LinkIcon size={16} />}
-                          >
-                            {app.connected ? 'Configure' : 'Connect'}
-                          </Button>
-                        </Box>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
 
-              <Divider sx={{ my: 4 }} />
-
-              <Typography variant="h6" fontWeight={600} gutterBottom>
+              <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mt: 2 }}>
                 Social Connections (Origin)
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
