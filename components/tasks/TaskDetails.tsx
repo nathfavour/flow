@@ -97,6 +97,8 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
   // AI Integration
   const { generate } = useAI();
   const [isGeneratingSubtasks, setIsGeneratingSubtasks] = useState(false);
+
+  const handleGenerateSubtasks = async () => {
     if (!task?.title) return;
     setIsGeneratingSubtasks(true);
     try {
