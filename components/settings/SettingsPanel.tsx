@@ -156,73 +156,9 @@ export default function SettingsPanel() {
 
           {/* Settings Content */}
           <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
-            {/* General / Account Tab */}
-            <TabPanel value={tabValue} index={0}>
-              <Typography variant="h6" fontWeight={600} gutterBottom>
-                Account Information
-              </Typography>
-              <Alert severity="info" sx={{ mb: 4 }}>
-                Your account details are managed by WhisperrAuth.
-              </Alert>
-              
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
-                <Avatar
-                  sx={{
-                    width: 80,
-                    height: 80,
-                    fontSize: '2rem',
-                    bgcolor: theme.palette.primary.main,
-                  }}
-                >
-                  {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                </Avatar>
-                <Box>
-                  <Typography variant="h6">{user?.name || 'User'}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {user?.email}
-                  </Typography>
-                  <Chip 
-                    label="Whisperr ID" 
-                    size="small" 
-                    variant="outlined" 
-                    sx={{ mt: 1, fontSize: '0.7rem' }} 
-                  />
-                </Box>
-              </Box>
-
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    value={user?.name || ''}
-                    disabled
-                    helperText="Managed by WhisperrAuth"
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    value={user?.email || ''}
-                    disabled
-                    helperText="Managed by WhisperrAuth"
-                  />
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <TextField
-                    fullWidth
-                    label="User ID"
-                    value={user?.$id || ''}
-                    disabled
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: <Settings size={16} style={{ opacity: 0.5 }} />
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </TabPanel>
+            <Alert severity="info" sx={{ mb: 3 }}>
+              Manage your account, security, and privacy settings in <a href="http://localhost:3001/settings" style={{ textDecoration: 'underline', fontWeight: 'bold' }}>Whisperr ID</a>.
+            </Alert>
 
             {/* Appearance Tab */}
             <TabPanel value={tabValue} index={0}>
@@ -341,7 +277,7 @@ export default function SettingsPanel() {
             </TabPanel>
 
             {/* Integrations Tab */}
-            <TabPanel value={tabValue} index={2}>
+            <TabPanel value={tabValue} index={1}>
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 Whisperr Ecosystem
               </Typography>
@@ -391,7 +327,7 @@ export default function SettingsPanel() {
             </TabPanel>
 
             {/* Keyboard Shortcuts Tab */}
-            <TabPanel value={tabValue} index={3}>
+            <TabPanel value={tabValue} index={2}>
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 Keyboard Shortcuts
               </Typography>
