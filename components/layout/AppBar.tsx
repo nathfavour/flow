@@ -118,17 +118,17 @@ export default function AppBar() {
         <Box
           sx={{
             position: 'relative',
-            borderRadius: 3,
-            backgroundColor: alpha(theme.palette.text.primary, 0.04),
+            borderRadius: 1,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
             border: `1px solid ${theme.palette.divider}`,
             '&:hover': {
-              backgroundColor: alpha(theme.palette.text.primary, 0.06),
-              borderColor: alpha(theme.palette.primary.main, 0.3),
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              borderColor: theme.palette.primary.main,
             },
             width: { xs: 0, sm: 300, md: 400 },
             maxWidth: '100%',
             display: { xs: 'none', sm: 'block' },
-            transition: 'all 0.2s ease',
+            transition: 'all 0.1s ease',
           }}
         >
           <Box
@@ -151,12 +151,13 @@ export default function AppBar() {
             sx={{
               color: theme.palette.text.primary,
               width: '100%',
+              fontFamily: 'var(--font-mono)',
               '& .MuiInputBase-input': {
                 padding: theme.spacing(1.25, 1.5, 1.25, 0),
                 paddingLeft: `calc(1em + ${theme.spacing(4)})`,
                 width: '100%',
                 fontSize: '0.9rem',
-                fontWeight: 500,
+                fontWeight: 600,
               },
             }}
           />
@@ -165,18 +166,19 @@ export default function AppBar() {
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {/* AI Assistant Button */}
           <Tooltip title="AI Assistant">
             <IconButton
               onClick={() => setAiModalOpen(true)}
               sx={{
-                backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-                color: theme.palette.secondary.main,
-                borderRadius: 2.5,
+                backgroundColor: 'rgba(26, 35, 126, 0.2)',
+                color: '#8C9EFF',
+                borderRadius: 1,
                 p: 1.25,
+                border: '1px solid rgba(26, 35, 126, 0.3)',
                 '&:hover': {
-                  backgroundColor: alpha(theme.palette.secondary.main, 0.2),
+                  backgroundColor: 'rgba(26, 35, 126, 0.4)',
                 },
               }}
             >
@@ -190,13 +192,18 @@ export default function AppBar() {
               onClick={() => setTaskDialogOpen(true)}
               sx={{
                 backgroundColor: theme.palette.primary.main,
-                color: '#1a1a1a',
-                borderRadius: 2.5,
+                color: '#1B1C20',
+                borderRadius: 1,
                 p: 1.25,
-                boxShadow: '0 4px 12px rgba(255, 199, 0, 0.2)',
+                boxShadow: '4px 4px 0 rgba(26, 35, 126, 0.8)',
                 '&:hover': {
-                  backgroundColor: theme.palette.primary.dark,
-                  transform: 'translateY(-1px)',
+                  backgroundColor: theme.palette.primary.main,
+                  transform: 'translate(-1px, -1px)',
+                  boxShadow: '6px 6px 0 rgba(26, 35, 126, 0.9)',
+                },
+                '&:active': {
+                  transform: 'translate(1px, 1px)',
+                  boxShadow: 'none',
                 },
               }}
             >
@@ -208,11 +215,14 @@ export default function AppBar() {
           <Tooltip title="Whisperr Apps">
             <IconButton
               onClick={handleAppsClick}
-              sx={{ 
-                color: theme.palette.text.secondary, 
+              sx={{
+                color: theme.palette.text.secondary,
                 display: { xs: 'none', sm: 'flex' },
-                borderRadius: 2.5,
+                borderRadius: 1,
                 p: 1.25,
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                }
               }}
             >
               <AppsIcon className="h-5 w-5" />
@@ -223,10 +233,13 @@ export default function AppBar() {
           <Tooltip title={`Switch to ${mode === 'dark' ? 'light' : mode === 'light' ? 'system' : 'dark'} mode`}>
             <IconButton
               onClick={toggleMode}
-              sx={{ 
+              sx={{
                 color: theme.palette.text.secondary,
-                borderRadius: 2.5,
+                borderRadius: 1,
                 p: 1.25,
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                }
               }}
             >
               {mode === 'dark' ? <LightModeIcon className="h-5 w-5" /> : <DarkModeIcon className="h-5 w-5" />}
@@ -237,19 +250,24 @@ export default function AppBar() {
           <Tooltip title="Notifications">
             <IconButton
               onClick={handleNotifClick}
-              sx={{ 
+              sx={{
                 color: theme.palette.text.secondary,
-                borderRadius: 2.5,
+                borderRadius: 1,
                 p: 1.25,
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                }
               }}
             >
-              <Badge 
-                badgeContent={3} 
+              <Badge
+                badgeContent={3}
                 color="error"
                 sx={{
                   '& .MuiBadge-badge': {
-                    fontWeight: 700,
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 800,
                     fontSize: '0.65rem',
+                    borderRadius: 0,
                   }
                 }}
               >
@@ -262,14 +280,17 @@ export default function AppBar() {
           <Tooltip title="Account">
             <IconButton onClick={handleProfileClick} sx={{ ml: 0.5 }}>
               <Avatar
+                variant="rounded"
                 sx={{
                   width: 38,
                   height: 38,
+                  borderRadius: 1,
                   bgcolor: theme.palette.primary.main,
-                  color: '#1a1a1a',
+                  color: '#1B1C20',
                   fontSize: '0.9rem',
-                  fontWeight: 700,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 800,
+                  boxShadow: '2px 2px 0 rgba(0,0,0,0.5)',
                 }}
               >
                 {getInitials(user)}
