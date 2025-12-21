@@ -52,7 +52,7 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
       onClick={onClick}
       sx={{
         p: 2.5,
-        borderRadius: 3,
+        borderRadius: 1,
         cursor: onClick ? 'pointer' : 'default',
         border: `1px solid ${alpha(color, 0.2)}`,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -71,13 +71,13 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
         },
         '&:hover': onClick
           ? {
-              borderColor: alpha(color, 0.5),
-              transform: 'translateY(-4px)',
-              boxShadow: `0 12px 28px ${alpha(color, 0.18)}`,
-              '&::before': {
-                opacity: 1,
-              },
-            }
+            borderColor: alpha(color, 0.5),
+            transform: 'translateY(-4px)',
+            boxShadow: `0 12px 28px ${alpha(color, 0.18)}`,
+            '&::before': {
+              opacity: 1,
+            },
+          }
           : {},
       }}
     >
@@ -86,7 +86,7 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
           <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
             {title}
           </Typography>
-          <Typography variant="h4" fontWeight={700} sx={{ color }}>
+          <Typography variant="h4" fontWeight={900} sx={{ color, fontFamily: 'var(--font-mono)' }}>
             {value}
           </Typography>
           {subtitle && (
@@ -217,10 +217,10 @@ export default function Dashboard() {
   };
 
   const productivityTips = [
-    'Focus on one task at a time for better results',
-    'Take regular breaks to maintain productivity',
-    'Prioritize urgent tasks early in the day',
-    'Break large tasks into smaller subtasks',
+    'Agency is your product. Never nerf your tools.',
+    'Privacy is not a feature; it is your legal defense.',
+    'Build like the internet is going dark tonight.',
+    'Retention via Freedom: Make it easy for them to leave.',
   ];
 
   const randomTip = productivityTips[Math.floor(Math.random() * productivityTips.length)];
@@ -229,8 +229,8 @@ export default function Dashboard() {
     <Box>
       {/* Welcome Section */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}! 👋
+        <Typography variant="h4" fontWeight={900} gutterBottom sx={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.02em' }}>
+          Greetings, Sovereign.
         </Typography>
         <Typography variant="body1" color="text.secondary">
           {format(now, 'EEEE, MMMM d, yyyy')} • You have{' '}
@@ -462,8 +462,8 @@ export default function Dashboard() {
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <TipIcon color={theme.palette.primary.main} />
-              <Typography variant="subtitle2" fontWeight={600} color="primary">
-                Productivity Tip
+              <Typography variant="subtitle2" fontWeight={800} color="primary" sx={{ fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                Operational Mandate
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">

@@ -277,24 +277,41 @@ export default function AppBar() {
           </Tooltip>
 
           {/* Profile */}
-          <Tooltip title="Account">
+          <Tooltip title="Sovereign ID">
             <IconButton onClick={handleProfileClick} sx={{ ml: 0.5 }}>
-              <Avatar
-                variant="rounded"
-                sx={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 1,
-                  bgcolor: theme.palette.primary.main,
-                  color: '#1B1C20',
-                  fontSize: '0.9rem',
-                  fontFamily: 'var(--font-mono)',
-                  fontWeight: 800,
-                  boxShadow: '2px 2px 0 rgba(0,0,0,0.5)',
-                }}
+              <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                badgeContent={
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      bgcolor: '#10b981',
+                      borderRadius: '50%',
+                      border: `2px solid ${theme.palette.background.default}`,
+                      boxShadow: '0 0 4px rgba(16, 185, 129, 0.5)'
+                    }}
+                  />
+                }
               >
-                {getInitials(user)}
-              </Avatar>
+                <Avatar
+                  variant="rounded"
+                  sx={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 1,
+                    bgcolor: theme.palette.primary.main,
+                    color: '#1B1C20',
+                    fontSize: '0.9rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 800,
+                    boxShadow: '2px 2px 0 rgba(0,0,0,0.5)',
+                  }}
+                >
+                  {getInitials(user)}
+                </Avatar>
+              </Badge>
             </IconButton>
           </Tooltip>
         </Box>
@@ -338,7 +355,16 @@ export default function AppBar() {
             <ListItemIcon>
               <SettingsIcon className="h-5 w-5" />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontWeight: 500 }}>Settings</ListItemText>
+            <ListItemText primaryTypographyProps={{ fontWeight: 600 }}>Vault Settings</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => {
+            alert('Nuke & Export: Compiling sovereign flow data...');
+            handleClose();
+          }}>
+            <ListItemIcon>
+              <LogoutIcon className="h-5 w-5 rotate-180" style={{ color: '#FFC107' }} />
+            </ListItemIcon>
+            <ListItemText primaryTypographyProps={{ fontWeight: 700, color: '#FFC107' }}>Sovereign Export</ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>
