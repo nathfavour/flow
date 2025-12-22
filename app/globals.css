@@ -13,6 +13,19 @@
 
   --background: var(--void);
   --foreground: #1B1C20;
+
+  /* Organic Realism: Radii */
+  --radius-micro: 12px;
+  --radius-macro: 24px;
+  --radius-mega: 32px;
+
+  /* Organic Realism: Shadows (Dual-Layer Adire Indigo) */
+  --shadow-resting: 0px 2px 4px rgba(var(--shadow-indigo), 0.2), 0px 8px 16px rgba(var(--shadow-indigo), 0.1);
+  --shadow-hover: 0px 4px 8px rgba(var(--shadow-indigo), 0.4), 0px 12px 24px rgba(var(--shadow-indigo), 0.2);
+  --shadow-floating: 0px 8px 16px rgba(var(--shadow-indigo), 0.3), 0px 24px 48px rgba(0, 0, 0, 0.2);
+
+  /* Surface Physics: Ceramic Highlight */
+  --shadow-ceramic: inset 0px 1px 0px rgba(255, 193, 7, 0.2);
 }
 
 .dark {
@@ -20,6 +33,10 @@
   --matter: #2D2421;
   --background: var(--void);
   --foreground: #FAF8F6;
+
+  --shadow-resting: 0px 2px 4px rgba(0, 0, 0, 0.4), 0px 8px 16px rgba(var(--shadow-indigo), 0.2);
+  --shadow-hover: 0px 4px 8px rgba(0, 0, 0, 0.6), 0px 12px 24px rgba(var(--shadow-indigo), 0.4);
+  --shadow-floating: 0px 8px 16px rgba(0, 0, 0, 0.8), 0px 24px 48px rgba(var(--shadow-indigo), 0.6);
 }
 
 html,

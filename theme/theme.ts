@@ -63,15 +63,14 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     },
   },
   shape: {
-    borderRadius: 4, // More industrial/angular
+    borderRadius: 12,
   },
   shadows: [
     'none',
-    '8px 12px 20px rgba(26, 35, 126, 0.4)', // The Shadow (Indigo)
-    '12px 18px 30px rgba(26, 35, 126, 0.5)',
-    '16px 24px 40px rgba(26, 35, 126, 0.6)',
-    // Fill the rest with similar patterns or multiples
-    ...Array(22).fill('16px 24px 40px rgba(26, 35, 126, 0.6)'),
+    '0px 2px 4px rgba(26, 35, 126, 0.2), 0px 8px 16px rgba(26, 35, 126, 0.1)',
+    '0px 4px 8px rgba(26, 35, 126, 0.4), 0px 12px 24px rgba(26, 35, 126, 0.2)',
+    '0px 8px 16px rgba(26, 35, 126, 0.3), 0px 24px 48px rgba(0, 0, 0, 0.2)',
+    ...Array(21).fill('0px 8px 16px rgba(26, 35, 126, 0.3), 0px 24px 48px rgba(0, 0, 0, 0.2)'),
   ] as any,
   components: {
     MuiCssBaseline: {
@@ -84,7 +83,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
             height: 8,
           },
           '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
-            borderRadius: 0,
+            borderRadius: 12,
             backgroundColor: 'rgba(255, 193, 7, 0.2)',
             '&:hover': {
               backgroundColor: 'rgba(255, 193, 7, 0.4)',
@@ -96,16 +95,21 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 2,
+          borderRadius: 12,
           padding: '12px 24px',
           fontWeight: 800,
-          boxShadow: '4px 4px 0 rgba(26, 35, 126, 0.8)',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: mode === 'light'
+            ? '0px 2px 4px rgba(26, 35, 126, 0.2), 0px 8px 16px rgba(26, 35, 126, 0.1), inset 0px 1px 0px rgba(255, 193, 7, 0.2)'
+            : '0px 2px 4px rgba(0, 0, 0, 0.4), 0px 8px 16px rgba(26, 35, 126, 0.2), inset 0px 1px 0px rgba(255, 193, 7, 0.2)',
           '&:hover': {
-            transform: 'translate(-2px, -2px)',
-            boxShadow: '6px 6px 0 rgba(26, 35, 126, 0.9)',
+            transform: 'translateY(-2px)',
+            boxShadow: mode === 'light'
+              ? '0px 4px 8px rgba(26, 35, 126, 0.4), 0px 12px 24px rgba(26, 35, 126, 0.2), inset 0px 1px 0px rgba(255, 193, 7, 0.2)'
+              : '0px 4px 8px rgba(0, 0, 0, 0.6), 0px 12px 24px rgba(26, 35, 126, 0.4), inset 0px 1px 0px rgba(255, 193, 7, 0.2)',
           },
           '&:active': {
-            transform: 'translate(2px, 2px)',
+            transform: 'translateY(0)',
             boxShadow: 'none',
           },
         },
@@ -118,11 +122,20 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     MuiCard: {
       styleOverrides: {
         root: {
+          borderRadius: 24,
           backgroundColor: mode === 'light' ? '#EADDD3' : '#2D2421',
-          border: `1px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
+          border: `2px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
           boxShadow: mode === 'light'
-            ? '4px 8px 16px rgba(26, 35, 126, 0.15)'
-            : '8px 12px 20px rgba(26, 35, 126, 0.4)',
+            ? '0px 2px 4px rgba(26, 35, 126, 0.2), 0px 8px 16px rgba(26, 35, 126, 0.1), inset 0px 1px 0px rgba(255, 193, 7, 0.2)'
+            : '0px 2px 4px rgba(0, 0, 0, 0.4), 0px 8px 16px rgba(26, 35, 126, 0.2), inset 0px 1px 0px rgba(255, 193, 7, 0.2)',
+          backgroundImage: 'none',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: mode === 'light'
+              ? '0px 4px 8px rgba(26, 35, 126, 0.4), 0px 12px 24px rgba(26, 35, 126, 0.2), inset 0px 1px 0px rgba(255, 193, 7, 0.2)'
+              : '0px 4px 8px rgba(0, 0, 0, 0.6), 0px 12px 24px rgba(26, 35, 126, 0.4), inset 0px 1px 0px rgba(255, 193, 7, 0.2)',
+          },
         },
       },
     },
@@ -131,7 +144,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
         root: {
           backgroundColor: mode === 'light' ? 'rgba(250, 248, 246, 0.8)' : 'rgba(27, 28, 32, 0.8)',
           backdropFilter: 'blur(12px)',
-          borderBottom: `1px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
+          borderBottom: `2px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
           boxShadow: 'none',
         },
       },
@@ -140,7 +153,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
       styleOverrides: {
         paper: {
           backgroundColor: mode === 'light' ? '#FAF8F6' : '#1B1C20',
-          borderRight: `1px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
+          borderRight: `2px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
         },
       },
     },
@@ -148,7 +161,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
       styleOverrides: {
         root: {
           margin: '4px 8px',
-          borderRadius: 4,
+          borderRadius: 12,
           '&.Mui-selected': {
             backgroundColor: 'rgba(255, 193, 7, 0.1)',
             borderLeft: '4px solid #FFC107',
@@ -163,7 +176,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 8,
+            borderRadius: 12,
           },
         },
       },
@@ -171,29 +184,37 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 16,
+          borderRadius: 32,
+          boxShadow: mode === 'light'
+            ? '0px 8px 16px rgba(26, 35, 126, 0.3), 0px 24px 48px rgba(0, 0, 0, 0.2)'
+            : '0px 8px 16px rgba(0, 0, 0, 0.8), 0px 24px 48px rgba(26, 35, 126, 0.6)',
         },
       },
     },
     MuiFab: {
       styleOverrides: {
         root: {
-          boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.15)',
+          borderRadius: 12,
+          boxShadow: mode === 'light'
+            ? '0px 4px 8px rgba(26, 35, 126, 0.4)'
+            : '0px 4px 8px rgba(0, 0, 0, 0.6)',
         },
       },
     },
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
-          height: 6,
+          borderRadius: 12,
+          height: 8,
         },
       },
     },
     MuiAvatar: {
       styleOverrides: {
         root: {
+          borderRadius: 12,
           fontWeight: 600,
+          border: `1px solid ${mode === 'light' ? 'rgba(26, 35, 126, 0.1)' : '#3D3D3D'}`,
         },
       },
     },
@@ -202,6 +223,9 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
         tooltip: {
           borderRadius: 8,
           fontSize: '0.75rem',
+          backgroundColor: '#1B1C20',
+          color: '#FAF8F6',
+          border: '1px solid rgba(255, 193, 7, 0.2)',
         },
       },
     },
