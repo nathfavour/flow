@@ -18,7 +18,7 @@ interface AuthState {
 interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
-  openLoginPopup: () => void;
+  openLoginPopup: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -176,7 +176,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => clearInterval(interval);
   }, [showAuthOverlay, authWindow]);
 
-  const openLoginPopup = useCallback(() => {
+  const openLoginPopup = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+
+    // First, check if we already have a session locally
+    try {
+      const currentUser = await account.get();
+      if (currentUser) {
+        console.log('Active session detected in whisperrflow, skipping IDM window');
+        setUser(currentUser);
+        setShowAuthOverlay(false);
+        if (authWindow) {
+          authWindow.close();
+          setAuthWindow(null);
+        }
+        return;
+      }
+    } catch (e) {
+      // No session, proceed to open window
+    }
+
     // Open the auth app in a popup
     const width = 500;
     const height = 600;
@@ -189,7 +208,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
     );
     setAuthWindow(win);
-  }, []);
+  }, [authWindow]);
 
   const logout = async () => {
     try {
