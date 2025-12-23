@@ -12,6 +12,7 @@ import { APP_CONFIG } from '@/lib/constants';
 interface AuthState {
   user: Models.User<Models.Preferences> | null;
   isLoading: boolean;
+  isAuthenticating: boolean;
   isAuthenticated: boolean;
 }
 
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
 
@@ -177,7 +179,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [showAuthOverlay, authWindow]);
 
   const openLoginPopup = useCallback(async () => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isAuthenticating) return;
+
+    setIsAuthenticating(true);
 
     // First, check if we already have a session locally
     try {
@@ -186,6 +190,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.log('Active session detected in whisperrflow, skipping IDM window');
         setUser(currentUser);
         setShowAuthOverlay(false);
+        setIsAuthenticating(false);
         if (authWindow) {
           authWindow.close();
           setAuthWindow(null);
@@ -193,7 +198,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
     } catch (e) {
-      // No session, proceed to open window
+      // No session, proceed to silent check
+    }
+
+    // Try silent auth before opening popup
+    await attemptSilentAuth();
+    try {
+      const currentUser = await account.get();
+      if (currentUser) {
+        setUser(currentUser);
+        setShowAuthOverlay(false);
+        setIsAuthenticating(false);
+        return;
+      }
+    } catch (e) {
+      // Still no session
     }
 
     // Open the auth app in a popup
@@ -207,13 +226,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
       'WhisperrAuth',
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
     );
-    setAuthWindow(win);
-  }, [authWindow]);
+    
+    if (win) {
+      setAuthWindow(win);
+    } else {
+      setIsAuthenticating(false);
+    }
+  }, [authWindow, isAuthenticating, attemptSilentAuth]);
 
   const logout = async () => {
     try {
       await account.deleteSession('current');
       setUser(null);
+      setIsAuthenticating(false);
       // Only show overlay if not on public route
       if (!isOnPublicRoute) {
         setShowAuthOverlay(true);
@@ -232,7 +257,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, logout, checkSession, openLoginPopup }}>
+    <AuthContext.Provider value={{ user, isLoading, isAuthenticating, isAuthenticated: !!user, logout, checkSession, openLoginPopup }}>
       {showAuthOverlay && !isOnPublicRoute ? (
         <Box sx={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
           {/* Blurred Background Content */}
@@ -281,15 +306,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
               variant="contained"
               size="large"
               onClick={openLoginPopup}
+              disabled={isAuthenticating}
               sx={{
                 px: 4,
                 py: 1.5,
                 fontSize: '1.1rem',
                 borderRadius: 2,
                 textTransform: 'none',
+                minWidth: 150,
               }}
             >
-              Sign In
+              {isAuthenticating ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
             </Button>
           </Backdrop>
         </Box>
