@@ -142,48 +142,70 @@ export default function Dashboard() {
   const weekStart = startOfWeek(now);
   const weekEnd = endOfWeek(now);
 
-  const activeTasks = tasks.filter((t) => !t.isArchived);
-  const completedTasks = activeTasks.filter((t) => t.status === 'done');
-  const incompleteTasks = activeTasks.filter((t) => t.status !== 'done');
+  const {
+    activeTasks,
+    completedTasks,
+    incompleteTasks,
+    overdueTasks,
+    todayTasks,
+    tomorrowTasks,
+    inProgressTasks,
+    urgentTasks,
+    highPriorityTasks,
+    completionRate,
+    recentTasks,
+    upcomingTasks
+  } = React.useMemo(() => {
+    const active = tasks.filter((t) => !t.isArchived);
+    const completed = active.filter((t) => t.status === 'done');
+    const incomplete = active.filter((t) => t.status !== 'done');
 
-  const overdueTasks = incompleteTasks.filter(
-    (t) => t.dueDate && isPast(new Date(t.dueDate)) && !isToday(new Date(t.dueDate))
-  );
+    const overdue = incomplete.filter(
+      (t) => t.dueDate && isPast(new Date(t.dueDate)) && !isToday(new Date(t.dueDate))
+    );
 
-  const todayTasks = incompleteTasks.filter(
-    (t) => t.dueDate && isToday(new Date(t.dueDate))
-  );
+    const todayT = incomplete.filter(
+      (t) => t.dueDate && isToday(new Date(t.dueDate))
+    );
 
-  const tomorrowTasks = incompleteTasks.filter(
-    (t) => t.dueDate && isTomorrow(new Date(t.dueDate))
-  );
+    const tomorrowT = incomplete.filter(
+      (t) => t.dueDate && isTomorrow(new Date(t.dueDate))
+    );
 
-  const thisWeekTasks = incompleteTasks.filter(
-    (t) =>
-      t.dueDate &&
-      isWithinInterval(new Date(t.dueDate), { start: weekStart, end: weekEnd })
-  );
+    const inProgress = incomplete.filter((t) => t.status === 'in-progress');
+    const urgent = incomplete.filter((t) => t.priority === 'urgent');
+    const highPriority = incomplete.filter((t) => t.priority === 'high');
 
-  const inProgressTasks = incompleteTasks.filter((t) => t.status === 'in-progress');
-  const urgentTasks = incompleteTasks.filter((t) => t.priority === 'urgent');
-  const highPriorityTasks = incompleteTasks.filter((t) => t.priority === 'high');
+    const rate = active.length > 0
+      ? Math.round((completed.length / active.length) * 100)
+      : 0;
 
-  const completionRate = activeTasks.length > 0
-    ? Math.round((completedTasks.length / activeTasks.length) * 100)
-    : 0;
+    const recent = [...incomplete]
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .slice(0, 5);
 
-  // Get recent tasks
-  const recentTasks = [...incompleteTasks]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 5);
+    const upcoming = [...incomplete]
+      .filter((t) => t.dueDate)
+      .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
+      .slice(0, 5);
 
-  // Get upcoming tasks
-  const upcomingTasks = [...incompleteTasks]
-    .filter((t) => t.dueDate)
-    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
-    .slice(0, 5);
+    return {
+      activeTasks: active,
+      completedTasks: completed,
+      incompleteTasks: incomplete,
+      overdueTasks: overdue,
+      todayTasks: todayT,
+      tomorrowTasks: tomorrowT,
+      inProgressTasks: inProgress,
+      urgentTasks: urgent,
+      highPriorityTasks: highPriority,
+      completionRate: rate,
+      recentTasks: recent,
+      upcomingTasks: upcoming
+    };
+  }, [tasks]);
 
-  const handleViewTasks = (filterType: string) => {
+  const handleViewTasks = React.useCallback((filterType: string) => {
     switch (filterType) {
       case 'today':
         setFilter({

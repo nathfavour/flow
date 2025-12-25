@@ -53,7 +53,7 @@ const priorityLabels: Record<Priority, string> = {
   urgent: 'Urgent',
 };
 
-export default function TaskItem({ task, onClick, compact = false }: TaskItemProps) {
+export default React.memo(function TaskItem({ task, onClick, compact = false }: TaskItemProps) {
   const theme = useTheme();
   const { completeTask, deleteTask, updateTask, labels, projects, selectTask } = useTask();
   const { openSecondarySidebar } = useLayout();

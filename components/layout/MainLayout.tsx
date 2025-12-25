@@ -2,14 +2,16 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Box, useTheme, useMediaQuery, alpha } from '@mui/material';
 import AppBar from '@/components/layout/AppBar';
 import Sidebar from '@/components/layout/Sidebar';
-import RightSidebar from '@/components/layout/RightSidebar';
 import BottomNav from '@/components/layout/BottomNav';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
-import { TaskDialog } from '@/components';
+
+const RightSidebar = dynamic(() => import('@/components/layout/RightSidebar'), { ssr: false });
+const TaskDialog = dynamic(() => import('@/components/tasks/TaskDialog'), { ssr: false });
 
 const DRAWER_WIDTH = 256;
 const RIGHT_DRAWER_WIDTH = 420;

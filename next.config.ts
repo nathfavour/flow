@@ -14,6 +14,15 @@ const config: NextConfig = {
     return config;
   },
   reactCompiler: true,
+  experimental: {
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+      'lucide-react',
+      '@heroicons/react',
+      'date-fns',
+    ],
+  },
   images: {
     remotePatterns: [
       {
