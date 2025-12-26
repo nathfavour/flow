@@ -39,7 +39,9 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { useThemeMode } from '@/theme';
 import { Logo } from '@/components/common';
 import { ECOSYSTEM_APPS } from '@/lib/constants';
-import AICommandModal from '@/components/ai/AICommandModal';
+import dynamic from 'next/dynamic';
+
+const AICommandModal = dynamic(() => import('@/components/ai/AICommandModal'), { ssr: false });
 
 function getInitials(user: { name?: string | null; email?: string | null } | null) {
   const text = user?.name?.trim() || user?.email?.split('@')[0] || '';

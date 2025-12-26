@@ -51,7 +51,7 @@ interface DayCellProps {
   onAddTask: (date: Date) => void;
 }
 
-function DayCell({ date, tasks, isCurrentMonth, onTaskClick, onAddTask }: DayCellProps) {
+const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTaskClick, onAddTask }: DayCellProps) {
   const theme = useTheme();
   const today = isToday(date);
   const maxVisible = 3;
@@ -205,7 +205,7 @@ function DayCell({ date, tasks, isCurrentMonth, onTaskClick, onAddTask }: DayCel
       </Box>
     </Box>
   );
-}
+});
 
 export default function CalendarView() {
   const theme = useTheme();
@@ -213,20 +213,40 @@ export default function CalendarView() {
   const { openSecondarySidebar } = useLayout();
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const calendarStart = startOfWeek(monthStart);
-  const calendarEnd = endOfWeek(monthEnd);
+  const { days, tasksByDate, monthTasks, completedMonthTasks } = React.useMemo(() => {
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(currentDate);
+    const calendarStart = startOfWeek(monthStart);
+    const calendarEnd = endOfWeek(monthEnd);
 
-  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  const getTasksForDate = (date: Date) => {
-    return tasks.filter((task) => {
-      if (!task.dueDate || task.isArchived) return false;
-      return isSameDay(new Date(task.dueDate), date);
+    const daysInterval = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+    
+    const byDate: Record<string, Task[]> = {};
+    tasks.forEach(task => {
+      if (task.dueDate && !task.isArchived) {
+        const dateKey = format(new Date(task.dueDate), 'yyyy-MM-dd');
+        if (!byDate[dateKey]) byDate[dateKey] = [];
+        byDate[dateKey].push(task);
+      }
     });
-  };
+
+    const mTasks = tasks.filter((task) => {
+      if (!task.dueDate || task.isArchived) return false;
+      const dueDate = new Date(task.dueDate);
+      return isSameMonth(dueDate, currentDate);
+    });
+
+    const cMTasks = mTasks.filter((t) => t.status === 'done');
+
+    return {
+      days: daysInterval,
+      tasksByDate: byDate,
+      monthTasks: mTasks,
+      completedMonthTasks: cMTasks
+    };
+  }, [currentDate, tasks]);
+
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const handlePrevMonth = () => {
     setCurrentDate(subMonths(currentDate, 1));
@@ -240,23 +260,15 @@ export default function CalendarView() {
     setCurrentDate(new Date());
   };
 
-  const handleTaskClick = (taskId: string) => {
+  const handleTaskClick = React.useCallback((taskId: string) => {
     selectTask(taskId);
     openSecondarySidebar('task', taskId);
-  };
+  }, [selectTask, openSecondarySidebar]);
 
-  const handleAddTask = (date: Date) => {
+  const handleAddTask = React.useCallback((date: Date) => {
     // In a real implementation, this would pre-fill the date in the task dialog
     setTaskDialogOpen(true);
-  };
-
-  // Calculate monthly stats
-  const monthTasks = tasks.filter((task) => {
-    if (!task.dueDate || task.isArchived) return false;
-    const dueDate = new Date(task.dueDate);
-    return isSameMonth(dueDate, currentDate);
-  });
-  const completedMonthTasks = monthTasks.filter((t) => t.status === 'done');
+  }, [setTaskDialogOpen]);
 
   return (
     <Box>
@@ -348,16 +360,19 @@ export default function CalendarView() {
             gridTemplateColumns: 'repeat(7, 1fr)',
           }}
         >
-          {days.map((day) => (
-            <DayCell
-              key={day.toISOString()}
-              date={day}
-              tasks={getTasksForDate(day)}
-              isCurrentMonth={isSameMonth(day, currentDate)}
-              onTaskClick={handleTaskClick}
-              onAddTask={handleAddTask}
-            />
-          ))}
+          {days.map((day) => {
+            const dateKey = format(day, 'yyyy-MM-dd');
+            return (
+              <DayCell
+                key={day.toISOString()}
+                date={day}
+                tasks={tasksByDate[dateKey] || []}
+                isCurrentMonth={isSameMonth(day, currentDate)}
+                onTaskClick={handleTaskClick}
+                onAddTask={handleAddTask}
+              />
+            );
+          })}
         </Box>
       </Paper>
 
@@ -390,3 +405,5 @@ export default function CalendarView() {
     </Box>
   );
 }
+
+
