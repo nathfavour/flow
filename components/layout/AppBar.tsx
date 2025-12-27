@@ -88,9 +88,9 @@ export default function AppBar() {
       elevation={0}
       sx={{
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backdropFilter: 'blur(25px) saturate(180%)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       }}
     >
       <Toolbar sx={{ gap: 1, minHeight: '64px' }}>
@@ -298,9 +298,9 @@ export default function AppBar() {
               width: 240, 
               mt: 1.5,
               borderRadius: '16px',
-              bgcolor: 'rgba(10, 10, 10, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bgcolor: 'rgba(10, 10, 10, 0.95)',
+              backdropFilter: 'blur(25px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
               backgroundImage: 'none',
             },
           }}
@@ -309,7 +309,7 @@ export default function AppBar() {
         >
           {user && (
             <Box sx={{ px: 2, py: 1.5 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: '"Space Grotesk", sans-serif' }}>
                 {user.name}
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
@@ -372,9 +372,9 @@ export default function AppBar() {
               mt: 1.5, 
               p: 1,
               borderRadius: '20px',
-              bgcolor: 'rgba(10, 10, 10, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bgcolor: 'rgba(10, 10, 10, 0.95)',
+              backdropFilter: 'blur(25px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
               backgroundImage: 'none',
             },
           }}
@@ -404,10 +404,10 @@ export default function AppBar() {
                   borderRadius: '16px',
                   cursor: 'pointer',
                   backgroundColor: app.active
-                    ? 'rgba(0, 240, 255, 0.08)'
+                    ? 'rgba(0, 245, 255, 0.08)'
                     : 'transparent',
                   border: app.active
-                    ? '1px solid rgba(0, 240, 255, 0.2)'
+                    ? '1px solid rgba(0, 245, 255, 0.2)'
                     : '1px solid transparent',
                   transition: 'all 0.2s ease',
                   '&:hover': {
@@ -437,7 +437,7 @@ export default function AppBar() {
                   sx={{
                     fontWeight: 700,
                     textAlign: 'center',
-                    color: app.active ? '#00F0FF' : 'text.primary'
+                    color: app.active ? '#00F5FF' : 'text.primary'
                   }}
                 >
                   {app.shortName}
@@ -458,9 +458,9 @@ export default function AppBar() {
               width: 360, 
               mt: 1.5,
               borderRadius: '20px',
-              bgcolor: 'rgba(10, 10, 10, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bgcolor: 'rgba(10, 10, 10, 0.95)',
+              backdropFilter: 'blur(25px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
               backgroundImage: 'none',
             },
           }}
@@ -476,7 +476,7 @@ export default function AppBar() {
               alignItems: 'center',
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: '"Space Grotesk", sans-serif' }}>
               Notifications
             </Typography>
             <Typography
@@ -513,7 +513,7 @@ export default function AppBar() {
                 py: 2,
                 px: 2.5,
                 backgroundColor: notif.unread
-                  ? 'rgba(0, 240, 255, 0.03)'
+                  ? 'rgba(0, 245, 255, 0.03)'
                   : 'transparent',
                 '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
               }}

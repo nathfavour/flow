@@ -73,10 +73,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
       >
         <Box
           sx={{
-            background: 'rgba(10, 10, 10, 0.7)',
-            backdropFilter: 'blur(20px) saturate(180%)',
+            background: 'rgba(10, 10, 10, 0.95)',
+            backdropFilter: 'blur(25px) saturate(180%)',
             borderRadius: { xs: '24px', md: '32px' },
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
             minHeight: '100%',
             p: { xs: 2, md: 4 },
             position: 'relative',

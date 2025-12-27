@@ -6,7 +6,7 @@ const getDesignTokens = (): ThemeOptions => ({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#00F0FF', // Electric Teal
+      main: '#00F5FF', // Electric Teal
       contrastText: '#000000',
     },
     secondary: {
@@ -21,56 +21,57 @@ const getDesignTokens = (): ThemeOptions => ({
       secondary: '#A1A1AA', // Gunmetal
       disabled: '#404040',  // Carbon
     },
-    divider: '#222222', // Subtle Border
+    divider: 'rgba(255, 255, 255, 0.1)', // Subtle Border
   },
   typography: {
-    fontFamily: '"Satoshi", "Inter", sans-serif',
+    fontFamily: '"Inter", sans-serif',
     h1: {
       fontFamily: '"Space Grotesk", sans-serif',
-      fontSize: '32px',
-      fontWeight: 700,
-      letterSpacing: '-0.02em',
+      fontSize: '3.5rem',
+      fontWeight: 900,
+      letterSpacing: '-0.04em',
       color: '#F2F2F2',
     },
     h2: {
       fontFamily: '"Space Grotesk", sans-serif',
-      fontSize: '24px',
-      fontWeight: 600,
-      letterSpacing: '-0.02em',
+      fontSize: '2.5rem',
+      fontWeight: 900,
+      letterSpacing: '-0.03em',
     },
     h3: {
       fontFamily: '"Space Grotesk", sans-serif',
-      fontSize: '20px',
-      fontWeight: 600,
+      fontSize: '2rem',
+      fontWeight: 900,
+      letterSpacing: '-0.02em',
     },
     h4: {
       fontFamily: '"Space Grotesk", sans-serif',
-      fontSize: '18px',
-      fontWeight: 600,
+      fontSize: '1.5rem',
+      fontWeight: 900,
     },
     body1: {
-      fontSize: '16px',
+      fontSize: '1rem',
       fontWeight: 400,
       lineHeight: 1.6,
     },
     body2: {
-      fontSize: '14px',
+      fontSize: '0.875rem',
       fontWeight: 400,
     },
     caption: {
-      fontSize: '12px',
+      fontSize: '0.75rem',
       color: '#A1A1AA',
     },
     button: {
       fontFamily: '"Space Grotesk", sans-serif',
       textTransform: 'none',
-      fontWeight: 600,
+      fontWeight: 700,
     },
   },
   shape: {
     borderRadius: 12,
   },
-  shadows: Array(25).fill('none') as any, // Depth is defined by strokes, not shadows
+  shadows: Array(25).fill('none') as any,
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -95,25 +96,26 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          padding: '8px 16px',
-          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: '1px solid #222222',
+          borderRadius: '12px',
+          padding: '10px 24px',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           '&:hover': {
-            borderColor: '#404040',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'rgba(0, 245, 255, 0.5)',
+            backgroundColor: 'rgba(0, 245, 255, 0.05)',
+            transform: 'translateY(-2px)',
           },
           '&:active': {
             transform: 'scale(0.98)',
           },
         },
         containedPrimary: {
-          backgroundColor: '#00F0FF',
+          backgroundColor: '#00F5FF',
           color: '#000000',
           border: 'none',
           '&:hover': {
-            backgroundColor: alpha('#00F0FF', 0.8),
-            boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+            backgroundColor: alpha('#00F5FF', 0.8),
+            boxShadow: '0 0 20px rgba(0, 245, 255, 0.4)',
           },
         },
       },
@@ -121,15 +123,16 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          backgroundColor: 'rgba(10, 10, 10, 0.7)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: 24,
+          backgroundColor: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(25px) saturate(180%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           backgroundImage: 'none',
-          transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            borderColor: '#404040',
-            transform: 'translateY(-2px)',
+            borderColor: 'rgba(0, 245, 255, 0.3)',
+            transform: 'translateY(-4px)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
           },
         },
       },
@@ -137,74 +140,32 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#0A0A0A',
+          backgroundColor: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(25px) saturate(180%)',
           backgroundImage: 'none',
-          border: '1px solid #222222',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid #222222',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(25px) saturate(180%)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: 'none',
-        },
-      },
-    },
-    MuiDrawer: {
-      styleOverrides: {
-        paper: {
-          backgroundColor: '#000000',
-          borderRight: '1px solid #222222',
-        },
-      },
-    },
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          margin: '2px 8px',
-          '&.Mui-selected': {
-            backgroundColor: 'rgba(0, 240, 255, 0.1)',
-            color: '#00F0FF',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 240, 255, 0.15)',
-            },
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 8,
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
-            '& fieldset': {
-              borderColor: '#222222',
-            },
-            '&:hover fieldset': {
-              borderColor: '#404040',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#00F0FF',
-              borderWidth: '1px',
-              boxShadow: '0 0 10px rgba(0, 240, 255, 0.1)',
-            },
-          },
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 16,
-          backgroundColor: 'rgba(10, 10, 10, 0.9)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid #222222',
+          borderRadius: 24,
+          backgroundColor: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(25px) saturate(180%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           backgroundImage: 'none',
+          boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
         },
       },
     },

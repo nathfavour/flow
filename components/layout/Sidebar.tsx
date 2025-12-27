@@ -217,8 +217,9 @@ export default function Sidebar() {
         '& .MuiDrawer-paper': {
           width: DRAWER_WIDTH,
           boxSizing: 'border-box',
-          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
-          backgroundColor: '#000000',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(25px) saturate(180%)',
           mt: '64px',
           height: 'calc(100% - 64px)',
           backgroundImage: 'none',
@@ -264,9 +265,10 @@ export default function Sidebar() {
                 <ListItemText
                   primary={item.label}
                   primaryTypographyProps={{
-                    fontWeight: pathname === item.href ? 800 : 600,
+                    fontWeight: pathname === item.href ? 900 : 700,
                     fontSize: '0.85rem',
-                    letterSpacing: '0.01em'
+                    letterSpacing: '0.01em',
+                    fontFamily: '"Space Grotesk", sans-serif'
                   }}
                 />
               </ListItemButton>
