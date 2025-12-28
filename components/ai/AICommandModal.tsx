@@ -19,13 +19,13 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  Wand2 as AutoAwesomeIcon,
-  X as CloseIcon,
-  Calendar as EventIcon,
-  CheckCircle2 as CheckCircleIcon,
-  Clock as ScheduleIcon,
-  FileText as DescriptionIcon,
-} from 'lucide-react';
+  AutoAwesome as AutoAwesomeIcon,
+  Close as CloseIcon,
+  Event as EventIcon,
+  CheckCircle as CheckCircleIcon,
+  AccessTime as ScheduleIcon,
+  Description as DescriptionIcon,
+} from '@mui/icons-material';
 import { useAI } from '@/hooks/useAI';
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
@@ -257,9 +257,10 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
                   color: 'white',
                   borderRadius: '50%',
                   p: 0.5,
+                  display: 'flex',
                 }}
               >
-                <CheckCircleIcon size={20} />
+                <CheckCircleIcon sx={{ fontSize: 20 }} />
               </Box>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
@@ -267,7 +268,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
                     label={result.intent === 'create_task' ? 'Task' : 'Event'} 
                     color={result.intent === 'create_task' ? 'primary' : 'secondary'}
                     size="small"
-                    icon={result.intent === 'create_task' ? <CheckCircleIcon /> : <EventIcon />}
+                    icon={result.intent === 'create_task' ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <EventIcon sx={{ fontSize: 16 }} />}
                   />
                   <Typography variant="h6" component="div">
                     {result.data.title}
@@ -276,14 +277,14 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
                 
                 {result.data.description && (
                   <Box sx={{ display: 'flex', gap: 1, mt: 1, color: 'text.secondary' }}>
-                    <DescriptionIcon size={20} />
+                    <DescriptionIcon sx={{ fontSize: 20 }} />
                     <Typography variant="body2">{result.data.description}</Typography>
                   </Box>
                 )}
 
                 {(result.data.dueDate || result.data.startTime) && (
                   <Box sx={{ display: 'flex', gap: 1, mt: 1, color: 'text.secondary' }}>
-                    <ScheduleIcon size={20} />
+                    <ScheduleIcon sx={{ fontSize: 20 }} />
                     <Typography variant="body2">
                       {result.intent === 'create_task' && result.data.dueDate
                         ? new Date(result.data.dueDate).toLocaleString()

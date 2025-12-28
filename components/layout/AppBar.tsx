@@ -320,7 +320,7 @@ export default function AppBar() {
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
           <MenuItem sx={{ py: 1.2, '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}>
             <ListItemIcon>
-              <PersonIcon className="h-5 w-5" />
+              <PersonIcon sx={{ fontSize: 20 }} />
             </ListItemIcon>
             <ListItemText primaryTypographyProps={{ fontWeight: 600 }}>Profile</ListItemText>
           </MenuItem>
@@ -334,7 +334,7 @@ export default function AppBar() {
             }}
           >
             <ListItemIcon>
-              <SettingsIcon className="h-5 w-5" />
+              <SettingsIcon sx={{ fontSize: 20 }} />
             </ListItemIcon>
             <ListItemText primaryTypographyProps={{ fontWeight: 600 }}>Vault Settings</ListItemText>
           </MenuItem>
@@ -346,14 +346,14 @@ export default function AppBar() {
             }}
           >
             <ListItemIcon>
-              <LogoutIcon className="h-5 w-5 rotate-180" style={{ color: '#FFC107' }} />
+              <LogoutIcon sx={{ fontSize: 20, transform: 'rotate(180deg)', color: '#FFC107' }} />
             </ListItemIcon>
             <ListItemText primaryTypographyProps={{ fontWeight: 700, color: '#FFC107' }}>Export Data</ListItemText>
           </MenuItem>
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
           <MenuItem sx={{ py: 1.2, color: 'error.main', '&:hover': { bgcolor: 'rgba(255, 0, 0, 0.05)' } }} onClick={() => logout()}>
             <ListItemIcon>
-              <LogoutIcon className="h-5 w-5" style={{ color: theme.palette.error.main }} />
+              <LogoutIcon sx={{ fontSize: 20, color: theme.palette.error.main }} />
             </ListItemIcon>
             <ListItemText primaryTypographyProps={{ fontWeight: 700 }}>Sign out</ListItemText>
           </MenuItem>
