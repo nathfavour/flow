@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { Plus as Add } from 'lucide-react';
+import { Add as AddIcon } from '@mui/icons-material';
 import EventCard from './EventCard';
 import EventDialog from './EventDialog';
 import { Event } from '@/types';
@@ -151,7 +151,7 @@ export default function EventList() {
         </Box>
         <Button
           variant="contained"
-          startIcon={<Add size={20} />}
+          startIcon={<AddIcon sx={{ fontSize: 20 }} />}
           sx={{ borderRadius: 50, px: 3 }}
           onClick={() => {
             if (!isAuthenticated) {

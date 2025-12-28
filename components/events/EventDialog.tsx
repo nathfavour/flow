@@ -109,7 +109,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
             Create New Event
           </Typography>
           <IconButton onClick={handleClose} size="small">
-            <CloseIcon size={20} />
+            <CloseIcon sx={{ fontSize: 20 }} />
           </IconButton>
         </DialogTitle>
 
@@ -168,7 +168,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LocationOn color={theme.palette.action.active} size={20} />
+                    <LocationOn sx={{ fontSize: 20, color: theme.palette.action.active }} />
                   </InputAdornment>
                 ),
               }}
@@ -184,7 +184,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LinkIcon color={theme.palette.action.active} size={20} />
+                    <LinkIcon sx={{ fontSize: 20, color: theme.palette.action.active }} />
                   </InputAdornment>
                 ),
               }}
@@ -200,7 +200,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <ImageIcon color={theme.palette.action.active} size={20} />
+                    <ImageIcon sx={{ fontSize: 20, color: theme.palette.action.active }} />
                   </InputAdornment>
                 ),
               }}
@@ -233,7 +233,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
                 <ToggleButton value="public">
                   <Tooltip title="Anyone can discover and view this event">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PublicIcon size={18} />
+                      <PublicIcon sx={{ fontSize: 18 }} />
                       <Typography variant="body2">Public</Typography>
                     </Box>
                   </Tooltip>
@@ -241,7 +241,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
                 <ToggleButton value="unlisted">
                   <Tooltip title="Only people with the link can view">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <UnlistedIcon size={18} />
+                      <UnlistedIcon sx={{ fontSize: 18 }} />
                       <Typography variant="body2">Unlisted</Typography>
                     </Box>
                   </Tooltip>
@@ -249,7 +249,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
                 <ToggleButton value="private">
                   <Tooltip title="Only you can view this event">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PrivateIcon size={18} />
+                      <PrivateIcon sx={{ fontSize: 18 }} />
                       <Typography variant="body2">Private</Typography>
                     </Box>
                   </Tooltip>

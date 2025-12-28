@@ -18,8 +18,6 @@ const config: NextConfig = {
     optimizePackageImports: [
       '@mui/material',
       '@mui/icons-material',
-      'lucide-react',
-      '@heroicons/react',
       'date-fns',
     ],
   },

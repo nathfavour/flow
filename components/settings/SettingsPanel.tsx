@@ -29,14 +29,14 @@ import {
   Grid,
 } from '@mui/material';
 import {
-  User,
+  Person as User,
   Palette,
-  LayoutGrid,
+  GridView as LayoutGrid,
   Keyboard,
   Settings,
   Link as LinkIcon,
   Check as CheckIcon,
-} from 'lucide-react';
+} from '@mui/icons-material';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useThemeMode } from '@/theme';
 import dynamic from 'next/dynamic';
@@ -93,9 +93,9 @@ export default function SettingsPanel() {
   });
 
   const settingsTabs = [
-    { label: 'Appearance', icon: <Palette size={20} /> },
-    { label: 'Integrations', icon: <LayoutGrid size={20} /> },
-    { label: 'Shortcuts', icon: <Keyboard size={20} /> },
+    { label: 'Appearance', icon: <Palette sx={{ fontSize: 20 }} /> },
+    { label: 'Integrations', icon: <LayoutGrid sx={{ fontSize: 20 }} /> },
+    { label: 'Shortcuts', icon: <Keyboard sx={{ fontSize: 20 }} /> },
   ];
 
   return (
