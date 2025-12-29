@@ -13,8 +13,8 @@ export const APP_CONFIG = {
   
   // Brand colors (for reference, actual theme colors are in theme/theme.ts)
   colors: {
-    primary: '#FFC700', // Sun yellow
-    secondary: '#8B5CF6', // Purple accent
+    primary: '#00F0FF', // Cybernetic Teal
+    secondary: '#A1A1AA', // Gunmetal
   },
 } as const;
 
