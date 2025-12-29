@@ -208,7 +208,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
       }}
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <AutoAwesomeIcon color={theme.palette.secondary.main} />
+        <AutoAwesomeIcon sx={{ color: theme.palette.secondary.main }} />
         <Typography variant="h6" fontWeight={600}>
           AI Assistant
         </Typography>

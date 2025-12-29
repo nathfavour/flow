@@ -9,6 +9,14 @@ interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
+export const useThemeMode = () => {
+  return {
+    mode: 'dark',
+    setMode: (mode: 'light' | 'dark' | 'system') => {},
+    toggleMode: () => {},
+  };
+};
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
   React.useEffect(() => {
     // Force dark mode class on html for any legacy tailwind or global styles
