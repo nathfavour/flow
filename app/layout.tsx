@@ -42,6 +42,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${mono.variable} ${spaceGrotesk.variable}`}>
 
+      <head>
+        <link rel="preconnect" href="https://fra.cloud.appwrite.io" />
+      </head>
       <body>
         <AppProviders>
           <MainLayout>

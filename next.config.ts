@@ -8,7 +8,8 @@ const config: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  serverExternalPackages: ['pino', 'thread-stream', '@walletconnect/logger'],
+  serverExternalPackages: ['pino', 'thread-stream'],
+  compress: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -25,6 +26,8 @@ const config: NextConfig = {
       '@mui/material',
       '@mui/icons-material',
       'date-fns',
+      'framer-motion',
+      'lodash-es',
     ],
   },
   images: {
