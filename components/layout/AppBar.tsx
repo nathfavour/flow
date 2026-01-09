@@ -25,8 +25,6 @@ import {
   Add as AddIcon,
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
   HelpOutline as HelpIcon,
@@ -36,7 +34,6 @@ import {
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
-import { useThemeMode } from '@/theme';
 import { Logo } from '@/components/common';
 import { ECOSYSTEM_APPS } from '@/lib/constants';
 import dynamic from 'next/dynamic';
