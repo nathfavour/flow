@@ -112,7 +112,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, []);
 
-  const checkSession = useCallback(async () => {
+  const checkSession = useCallback(async (retryCount = 0) => {
     try {
       const currentUser = await account.get();
       setUser(currentUser);
@@ -121,7 +121,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
         authWindow.close();
         setAuthWindow(null);
       }
+      
+      // Clear the auth=success param from URL if it exists
+      if (typeof window !== 'undefined' && window.location.search.includes('auth=success')) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('auth');
+        window.history.replaceState({}, '', url.toString());
+      }
     } catch (error: any) {
+      // Check for auth=success signal in URL - this means we just came from IDM
+      const hasAuthSignal = typeof window !== 'undefined' && window.location.search.includes('auth=success');
+      
+      if (hasAuthSignal && retryCount < 3) {
+        console.log(`Auth signal detected but session not found. Retrying... (${retryCount + 1})`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return checkSession(retryCount + 1);
+      }
+
       // First try silent recovery
       await attemptSilentAuth();
 
@@ -145,9 +161,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
     } finally {
-      setIsLoading(false);
+      if (retryCount === 0 || !user) {
+        setIsLoading(false);
+      }
     }
-  }, [authWindow, pathname, attemptSilentAuth]);
+  }, [authWindow, pathname, attemptSilentAuth, user]);
 
   useEffect(() => {
     checkSession();
