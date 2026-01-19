@@ -19,7 +19,7 @@ import {
     Bolt as ActionIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ECOSYSTEM_APPS } from '@/lib/constants';
+import { ECOSYSTEM_APPS, getEcosystemUrl } from '@/lib/constants';
 
 interface EcosystemPortalProps {
     open: boolean;
@@ -31,12 +31,12 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
     const theme = useTheme();
 
     const filteredApps = ECOSYSTEM_APPS.filter(app =>
-        app.name.toLowerCase().includes(search.toLowerCase()) ||
+        app.label.toLowerCase().includes(search.toLowerCase()) ||
         app.description.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleAppClick = (url: string) => {
-        window.location.href = url;
+    const handleAppClick = (subdomain: string) => {
+        window.location.href = getEcosystemUrl(subdomain);
         onClose();
     };
 
@@ -152,10 +152,10 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                         </Typography>
                         <Grid container spacing={2}>
                             {filteredApps.map((app) => (
-                                <Grid size={{ xs: 12, sm: 6 }} key={app.name}>
+                                <Grid size={{ xs: 12, sm: 6 }} key={app.id}>
                                     <Box
                                         component="button"
-                                        onClick={() => handleAppClick(app.url)}
+                                        onClick={() => handleAppClick(app.subdomain)}
                                         sx={{
                                             width: '100%',
                                             display: 'flex',
@@ -163,17 +163,17 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                                             gap: 2,
                                             p: 2,
                                             borderRadius: '20px',
-                                            bgcolor: app.active ? 'rgba(0, 240, 255, 0.05)' : 'rgba(255, 255, 255, 0.02)',
-                                            border: '1px solid',
-                                            borderColor: app.active ? 'rgba(0, 240, 255, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                                            bgcolor: 'rgba(255, 255, 255, 0.02)',
+                                            border: '1px solid rgba(255, 255, 255, 0.06)',
                                             color: 'white',
                                             textAlign: 'left',
                                             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                             cursor: 'pointer',
                                             '&:hover': {
                                                 bgcolor: 'rgba(255, 255, 255, 0.06)',
-                                                borderColor: 'rgba(255, 255, 255, 0.15)',
-                                                transform: 'translateY(-2px)'
+                                                borderColor: alpha(app.color, 0.4),
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: `0 8px 24px ${alpha(app.color, 0.1)}`
                                             },
                                             '&:active': {
                                                 transform: 'scale(0.98)'
@@ -194,8 +194,8 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                                             {app.icon}
                                         </Box>
                                         <Box>
-                                            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: app.active ? '#00F0FF' : 'white' }}>
-                                                {app.name}
+                                            <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                                                {app.label}
                                             </Typography>
                                             <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', display: 'block' }}>
                                                 {app.description}
