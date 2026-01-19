@@ -472,5 +472,4 @@ export default function Dashboard() {
       </Grid>
     </Box>
   );
-  );
 }
