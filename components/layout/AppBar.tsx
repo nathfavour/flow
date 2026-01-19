@@ -199,7 +199,7 @@ export default function AppBar() {
                 },
               }}
             >
-              <AutoAwesomeIcon sx={{ fontSize: 20 }} />
+              <Sparkles size={20} strokeWidth={1.5} />
             </IconButton>
           </Tooltip>
 
@@ -221,7 +221,7 @@ export default function AppBar() {
                 },
               }}
             >
-              <AddIcon sx={{ fontSize: 20 }} />
+              <Plus size={20} strokeWidth={2} />
             </IconButton>
           </Tooltip>
 
@@ -249,7 +249,7 @@ export default function AppBar() {
                 }
               }}
             >
-              <AppsIcon sx={{ fontSize: 20 }} />
+              <LayoutGrid size={20} strokeWidth={1.5} />
             </IconButton>
           </Tooltip>
 
@@ -280,7 +280,7 @@ export default function AppBar() {
                   }
                 }}
               >
-                <NotificationsIcon sx={{ fontSize: 20 }} />
+                <Bell size={20} strokeWidth={1.5} />
               </Badge>
             </IconButton>
           </Tooltip>
