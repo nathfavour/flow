@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ECOSYSTEM_APPS, getEcosystemUrl } from '@/lib/constants';
+import { EcosystemWidgets } from '@/ecosystem/integration/Widgets';
 
 interface EcosystemPortalProps {
     open: boolean;
@@ -206,42 +207,9 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                             ))}
                         </Grid>
 
-                        {/* Quick Actions Placeholder */}
+                        {/* Ecosystem Widgets Integration */}
                         {search.length === 0 && (
-                            <Box sx={{ mt: 4 }}>
-                                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', mb: 2, display: 'block' }}>
-                                    Ecosystem Commands
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                    {[
-                                        { label: 'Create new secure note', cmd: 'Note' },
-                                        { label: 'Check vault security health', cmd: 'Keep' },
-                                        { label: 'Start a new task workflow', cmd: 'Flow' }
-                                    ].map((action, i) => (
-                                        <Box key={i} sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            p: 1.5,
-                                            px: 2,
-                                            borderRadius: '12px',
-                                            bgcolor: 'rgba(255, 255, 255, 0.01)',
-                                            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' },
-                                            cursor: 'pointer'
-                                        }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <ActionIcon sx={{ fontSize: 16, color: 'rgba(255, 255, 255, 0.2)' }} />
-                                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 500 }}>
-                                                    {action.label}
-                                                </Typography>
-                                            </Box>
-                                            <Typography variant="caption" sx={{ color: '#00F0FF', fontWeight: 700, opacity: 0.6 }}>
-                                                {action.cmd}
-                                            </Typography>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            </Box>
+                            <EcosystemWidgets />
                         )}
                     </Box>
 
