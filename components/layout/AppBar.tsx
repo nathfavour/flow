@@ -20,18 +20,19 @@ import {
   alpha,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  Add as AddIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
-  Logout as LogoutIcon,
-  Person as PersonIcon,
-  HelpOutline as HelpIcon,
-  Terminal as KeyboardIcon,
-  Apps as AppsIcon,
-  AutoAwesome as AutoAwesomeIcon,
-} from '@mui/icons-material';
+  Menu,
+  Search,
+  Plus,
+  Bell,
+  Settings,
+  LogOut,
+  User,
+  HelpCircle,
+  Keyboard,
+  LayoutGrid,
+  Sparkles,
+  Download
+} from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { Logo } from '@/components/common';
@@ -118,7 +119,7 @@ export default function AppBar() {
             '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
           }}
         >
-          <MenuIcon sx={{ fontSize: 20 }} />
+          <Menu size={20} strokeWidth={1.5} />
         </IconButton>
 
         {/* Logo */}
@@ -157,7 +158,7 @@ export default function AppBar() {
               justifyContent: 'center',
             }}
           >
-            <SearchIcon sx={{ fontSize: 20, color: '#A1A1AA' }} />
+            <Search size={18} strokeWidth={1.5} color="#A1A1AA" />
           </Box>
           <InputBase
             placeholder="Search tasks... (Ctrl+K)"
