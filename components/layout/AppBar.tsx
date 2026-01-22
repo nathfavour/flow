@@ -417,7 +417,7 @@ export default function AppBar() {
           >
             {ECOSYSTEM_APPS.map((app) => (
               <Box
-                key={app.name}
+                key={app.id}
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -425,12 +425,8 @@ export default function AppBar() {
                   p: 1.5,
                   borderRadius: '16px',
                   cursor: 'pointer',
-                  backgroundColor: app.active
-                    ? 'rgba(0, 245, 255, 0.08)'
-                    : 'transparent',
-                  border: app.active
-                    ? '1px solid rgba(0, 245, 255, 0.2)'
-                    : '1px solid transparent',
+                  backgroundColor: 'transparent',
+                  border: '1px solid transparent',
                   transition: 'all 0.2s ease',
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -459,10 +455,10 @@ export default function AppBar() {
                   sx={{
                     fontWeight: 700,
                     textAlign: 'center',
-                    color: app.active ? '#00F5FF' : 'text.primary'
+                    color: 'text.primary'
                   }}
                 >
-                  {app.shortName}
+                  {app.label}
                 </Typography>
               </Box>
             ))}

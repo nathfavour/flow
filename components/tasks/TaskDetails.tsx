@@ -104,7 +104,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
     try {
       const prompt = `You are a Project Manager. The user wants to '${task.title}'. Generate a JSON array of 5 concrete, actionable sub-tasks. Return ONLY the JSON array of strings.`;
       const result = await generate(prompt);
-      const text = result.text;
+      const text = result;
       // Clean up markdown code blocks if present
       const jsonString = text.replace(/```json\n|\n```/g, '').replace(/```/g, '');
       const subtasks = JSON.parse(jsonString);
