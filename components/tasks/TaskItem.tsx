@@ -34,6 +34,7 @@ import { Task, Priority } from '@/types';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
 import { NoteSelectorModal } from '../common/NoteSelectorModal';
+import { SecretSelectorModal } from '../common/SecretSelectorModal';
 
 interface TaskItemProps {
   task: Task;
@@ -61,6 +62,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
   const { openSecondarySidebar } = useLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [isSecretModalOpen, setIsSecretModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const project = projects.find((p) => p.id === task.projectId);
@@ -100,6 +102,17 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
 
     updateTask(task.id, {
       linkedNotes: [...currentNotes, noteId]
+    });
+  };
+
+  const handleAttachSecret = async (secretId: string) => {
+    setIsSecretModalOpen(false);
+    const tag = `source:whisperrkeep:${secretId}`;
+    const currentTags = task.labels || [];
+    if (currentTags.includes(tag)) return;
+
+    updateTask(task.id, {
+      labels: [...currentTags, tag]
     });
   };
 
@@ -331,6 +344,10 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
         <MenuItem onClick={() => { setIsNoteModalOpen(true); handleMenuClose(); }}>
           <ListItemIcon><NoteIcon sx={{ fontSize: 16, color: '#00F5FF' }} /></ListItemIcon>
           <ListItemText primary="Attach Note" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
+        </MenuItem>
+        <MenuItem onClick={() => { setIsSecretModalOpen(true); handleMenuClose(); }}>
+          <ListItemIcon><ScheduleIcon sx={{ fontSize: 16, color: '#FFD700' }} /></ListItemIcon>
+          <ListItemText primary="Attach Secret (Keep)" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
         </MenuItem>
         <Box sx={{ my: 0.5, height: '1px', backgroundColor: '#222222' }} />
         <MenuItem onClick={handleDelete} sx={{ color: '#ef4444' }}>

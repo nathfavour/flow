@@ -151,3 +151,24 @@ export const notes = {
         data
     })
 };
+
+// --- Secrets (Keep) ---
+
+export const secrets = {
+    list: (queries?: string[]) => tablesDB.listRows({ 
+        databaseId: 'passwordManagerDb', 
+        tableId: 'credentials', 
+        queries 
+    }),
+    get: (id: string) => tablesDB.getRow({
+        databaseId: 'passwordManagerDb',
+        tableId: 'credentials',
+        rowId: id
+    }),
+    update: (id: string, data: any) => tablesDB.updateRow({
+        databaseId: 'passwordManagerDb',
+        tableId: 'credentials',
+        rowId: id,
+        data
+    })
+};
