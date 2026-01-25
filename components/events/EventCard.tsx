@@ -315,6 +315,11 @@ export default function EventCard({ event, onClick }: EventCardProps) {
         onClose={() => setIsNoteModalOpen(false)}
         onSelect={handleAttachNote}
       />
+      <SecretSelectorModal
+        isOpen={isSecretModalOpen}
+        onClose={() => setIsSecretModalOpen(false)}
+        onSelect={handleAttachSecret}
+      />
     </Card>
   );
 }
