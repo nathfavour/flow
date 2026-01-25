@@ -38,6 +38,8 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { Logo } from '@/components/common';
 import { ECOSYSTEM_APPS } from '@/lib/constants';
 import dynamic from 'next/dynamic';
+import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-preview';
+import { getUserProfilePicId } from '@/lib/user-utils';
 
 const AICommandModal = dynamic(() => import('@/components/ai/AICommandModal'), { ssr: false });
 const EcosystemPortal = dynamic(() => import('@/components/common/EcosystemPortal'), { ssr: false });
@@ -61,6 +63,30 @@ export default function AppBar() {
   const [appsAnchorEl, setAppsAnchorEl] = useState<null | HTMLElement>(null);
   const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
   const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    let mounted = true;
+    const profilePicId = getUserProfilePicId(user);
+    const cached = getCachedProfilePreview(profilePicId || undefined);
+    if (cached !== undefined && mounted) {
+      setProfileUrl(cached ?? null);
+    }
+
+    const fetchPreview = async () => {
+      try {
+        if (profilePicId) {
+          const url = await fetchProfilePreview(profilePicId, 64, 64);
+          if (mounted) setProfileUrl(url as unknown as string);
+        } else if (mounted) setProfileUrl(null);
+      } catch (err) {
+        if (mounted) setProfileUrl(null);
+      }
+    };
+
+    fetchPreview();
+    return () => { mounted = false; };
+  }, [user]);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -287,19 +313,24 @@ export default function AppBar() {
 
           {/* Profile */}
           <Tooltip title="User Profile">
-            <IconButton onClick={handleProfileClick} sx={{ ml: 0.5 }}>
+            <IconButton onClick={handleProfileClick} sx={{ 
+              ml: 0.5,
+              p: 0.5,
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: '12px',
+              '&:hover': { borderColor: 'rgba(0, 240, 255, 0.2)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
+            }}>
               <Avatar
-                variant="rounded"
+                src={profileUrl || undefined}
                 sx={{
-                  width: 38,
-                  height: 38,
+                  width: 32,
+                  height: 32,
                   borderRadius: '10px',
                   bgcolor: '#0A0A0A',
                   color: '#00F0FF',
                   fontSize: '0.85rem',
                   fontFamily: 'var(--font-mono)',
                   fontWeight: 700,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
                 {getInitials(user)}
@@ -330,13 +361,28 @@ export default function AppBar() {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           {user && (
-            <Box sx={{ px: 2, py: 1.5 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: '"Space Grotesk", sans-serif' }}>
-                {user.name}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                {user.email}
-              </Typography>
+            <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar 
+                src={profileUrl || undefined}
+                sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  bgcolor: 'rgba(0, 240, 255, 0.1)',
+                  color: 'primary.main',
+                  borderRadius: '12px',
+                  fontWeight: 900
+                }}
+              >
+                {getInitials(user)}
+              </Avatar>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1.2 }}>
+                  {user.name}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }} noWrap>
+                  {user.email}
+                </Typography>
+              </Box>
             </Box>
           )}
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
