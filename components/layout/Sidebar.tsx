@@ -22,24 +22,24 @@ import {
   alpha,
 } from '@mui/material';
 import {
-  LayoutDashboard,
-  CheckSquare,
-  Calendar,
-  Zap,
-  Flame,
-  Inbox,
-  Clock,
-  CheckCircle2,
-  Tag,
-  Plus,
-  ChevronUp,
-  ChevronDown,
-  Star,
-  Columns,
-  Grid2X2,
-  BarChart3,
-  Settings,
-} from 'lucide-react';
+  DashboardOutlined as LayoutDashboardIcon,
+  CheckCircleOutline as CheckSquareIcon,
+  CalendarMonthOutlined as CalendarIcon,
+  ZapOutlined as ZapIcon,
+  LocalFireDepartmentOutlined as FlameIcon,
+  InboxOutlined as InboxIcon,
+  AccessTimeOutlined as ClockIcon,
+  CheckCircleOutlined as CheckCircle2Icon,
+  LocalOfferOutlined as TagIcon,
+  Add as PlusIcon,
+  KeyboardArrowUp as ChevronUpIcon,
+  KeyboardArrowDown as ChevronDownIcon,
+  StarOutline as StarIcon,
+  ViewColumnOutlined as ColumnsIcon,
+  GridViewOutlined as Grid2X2Icon,
+  BarChartOutlined as BarChart3Icon,
+  SettingsOutlined as SettingsIcon,
+} from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 
 const DRAWER_WIDTH = 256;
@@ -105,32 +105,32 @@ export default function Sidebar() {
   ).length;
 
   const mainNav: NavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} strokeWidth={1.5} />, href: '/dashboard' },
-    { id: 'tasks', label: 'Tasks', icon: <CheckSquare size={20} strokeWidth={1.5} />, href: '/tasks' },
-    { id: 'calendar', label: 'Calendar', icon: <Calendar size={20} strokeWidth={1.5} />, href: '/calendar' },
-    { id: 'events', label: 'Events', icon: <Zap size={20} strokeWidth={1.5} />, href: '/events' },
-    { id: 'focus', label: 'Focus Mode', icon: <Flame size={20} strokeWidth={1.5} />, href: '/focus' },
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboardIcon sx={{ fontSize: 20 }} />, href: '/dashboard' },
+    { id: 'tasks', label: 'Tasks', icon: <CheckSquareIcon sx={{ fontSize: 20 }} />, href: '/tasks' },
+    { id: 'calendar', label: 'Calendar', icon: <CalendarIcon sx={{ fontSize: 20 }} />, href: '/calendar' },
+    { id: 'events', label: 'Events', icon: <ZapIcon sx={{ fontSize: 20 }} />, href: '/events' },
+    { id: 'focus', label: 'Focus Mode', icon: <FlameIcon sx={{ fontSize: 20 }} />, href: '/focus' },
   ];
 
   const smartLists: NavItem[] = [
-    { id: 'inbox', label: 'Inbox', icon: <Inbox size={18} strokeWidth={1.5} />, badge: inboxCount },
-    { id: 'today', label: 'Today', icon: <Calendar size={18} strokeWidth={1.5} />, badge: todayCount, color: '#10b981' },
-    { id: 'upcoming', label: 'Upcoming', icon: <Clock size={18} strokeWidth={1.5} />, badge: upcomingCount, color: '#3b82f6' },
+    { id: 'inbox', label: 'Inbox', icon: <InboxIcon sx={{ fontSize: 18 }} />, badge: inboxCount },
+    { id: 'today', label: 'Today', icon: <CalendarIcon sx={{ fontSize: 18 }} />, badge: todayCount, color: '#10b981' },
+    { id: 'upcoming', label: 'Upcoming', icon: <ClockIcon sx={{ fontSize: 18 }} />, badge: upcomingCount, color: '#3b82f6' },
     {
       id: 'overdue',
       label: 'Overdue',
-      icon: <Calendar size={18} strokeWidth={1.5} />,
+      icon: <CalendarIcon sx={{ fontSize: 18 }} />,
       badge: overdueCount,
       color: '#ef4444',
     },
-    { id: 'completed', label: 'Completed', icon: <CheckCircle2 size={18} strokeWidth={1.5} />, badge: completedCount },
+    { id: 'completed', label: 'Completed', icon: <CheckCircle2Icon sx={{ fontSize: 18 }} />, badge: completedCount },
   ];
 
   const viewModes: NavItem[] = [
-    { id: 'board', label: 'Board View', icon: <Columns size={18} strokeWidth={1.5} /> },
-    { id: 'calendar', label: 'Calendar View', icon: <Calendar size={18} strokeWidth={1.5} /> },
-    { id: 'timeline', label: 'Timeline', icon: <BarChart3 size={18} strokeWidth={1.5} /> },
-    { id: 'matrix', label: 'Priority Matrix', icon: <Grid2X2 size={18} strokeWidth={1.5} /> },
+    { id: 'board', label: 'Board View', icon: <ColumnsIcon sx={{ fontSize: 18 }} /> },
+    { id: 'calendar', label: 'Calendar View', icon: <CalendarIcon sx={{ fontSize: 18 }} /> },
+    { id: 'timeline', label: 'Timeline', icon: <BarChart3Icon sx={{ fontSize: 18 }} /> },
+    { id: 'matrix', label: 'Priority Matrix', icon: <Grid2X2Icon sx={{ fontSize: 18 }} /> },
   ];
 
   const handleSmartListClick = (id: string) => {
@@ -259,7 +259,7 @@ export default function Sidebar() {
                     color: pathname === item.href ? '#00F0FF' : '#A1A1AA',
                   }}
                 >
-                  {React.cloneElement(item.icon as React.ReactElement, { sx: { fontSize: 20 } } as any)}
+                  {item.icon}
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
