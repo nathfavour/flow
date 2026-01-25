@@ -100,7 +100,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             queries: [
                 Query.or([
                     Query.startsWith('username', query.toLowerCase()),
-                    Query.search('displayName', query)
+                    Query.startsWith('displayName', query)
                 ]),
                 Query.limit(limit)
             ]
