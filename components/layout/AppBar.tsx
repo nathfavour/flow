@@ -403,8 +403,8 @@ export default function AppBar() {
             onClick={() => {
               handleClose();
               const domain = process.env.NEXT_PUBLIC_DOMAIN || 'whisperrnote.space';
-              const authSub = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'accounts';
-              window.location.href = `https://${authSub}.${domain}/settings?source=${encodeURIComponent(window.location.origin)}`;
+              const idSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'id';
+              window.location.href = `https://${idSubdomain}.${domain}/settings?source=${encodeURIComponent(window.location.origin)}`;
             }}
           >
             <ListItemIcon>
