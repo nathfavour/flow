@@ -41,43 +41,6 @@ export default function EventDetails({ eventId, initialData }: EventDetailsProps
   const [event, setEvent] = useState<AppwriteEvent | LocalEvent | null>(initialData || null);
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [isSecretModalOpen, setIsSecretModalOpen] = useState(false);
-
-  const handleAttachNote = async (noteId: string) => {
-    if (!event) return;
-    setIsNoteModalOpen(false);
-    const tag = `source:whisperrnote:${noteId}`;
-    const currentTags = (event as any).tags || [];
-    if (currentTags.includes(tag)) return;
-
-    try {
-      const updated = await eventApi.update(eventId, {
-        tags: [...currentTags, tag]
-      });
-      setEvent(updated);
-    } catch (err) {
-      console.error('Failed to link note to event:', err);
-    }
-  };
-
-  const handleAttachSecret = async (secretId: string) => {
-    if (!event) return;
-    setIsSecretModalOpen(false);
-    const tag = `source:whisperrkeep:${secretId}`;
-    const currentTags = (event as any).tags || [];
-    if (currentTags.includes(tag)) return;
-
-    try {
-      const updated = await eventApi.update(eventId, {
-        tags: [...currentTags, tag]
-      });
-      setEvent(updated);
-    } catch (err) {
-      console.error('Failed to link secret to event:', err);
-    }
-  };
-
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -229,63 +192,6 @@ export default function EventDetails({ eventId, initialData }: EventDetailsProps
         </Box>
 
         <Divider sx={{ my: 3 }} />
-
-        {/* Ecosystem Integration */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-            Ecosystem Links
-          </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1.5 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<NotesIcon sx={{ fontSize: 16 }} />}
-              onClick={() => {
-                const sourceTag = (event as any).tags?.find((t: string) => t.startsWith('source:whisperrnote:'));
-                if (sourceTag) {
-                  const noteId = sourceTag.split(':')[2];
-                  window.open(`https://note.whisperrnote.space/notes?openNoteId=${noteId}`, '_blank');
-                } else {
-                  setIsNoteModalOpen(true);
-                }
-              }}
-              sx={{ 
-                justifyContent: 'flex-start', 
-                border: '1px solid rgba(255, 255, 255, 0.05)', 
-                bgcolor: 'rgba(255, 255, 255, 0.01)', 
-                fontSize: '0.75rem',
-                color: (event as any).tags?.some((t: string) => t.startsWith('source:whisperrnote:')) ? '#00F5FF' : 'inherit'
-              }}
-            >
-              {(event as any).tags?.some((t: string) => t.startsWith('source:whisperrnote:')) ? 'View Source Note' : 'Link Note'}
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<KeyIcon sx={{ fontSize: 16, color: (event as any).tags?.some((t: string) => t.startsWith('source:whisperrkeep:')) ? '#FFD700' : 'inherit' }} />}
-              onClick={() => {
-                const sourceTag = (event as any).tags?.find((t: string) => t.startsWith('source:whisperrkeep:'));
-                if (sourceTag) {
-                  const secretId = sourceTag.split(':')[2];
-                  window.open(`https://keep.whisperrnote.space/vault?id=${secretId}`, '_blank');
-                } else {
-                  setIsSecretModalOpen(true);
-                }
-              }}
-              sx={{ 
-                justifyContent: 'flex-start', 
-                border: '1px solid rgba(255, 255, 255, 0.05)', 
-                bgcolor: 'rgba(255, 255, 255, 0.01)', 
-                fontSize: '0.75rem',
-                color: (event as any).tags?.some((t: string) => t.startsWith('source:whisperrkeep:')) ? '#FFD700' : 'inherit'
-              }}
-            >
-              {(event as any).tags?.some((t: string) => t.startsWith('source:whisperrkeep:')) ? 'View Secret' : 'Link Secret'}
-            </Button>
-          </Box>
-        </Box>
-
-        <Divider sx={{ my: 3 }} />
         <Box sx={{ mb: 3 }}>
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 About
@@ -319,17 +225,6 @@ export default function EventDetails({ eventId, initialData }: EventDetailsProps
             </Button>
         </Box>
       </Box>
-
-      <NoteSelectorModal
-        isOpen={isNoteModalOpen}
-        onClose={() => setIsNoteModalOpen(false)}
-        onSelect={handleAttachNote}
-      />
-      <SecretSelectorModal
-        isOpen={isSecretModalOpen}
-        onClose={() => setIsSecretModalOpen(false)}
-        onSelect={handleAttachSecret}
-      />
     </Box>
   );
 }

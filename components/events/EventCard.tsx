@@ -40,8 +40,6 @@ export default function EventCard({ event, onClick }: EventCardProps) {
   const theme = useTheme();
   const pattern = generatePattern(event.id);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [isSecretModalOpen, setIsSecretModalOpen] = useState(false);
   
   const getDateLabel = () => {
     const date = new Date(event.startTime);
@@ -60,36 +58,6 @@ export default function EventCard({ event, onClick }: EventCardProps) {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleAttachNote = async (noteId: string) => {
-    setIsNoteModalOpen(false);
-    const tag = `source:whisperrnote:${noteId}`;
-    const currentTags = (event as any).tags || [];
-    if (currentTags.includes(tag)) return;
-
-    try {
-      await eventApi.update(event.id, {
-        tags: [...currentTags, tag]
-      });
-    } catch (err) {
-      console.error('Failed to link note to event:', err);
-    }
-  };
-
-  const handleAttachSecret = async (secretId: string) => {
-    setIsSecretModalOpen(false);
-    const tag = `source:whisperrkeep:${secretId}`;
-    const currentTags = (event as any).tags || [];
-    if (currentTags.includes(tag)) return;
-
-    try {
-      await eventApi.update(event.id, {
-        tags: [...currentTags, tag]
-      });
-    } catch (err) {
-      console.error('Failed to link secret to event:', err);
-    }
   };
 
   return (
@@ -296,30 +264,11 @@ export default function EventCard({ event, onClick }: EventCardProps) {
           },
         }}
       >
-        <MenuItem onClick={() => { setIsNoteModalOpen(true); handleMenuClose(); }}>
-          <ListItemIcon><NoteIcon sx={{ fontSize: 16, color: '#00F5FF' }} /></ListItemIcon>
-          <ListItemText primary="Attach Note" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
-        </MenuItem>
-        <MenuItem onClick={() => { setIsSecretModalOpen(true); handleMenuClose(); }}>
-          <ListItemIcon><KeyIcon sx={{ fontSize: 16, color: '#FFD700' }} /></ListItemIcon>
-          <ListItemText primary="Attach Secret (Keep)" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
-        </MenuItem>
         <MenuItem onClick={handleMenuClose}>
           <ListItemIcon><Share fontSize="small" sx={{ fontSize: 16, color: '#A1A1AA' }} /></ListItemIcon>
           <ListItemText primary="Share Event" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
         </MenuItem>
       </Menu>
-
-      <NoteSelectorModal
-        isOpen={isNoteModalOpen}
-        onClose={() => setIsNoteModalOpen(false)}
-        onSelect={handleAttachNote}
-      />
-      <SecretSelectorModal
-        isOpen={isSecretModalOpen}
-        onClose={() => setIsSecretModalOpen(false)}
-        onSelect={handleAttachSecret}
-      />
     </Card>
   );
 }
