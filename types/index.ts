@@ -318,18 +318,18 @@ export interface ProjectTemplate {
 export interface Event {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
   startTime: Date;
   endTime: Date;
-  location?: string;
-  url?: string;
-  coverImage?: string;
+  location?: string | null;
+  url?: string | null;
+  coverImage?: string | null;
   attendees: string[]; // User IDs
   isPublic: boolean;
   creatorId: string;
   createdAt: Date;
   updatedAt: Date;
-  tags?: string[];
+  tags?: string[] | null;
 }
 
 // Focus Mode Types
