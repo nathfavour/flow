@@ -18,7 +18,6 @@ import {
   LocationOn as LocationIcon,
   Share as ShareIcon,
   Videocam as MeetingIcon,
-  Description as NotesIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useLayout } from '@/context/LayoutContext';
@@ -26,9 +25,6 @@ import { events as eventApi } from '@/lib/whisperrflow';
 import { generateEventPattern } from '@/utils/patternGenerator';
 import { Event as AppwriteEvent } from '@/types/whisperrflow';
 import { Event as LocalEvent } from '@/types';
-import { NoteSelectorModal } from '../common/NoteSelectorModal';
-import { SecretSelectorModal } from '../common/SecretSelectorModal';
-import { VpnKey as KeyIcon } from '@mui/icons-material';
 
 interface EventDetailsProps {
   eventId: string;
@@ -192,6 +188,8 @@ export default function EventDetails({ eventId, initialData }: EventDetailsProps
         </Box>
 
         <Divider sx={{ my: 3 }} />
+
+        {/* Description */}
         <Box sx={{ mb: 3 }}>
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 About

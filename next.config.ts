@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
 
 const config: NextConfig = {
-  compress: true,
-  poweredByHeader: false,
   serverExternalPackages: ['pino', 'thread-stream', '@walletconnect/logger'],
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -20,11 +18,7 @@ const config: NextConfig = {
     optimizePackageImports: [
       '@mui/material',
       '@mui/icons-material',
-      '@emotion/react',
-      '@emotion/styled',
       'date-fns',
-      'lucide-react',
-      '@tanstack/react-query',
     ],
   },
   images: {
