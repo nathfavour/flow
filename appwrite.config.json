@@ -1,7 +1,7 @@
 {
     "projectId": "67fe9627001d97e37ef3",
     "endpoint": "https://fra.cloud.appwrite.io/v1",
-    "projectName": "whisperrnote",
+    "projectName": "kylrixnote",
     "settings": {
         "services": {
             "account": true,
@@ -42,7 +42,7 @@
     "tablesDB": [
         {
             "$id": "67ff05a9000296822396",
-            "name": "whisperrnote",
+            "name": "kylrixnote",
             "enabled": true
         },
         {
@@ -56,8 +56,8 @@
             "enabled": true
         },
         {
-            "$id": "whisperrflow",
-            "name": "whisperrflow",
+            "$id": "kylrixflow",
+            "name": "kylrixflow",
             "enabled": true
         }
     ],
@@ -6038,7 +6038,7 @@
         },
         {
             "$id": "calendars",
-            "databaseId": "whisperrflow",
+            "databaseId": "kylrixflow",
             "name": "calendars",
             "enabled": true,
             "rowSecurity": true,
@@ -6079,7 +6079,7 @@
         },
         {
             "$id": "tasks",
-            "databaseId": "whisperrflow",
+            "databaseId": "kylrixflow",
             "name": "tasks",
             "enabled": true,
             "rowSecurity": true,
@@ -6179,7 +6179,7 @@
         },
         {
             "$id": "events",
-            "databaseId": "whisperrflow",
+            "databaseId": "kylrixflow",
             "name": "events",
             "enabled": true,
             "rowSecurity": true,
@@ -6280,7 +6280,7 @@
         },
         {
             "$id": "eventGuests",
-            "databaseId": "whisperrflow",
+            "databaseId": "kylrixflow",
             "name": "eventGuests",
             "enabled": true,
             "rowSecurity": true,
@@ -6330,7 +6330,7 @@
         },
         {
             "$id": "focusSessions",
-            "databaseId": "whisperrflow",
+            "databaseId": "kylrixflow",
             "name": "focusSessions",
             "enabled": true,
             "rowSecurity": true,

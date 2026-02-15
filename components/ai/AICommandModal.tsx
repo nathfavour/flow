@@ -29,7 +29,7 @@ import {
 import { useAI } from '@/hooks/useAI';
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
-import { events as eventApi } from '@/lib/whisperrflow';
+import { events as eventApi } from '@/lib/kylrixflow';
 import { permissions } from '@/lib/permissions';
 
 interface AICommandModalProps {

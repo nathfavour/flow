@@ -4,11 +4,11 @@ import { APPWRITE_CONFIG } from '../config';
 const CONNECT_DATABASE_ID = 'chat';
 const CONNECT_COLLECTION_ID_USERS = 'users';
 
-const PROFILE_SYNC_KEY = 'whisperr_ecosystem_identity_synced';
-const SESSION_SYNC_KEY = 'whisperr_ecosystem_session_synced';
+const PROFILE_SYNC_KEY = 'kylrix_ecosystem_identity_synced';
+const SESSION_SYNC_KEY = 'kylrix_ecosystem_session_synced';
 
 /**
- * Ensures the user has a record in the global WhisperrConnect Directory.
+ * Ensures the user has a record in the global Kylrix Connect Directory.
  * Uses a multi-layered cache check (session + local) to minimize DB calls.
  */
 export async function ensureGlobalIdentity(user: any, force = false) {

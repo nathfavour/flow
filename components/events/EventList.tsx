@@ -17,7 +17,7 @@ import EventCard from './EventCard';
 import EventDialog from './EventDialog';
 import { Event } from '@/types';
 import { addDays, addHours } from 'date-fns';
-import { events as eventApi } from '@/lib/whisperrflow';
+import { events as eventApi } from '@/lib/kylrixflow';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
 import { useAuth } from '@/context/auth/AuthContext';

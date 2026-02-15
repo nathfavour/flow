@@ -55,7 +55,7 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
     const [search, setSearch] = useState('');
     const theme = useTheme();
 
-    const FLAGSHIP_APPS = ['note', 'keep', 'flow', 'connect'];
+    const FLAGSHIP_APPS = ['note', 'vault', 'flow', 'connect'];
     const filteredApps = ECOSYSTEM_APPS.filter(app =>
         FLAGSHIP_APPS.includes(app.id) && (
             app.label.toLowerCase().includes(search.toLowerCase()) ||

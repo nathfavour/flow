@@ -2,10 +2,10 @@
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode, useEffect } from 'react';
 import { ID } from 'appwrite';
-import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/lib/whisperrflow';
+import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/lib/kylrixflow';
 import { account } from '@/lib/appwrite';
 import { APPWRITE_CONFIG } from '@/lib/config';
-import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/whisperrflow';
+import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import {
   Task,
   Project,
@@ -25,7 +25,7 @@ const mapAppwriteTaskToTask = (doc: AppwriteTask): Task => {
   const projectTag = doc.tags?.find(t => t.startsWith('project:'));
   const projectId = projectTag ? projectTag.split(':')[1] : 'inbox';
   const userLabels = doc.tags?.filter(t => !t.startsWith('project:') && !t.startsWith('source:')) || [];
-  const linkedNotes = doc.tags?.filter(t => t.startsWith('source:whisperrnote:'))
+  const linkedNotes = doc.tags?.filter(t => t.startsWith('source:kylrixnote:'))
                                .map(t => t.split(':')[2]) || [];
 
   return {
@@ -565,7 +565,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         // Merge linked notes (source: tags)
         const notesToLink = updates.linkedNotes !== undefined ? updates.linkedNotes : (currentTask?.linkedNotes || []);
         notesToLink.forEach(noteId => {
-          const tag = `source:whisperrnote:${noteId}`;
+          const tag = `source:kylrixnote:${noteId}`;
           if (!finalTags.includes(tag)) finalTags.push(tag);
         });
 

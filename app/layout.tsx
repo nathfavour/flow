@@ -23,13 +23,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "WhisperrFlow - Smart Task Navigation",
-  description: "The future of task orchestration inside the Whisperr ecosystem.",
-  keywords: ["task management", "productivity", "whisperr", "todo", "project management"],
-  authors: [{ name: "Whisperr Team" }],
+  title: "Kylrix Flow - Smart Task Navigation",
+  description: "The future of task orchestration inside the Kylrix ecosystem.",
+  keywords: ["task management", "productivity", "kylrix", "todo", "project management"],
+  authors: [{ name: "Kylrix Team" }],
   openGraph: {
-    title: "WhisperrFlow - Smart Task Navigation",
-    description: "The future of task orchestration inside the Whisperr ecosystem.",
+    title: "Kylrix Flow - Smart Task Navigation",
+    description: "The future of task orchestration inside the Kylrix ecosystem.",
     type: "website",
   },
 };

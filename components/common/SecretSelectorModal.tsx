@@ -23,7 +23,7 @@ import {
   Search as SearchIcon,
   Key,
 } from 'lucide-react';
-import { secrets as secretsApi } from '@/lib/whisperrflow';
+import { secrets as secretsApi } from '@/lib/kylrixflow';
 
 interface Secret {
   $id: string;
@@ -88,7 +88,7 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
             ATTACH SECRET
           </Typography>
           <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-            Resource from WhisperrKeep
+            Resource from Kylrix Vault
           </Typography>
         </Box>
         <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)', color: 'rgba(255, 255, 255, 0.4)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.08)' } }}>

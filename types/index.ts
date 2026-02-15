@@ -1,4 +1,4 @@
-// Task Management Types for WhisperrFlow
+// Task Management Types for Kylrix Flow
 
 export type Priority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskStatus = 'todo' | 'in-progress' | 'done' | 'blocked' | 'cancelled';
@@ -91,10 +91,10 @@ export interface Task {
   position: number; // for ordering
   isArchived: boolean;
   // Ecosystem integration fields
-  linkedNotes?: string[]; // WhisperrNote integration
-  linkedEvents?: string[]; // WhisperrEvents integration
-  linkedMeetings?: string[]; // WhisperrMeet integration
-  linkedCalendarEvents?: string[]; // WhisperrCal integration
+  linkedNotes?: string[]; // Kylrix Note integration
+  linkedEvents?: string[]; // KylrixEvents integration
+  linkedMeetings?: string[]; // KylrixMeet integration
+  linkedCalendarEvents?: string[]; // KylrixCal integration
 }
 
 export interface Project {
@@ -154,26 +154,26 @@ export interface NotificationSettings {
 }
 
 export interface IntegrationSettings {
-  whisperrnote: {
+  kylrixnote: {
     enabled: boolean;
     autoLinkNotes: boolean;
   };
-  whisperrmeet: {
+  kylrixmeet: {
     enabled: boolean;
     createTasksFromMeetings: boolean;
   };
-  whisperrevents: {
+  kylrixevents: {
     enabled: boolean;
     syncEvents: boolean;
   };
-  whisperrcal: {
+  kylrixcal: {
     enabled: boolean;
     showTasksInCalendar: boolean;
   };
-  whisperrpass: {
+  kylrixpass: {
     enabled: boolean;
   };
-  whisperrauth: {
+  kylrixauth: {
     enabled: boolean;
     twoFactorEnabled: boolean;
   };

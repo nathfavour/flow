@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     
     const model = genAI.getGenerativeModel({ 
       model: modelName,
-      systemInstruction: systemInstruction || "You are Whisperrbot, an intelligent assistant for Whisperrflow, a premium task management and automation app. You represent 'Quiet Power' and 'The Glass Monolith' aesthetic. Be concise, professional, and helpful."
+      systemInstruction: systemInstruction || "You are Kylrixbot, an intelligent assistant for Kylrixflow, a premium task management and automation app. You represent 'Quiet Power' and 'The Glass Monolith' aesthetic. Be concise, professional, and helpful."
     });
 
     // 3. Handle Chat vs Single Prompt

@@ -257,7 +257,7 @@ export default function AppBar() {
           </Tooltip>
 
           {/* Ecosystem Apps - hidden on mobile */}
-          <Tooltip title="Whisperr Portal (Ctrl+Space)">
+          <Tooltip title="Kylrix Portal (Ctrl+Space)">
             <IconButton
               onClick={() => setPortalOpen(true)}
               sx={{
@@ -402,7 +402,7 @@ export default function AppBar() {
             sx={{ py: 1.2, '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
             onClick={() => {
               handleClose();
-              const domain = process.env.NEXT_PUBLIC_DOMAIN || 'whisperrnote.space';
+              const domain = process.env.NEXT_PUBLIC_DOMAIN || 'kylrixnote.space';
               const idSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'id';
               window.location.href = `https://${idSubdomain}.${domain}/settings?source=${encodeURIComponent(window.location.origin)}`;
             }}
@@ -456,7 +456,7 @@ export default function AppBar() {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           <Typography variant="overline" sx={{ px: 2, color: 'text.secondary', fontWeight: 800, letterSpacing: '0.1em' }}>
-            Whisperr Ecosystem
+            Kylrix Ecosystem
           </Typography>
           <Box
             sx={{

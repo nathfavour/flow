@@ -89,7 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (event.origin !== `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}`) return;
 
         if (event.data?.type === 'idm:auth-status' && event.data.status === 'authenticated') {
-          console.log('Silent auth discovered active session in whisperrflow');
+          console.log('Silent auth discovered active session in kylrixflow');
           checkSession();
           cleanup();
           resolve();
@@ -157,7 +157,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setShowAuthOverlay(true);
           }
         } else {
-          console.warn('Network issue detected in whisperrflow. Retaining last state.');
+          console.warn('Network issue detected in kylrixflow. Retaining last state.');
         }
       }
     } finally {
@@ -178,7 +178,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (event.origin !== expectedOrigin) return;
 
       if (event.data?.type === 'idm:auth-success') {
-        console.log('Received auth success via postMessage in whisperrflow');
+        console.log('Received auth success via postMessage in kylrixflow');
         checkSession();
         setIsAuthenticating(false);
         if (authWindow && !authWindow.closed) {
@@ -233,7 +233,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const currentUser = await account.get();
       if (currentUser) {
-        console.log('Active session detected in whisperrflow, skipping IDM window');
+        console.log('Active session detected in kylrixflow, skipping IDM window');
         setUser(currentUser);
         setShowAuthOverlay(false);
         setIsAuthenticating(false);
@@ -278,7 +278,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const win = window.open(
       AUTH_URL,
-      'WhisperrAuth',
+      'KylrixAuth',
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
     );
 
@@ -286,7 +286,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setAuthWindow(win);
     } else {
       // Popup blocked - fallback to redirect
-      console.warn('Popup blocked, falling back to redirect in whisperrflow');
+      console.warn('Popup blocked, falling back to redirect in kylrixflow');
       window.location.assign(mobileUrl.toString());
     }
   }, [authWindow, isAuthenticating, attemptSilentAuth]);
@@ -358,7 +358,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               Welcome to {APP_CONFIG.name}
             </Typography>
             <Typography variant="body1" align="center" sx={{ maxWidth: 400, opacity: 0.9 }}>
-              Please sign in with your Whisperr account to access your tasks and workflows.
+              Please sign in with your Kylrix account to access your tasks and workflows.
             </Typography>
             <Button
               variant="contained"

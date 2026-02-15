@@ -21,9 +21,9 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useLayout } from '@/context/LayoutContext';
-import { events as eventApi } from '@/lib/whisperrflow';
+import { events as eventApi } from '@/lib/kylrixflow';
 import { generateEventPattern } from '@/utils/patternGenerator';
-import { Event as AppwriteEvent } from '@/types/whisperrflow';
+import { Event as AppwriteEvent } from '@/types/kylrixflow';
 import { Event as LocalEvent } from '@/types';
 
 interface EventDetailsProps {

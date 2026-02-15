@@ -38,7 +38,7 @@ import {
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 import { Task } from '@/types';
-import { focusSessions } from '@/lib/whisperrflow';
+import { focusSessions } from '@/lib/kylrixflow';
 import { useAI } from '@/hooks/useAI';
 import dynamic from 'next/dynamic';
 import { tablesDB } from '@/lib/appwrite';
@@ -130,7 +130,7 @@ export default function FocusMode() {
           rowId: userId,
           data: {
             presence: 'busy',
-            statusMessage: 'In Focus Mode (WhisperrFlow)'
+            statusMessage: 'In Focus Mode (Kylrix Flow)'
           }
         }).catch(() => { /* Connect might not be initialized for this user */ });
       }
@@ -143,7 +143,7 @@ export default function FocusMode() {
           rowId: userId,
           data: {
             presence: isPaused ? 'busy' : 'online',
-            statusMessage: isPaused ? 'In Focus Mode (WhisperrFlow)' : ''
+            statusMessage: isPaused ? 'In Focus Mode (Kylrix Flow)' : ''
           }
         }).catch(() => {});
       }

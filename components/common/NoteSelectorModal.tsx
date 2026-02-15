@@ -23,7 +23,7 @@ import {
   Search as SearchIcon,
   FileText,
 } from 'lucide-react';
-import { notes as notesApi } from '@/lib/whisperrflow';
+import { notes as notesApi } from '@/lib/kylrixflow';
 
 interface Note {
   $id: string;
@@ -88,7 +88,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
             ATTACH NOTE
           </Typography>
           <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-            Resource from WhisperrNote
+            Resource from Kylrix Note
           </Typography>
         </Box>
         <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)', color: 'rgba(255, 255, 255, 0.4)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.08)' } }}>

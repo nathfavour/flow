@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Models } from 'appwrite';
-import { subscribeToTable } from '../lib/whisperrflow';
+import { subscribeToTable } from '../lib/kylrixflow';
 
 export function useRealtimeTable<T extends Models.Row>(
     tableId: string,

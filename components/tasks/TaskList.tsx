@@ -423,7 +423,7 @@ export default function TaskList() {
             Time Dimension
           </Typography>
           <Typography variant="body2" sx={{ maxWidth: 400, mx: 'auto', opacity: 0.6 }}>
-            The visual calendar interface is currently being optimized for the Whisperr ecosystem. 
+            The visual calendar interface is currently being optimized for the Kylrix ecosystem. 
           </Typography>
         </Box>
       )}

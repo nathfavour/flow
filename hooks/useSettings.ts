@@ -10,7 +10,7 @@ export const useSettings = () => {
   const [userSettings, setUserSettings] = useState<UserSettings>({});
 
   useEffect(() => {
-    const storedSettings = localStorage.getItem('whisperr_settings');
+    const storedSettings = localStorage.getItem('kylrix_settings');
     if (storedSettings) {
       try {
         setUserSettings(JSON.parse(storedSettings));
@@ -23,7 +23,7 @@ export const useSettings = () => {
   const updateSettings = (newSettings: Partial<UserSettings>) => {
     setUserSettings((prev) => {
       const updated = { ...prev, ...newSettings };
-      localStorage.setItem('whisperr_settings', JSON.stringify(updated));
+      localStorage.setItem('kylrix_settings', JSON.stringify(updated));
       return updated;
     });
   };
