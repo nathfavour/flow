@@ -1,5 +1,10 @@
 import { Dashboard } from '@/components/dashboard';
+import SudoGuard from '@/components/common/SudoGuard';
 
 export default function DashboardPage() {
-  return <Dashboard />;
+  return (
+    <SudoGuard>
+      <Dashboard />
+    </SudoGuard>
+  );
 }
