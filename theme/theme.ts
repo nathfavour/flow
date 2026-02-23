@@ -24,28 +24,28 @@ const getDesignTokens = (): ThemeOptions => ({
     divider: 'rgba(255, 255, 255, 0.08)', // Subtle Border
   },
   typography: {
-    fontFamily: 'var(--font-inter), "Inter", sans-serif',
+    fontFamily: 'var(--font-satoshi), "Satoshi", sans-serif',
     h1: {
-      fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
       fontSize: '3.5rem',
       fontWeight: 900,
       letterSpacing: '-0.04em',
       color: '#F2F2F2',
     },
     h2: {
-      fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
       fontSize: '2.5rem',
       fontWeight: 900,
       letterSpacing: '-0.03em',
     },
     h3: {
-      fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
       fontSize: '2rem',
       fontWeight: 900,
       letterSpacing: '-0.02em',
     },
     h4: {
-      fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
       fontSize: '1.5rem',
       fontWeight: 900,
     },
@@ -76,7 +76,7 @@ const getDesignTokens = (): ThemeOptions => ({
       color: '#A1A1AA',
     },
     button: {
-      fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
       textTransform: 'none',
       fontWeight: 700,
       letterSpacing: '0.02em',
@@ -92,7 +92,7 @@ const getDesignTokens = (): ThemeOptions => ({
         body: {
           backgroundColor: '#000000',
           color: '#F2F2F2',
-          fontFamily: 'var(--font-inter), "Inter", sans-serif',
+          fontFamily: 'var(--font-satoshi), "Satoshi", sans-serif',
           scrollbarColor: '#222222 transparent',
           '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
             width: 6,

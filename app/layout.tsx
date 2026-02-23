@@ -1,24 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/providers";
 import { MainLayout } from "@/components/layout";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -40,9 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${mono.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" suppressHydrationWarning className={mono.variable}>
 
       <head>
+        {/* THE KYLRIX SIGNATURE TRIO: Satoshi (Body) & Clash Display (Headings) */}
+        <link 
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700,900&display=swap" 
+          rel="stylesheet" 
+        />
         <link rel="preconnect" href="https://fra.cloud.appwrite.io" />
       </head>
       <body>
