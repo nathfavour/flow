@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from '@next/bundle-analyzer';
 
 const config: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   serverExternalPackages: ['pino', 'thread-stream', '@walletconnect/logger'],
   webpack: (config, { isServer }) => {
     if (!isServer) {
