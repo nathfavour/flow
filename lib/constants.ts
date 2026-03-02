@@ -31,7 +31,9 @@ export interface EcosystemApp {
   description: string;
 }
 
-export const NEXT_PUBLIC_DOMAIN = 'kylrix.space';
+export const KYLRIX_DOMAIN = 'kylrix.space';
+export const KYLRIX_AUTH_SUBDOMAIN = 'accounts';
+export const KYLRIX_AUTH_URI = `https://${KYLRIX_AUTH_SUBDOMAIN}.${KYLRIX_DOMAIN}`;
 
 // Kylrix ecosystem apps
 export const ECOSYSTEM_APPS: EcosystemApp[] = [
@@ -39,7 +41,7 @@ export const ECOSYSTEM_APPS: EcosystemApp[] = [
   { id: 'vault', label: 'Vault', subdomain: 'vault', type: 'app', icon: '🔐', color: '#8b5cf6', description: 'Secure vault and identity vault.' },
   { id: 'flow', label: 'Flow', subdomain: 'flow', type: 'app', icon: '🚀', color: '#10b981', description: 'Intelligent task orchestration.' },
   { id: 'connect', label: 'Connect', subdomain: 'connect', type: 'app', icon: '💬', color: '#ec4899', description: 'Secure bridge for communication.' },
-  { id: 'id', label: 'Identity', subdomain: 'accounts', type: 'accounts', icon: '🛡️', color: '#ef4444', description: 'Sovereign identity management.' },
+  { id: 'id', label: 'Accounts', subdomain: KYLRIX_AUTH_SUBDOMAIN, type: 'accounts', icon: '🛡️', color: '#ef4444', description: 'Sovereign identity management.' },
 ];
 
 export function getEcosystemUrl(subdomain: string) {
@@ -47,13 +49,8 @@ export function getEcosystemUrl(subdomain: string) {
     return '#';
   }
 
-  if (typeof window === 'undefined') {
-    return `https://${subdomain}.kylrix.space`;
-  }
-
-  const hostname = window.location.hostname;
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
   const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-  const isKylrixDomain = hostname.endsWith('kylrix.space');
 
   if (isLocalhost) {
     const ports: Record<string, number> = {
@@ -63,15 +60,9 @@ export function getEcosystemUrl(subdomain: string) {
       flow: 3003,
       connect: 3004
     };
-    const subdomainToAppId: Record<string, string> = {
-      app: 'note',
-      id: 'accounts',
-      keep: 'vault'
-    };
-    const appId = subdomainToAppId[subdomain] || subdomain;
+    const appId = subdomain === 'id' ? 'accounts' : subdomain;
     return `http://localhost:${ports[appId] || 3000}`;
   }
 
-  return `https://${subdomain}.kylrix.space`;
+  return `https://${subdomain}.${KYLRIX_DOMAIN}`;
 }
-
