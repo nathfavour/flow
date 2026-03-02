@@ -29,21 +29,9 @@
   268:44  warning  'date' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
 
 /home/nathfavour/code/kylrix/flow/components/common/EcosystemPortal.tsx
-  26:18  warning  'AnimatePresence' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
-  47:10  warning  'EcosystemWidgets' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
-  56:11  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
-  67:9   error    Error: This value cannot be modified
-
-Modifying a variable defined outside a component or hook is not allowed. Consider using an effect.
-
-/home/nathfavour/code/kylrix/flow/components/common/EcosystemPortal.tsx:67:9
-  65 |
-  66 |     const handleAppClick = (subdomain: string) => {
-> 67 |         window.location.href = getEcosystemUrl(subdomain);
-     |         ^^^^^^^^^^^^^^^ value cannot be modified
-  68 |         onClose();
-  69 |     };
-  70 |  react-hooks/immutability
+  26:18  warning  'AnimatePresence' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  47:10  warning  'EcosystemWidgets' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  56:11  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
 
 /home/nathfavour/code/kylrix/flow/components/common/NoteSelectorModal.tsx
   18:3  warning  'alpha' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
@@ -54,8 +42,8 @@ Modifying a variable defined outside a component or hook is not allowed. Conside
   41:9  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
 /home/nathfavour/code/kylrix/flow/components/common/SudoGuard.tsx
-   5:35  warning  'CircularProgress' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
-  17:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+   5:35  warning  'CircularProgress' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  18:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
 
 Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
 * Update external systems with the latest state from React.
@@ -63,34 +51,35 @@ Effects are intended to synchronize state between React and external systems suc
 
 Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
 
-/home/nathfavour/code/kylrix/flow/components/common/SudoGuard.tsx:17:9
-  15 |
+/home/nathfavour/code/kylrix/flow/components/common/SudoGuard.tsx:18:13
   16 |     useEffect(() => {
-> 17 |         setMounted(true);
-     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
-  18 |     }, []);
-  19 |
-  20 |     if (!mounted) return null;  react-hooks/set-state-in-effect
+  17 |         if (!mounted) {
+> 18 |             setMounted(true);
+     |             ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  19 |         }
+  20 |     }, [mounted]);
+  21 |  react-hooks/set-state-in-effect
 
 /home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx
-   17:3   warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
-   18:3   warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
-   44:58  warning  'trend' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
-  112:9   warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
-  117:9   warning  The 'today' object construction makes the dependencies of useCallback Hook (at line 200) change on every render. To fix this, wrap the initialization of 'today' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
-  118:9   warning  The 'tomorrow' object construction makes the dependencies of useCallback Hook (at line 200) change on every render. To fix this, wrap the initialization of 'tomorrow' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
-  209:49  error    Error: Cannot call impure function during render
+   17:3    warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   18:3    warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   44:58   warning  'trend' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  112:9    warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  117:9    warning  The 'today' object construction makes the dependencies of useCallback Hook (at line 200) change on every render. To fix this, wrap the initialization of 'today' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+  118:9    warning  The 'tomorrow' object construction makes the dependencies of useCallback Hook (at line 200) change on every render. To fix this, wrap the initialization of 'tomorrow' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+  209:63   error    Error: Cannot call impure function during render
 
 `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
 
-/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:209:49
+/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:209:63
   207 |   ];
   208 |
-> 209 |   const randomTip = productivityTips[Math.floor(Math.random() * productivityTips.length)];
-      |                                                 ^^^^^^^^^^^^^ Cannot call impure function
+> 209 |   const randomTip = useMemo(() => productivityTips[Math.floor(Math.random() * productivityTips.length)], []);
+      |                                                               ^^^^^^^^^^^^^ Cannot call impure function
   210 |
   211 |   return (
   212 |     <Box sx={{ animation: 'fadeIn 0.6s ease-out' }}>  react-hooks/purity
+  209:106  warning  React Hook useMemo has a missing dependency: 'productivityTips'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
 
 /home/nathfavour/code/kylrix/flow/components/events/EventCard.tsx
   14:3  warning  'alpha' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
@@ -200,7 +189,7 @@ React Compiler has skipped optimizing this component because the existing manual
   113:6  warning  React Hook useCallback has a missing dependency: 'checkSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
 
 /home/nathfavour/code/kylrix/flow/context/origin/OriginProvider.tsx
-  27:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+  28:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
 
 Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
 * Update external systems with the latest state from React.
@@ -208,14 +197,14 @@ Effects are intended to synchronize state between React and external systems suc
 
 Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
 
-/home/nathfavour/code/kylrix/flow/context/origin/OriginProvider.tsx:27:5
-  25 |
+/home/nathfavour/code/kylrix/flow/context/origin/OriginProvider.tsx:28:7
   26 |   useEffect(() => {
-> 27 |     setIsClient(true);
-     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
-  28 |   }, []);
-  29 |
-  30 |   return (  react-hooks/set-state-in-effect
+  27 |     if (!isClient) {
+> 28 |       setIsClient(true);
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  29 |     }
+  30 |   }, [isClient]);
+  31 |  react-hooks/set-state-in-effect
 
 /home/nathfavour/code/kylrix/flow/ecosystem/contributions/FocusStatus.tsx
   31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
@@ -244,11 +233,8 @@ Calling setState synchronously within an effect body causes cascading renders th
 /home/nathfavour/code/kylrix/flow/hooks/useEcosystemNode.ts
   4:37  warning  'NodeIdentity' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
-/home/nathfavour/code/kylrix/flow/hooks/useOriginEnricher.ts
-  10:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
-
 /home/nathfavour/code/kylrix/flow/hooks/useSettings.ts
-  16:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+  20:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
 
 Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
 * Update external systems with the latest state from React.
@@ -256,14 +242,14 @@ Effects are intended to synchronize state between React and external systems suc
 
 Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
 
-/home/nathfavour/code/kylrix/flow/hooks/useSettings.ts:16:9
-  14 |     if (storedSettings) {
-  15 |       try {
-> 16 |         setUserSettings(JSON.parse(storedSettings));
+/home/nathfavour/code/kylrix/flow/hooks/useSettings.ts:20:9
+  18 |       // Only update if it's different to avoid cycles
+  19 |       if (JSON.stringify(parsed) !== JSON.stringify(userSettings)) {
+> 20 |         setUserSettings(parsed);
      |         ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
-  17 |       } catch (_e: unknown) {
-  18 |         console.error('Failed to parse settings', e);
-  19 |       }  react-hooks/set-state-in-effect
+  21 |       }
+  22 |       } catch (err: unknown) {
+  23 |       console.error('Failed to parse settings', err);  react-hooks/set-state-in-effect
 
 /home/nathfavour/code/kylrix/flow/lib/config.ts
   3:7  warning  'getRequiredEnv' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
@@ -281,6 +267,6 @@ Calling setState synchronously within an effect body causes cascading renders th
 /home/nathfavour/code/kylrix/flow/theme/theme.ts
   3:37  warning  'alpha' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
-✖ 110 problems (8 errors, 102 warnings)
+✖ 109 problems (6 errors, 103 warnings)
 
  ELIFECYCLE  Command failed with exit code 1.
