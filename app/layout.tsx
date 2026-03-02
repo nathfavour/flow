@@ -19,7 +19,12 @@ export const metadata: Metadata = {
     title: "Kylrix Flow - Smart Task Navigation",
     description: "The future of task orchestration inside the Kylrix ecosystem.",
     type: "website",
+    images: ['/og-image.png'],
   },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  }
 };
 
 export default function RootLayout({

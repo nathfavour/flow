@@ -36,10 +36,10 @@ export const Logo: React.FC<LogoProps> = ({
 }) => {
   const configs = {
     root: { color1: "#00F5FF", color2: "#00A3FF", name: "KYLRIX", desc: "Ecosystem Hub" },
-    vault: { color1: "#00F5FF", color2: "#222222", name: "VAULT", desc: "Zero-Knowledge Storage" },
-    flow: { color1: "#00FF94", color2: "#00B2FF", name: "FLOW", desc: "AI Orchestration" },
-    note: { color1: "#6366F1", color2: "#A855F7", name: "NOTE", desc: "Structured Intelligence" },
-    connect: { color1: "#F43F5E", color2: "#FB923C", name: "CONNECT", desc: "P2P Encryption" }
+    vault: { color1: "#00F5FF", color2: "#3B82F6", name: "VAULT", desc: "Zero-Knowledge Storage" },
+    flow: { color1: "#00F5FF", color2: "#00FF94", name: "FLOW", desc: "AI Orchestration" },
+    note: { color1: "#00F5FF", color2: "#A855F7", name: "NOTE", desc: "Structured Intelligence" },
+    connect: { color1: "#00F5FF", color2: "#F43F5E", name: "CONNECT", desc: "P2P Encryption" }
   };
 
   const current = configs[app];
@@ -52,12 +52,11 @@ export const Logo: React.FC<LogoProps> = ({
             <stop offset="0%" stopColor={current.color1} />
             <stop offset="100%" stopColor={current.color2} />
           </linearGradient>
-          <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="noise" /><feComposite operator="in" in="noise" in2="SourceGraphic" result="composite" /><feBlend mode="overlay" in="composite" in2="SourceGraphic" /></filter>
         </defs>
 
         {app === 'flow' && (
           <>
-            <path d="M30 20V80" stroke={`url(#grad-${app})`} strokeWidth="8" strokeLinecap="round" />
+            <path d="M30 20V80" stroke={current.color1} strokeWidth="8" strokeLinecap="round" />
             <path
               d="M70 20L35 50L70 80"
               stroke={`url(#grad-${app})`}
@@ -70,8 +69,8 @@ export const Logo: React.FC<LogoProps> = ({
           </>
         )}
         
-        {(app === 'root' || app === 'vault' || app === 'note' || app === 'connect') && (
-           <g filter="url(#grain)">
+        {app !== 'flow' && (
+           <g>
              <path d="M30 20V80" stroke={`url(#grad-${app})`} strokeWidth="10" strokeLinecap="round" />
              <path d="M70 20L35 50L70 80" stroke={`url(#grad-${app})`} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
              <circle cx="35" cy="50" r="5" fill="#fff" />
