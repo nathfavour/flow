@@ -5,7 +5,9 @@
       <stop offset="100%" stopColor="#00FF94" />
     </linearGradient>
   </defs>
-  <path d="M30 20V80" stroke="#00F5FF" stroke-width="8" stroke-linecap="round" />
-  <path d="M70 20L35 50L70 80" stroke="url(#grad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 5" />
-  <path d="M85 30L60 50L85 70" stroke="#00FF94" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.4" />
+  <g stroke="url(#grad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 20V80" opacity="0.3" />
+    <path d="M40 30L65 50L40 70" />
+    <path d="M65 30L90 50L65 70" opacity="0.5" />
+  </g>
 </svg>
