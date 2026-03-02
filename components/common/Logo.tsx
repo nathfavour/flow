@@ -1,75 +1,90 @@
-'use client';
+import React from 'react';
+import { Box, Typography } from '@mui/material';
+import { styled, keyframes } from '@mui/material/styles';
 
-import { Box, Typography, useTheme } from '@mui/material';
-import Image from 'next/image';
-import Link from 'next/link';
-import { APP_CONFIG } from '@/lib/constants';
+export type KylrixApp = 'root' | 'vault' | 'flow' | 'note' | 'connect';
 
 interface LogoProps {
-  size?: 'small' | 'medium' | 'large';
-  showText?: boolean;
-  linkToHome?: boolean;
+  sx?: any;
+  size?: number;
+  app?: KylrixApp;
+  variant?: 'full' | 'icon';
+  component?: any;
+  href?: string;
 }
 
-const sizeMap = {
-  small: { image: 28, fontSize: '1rem' },
-  medium: { image: 36, fontSize: '1.25rem' },
-  large: { image: 48, fontSize: '1.5rem' },
-};
+const flowOffset = keyframes`
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+`;
 
-export function Logo({ size = 'medium', showText = true, linkToHome = true }: LogoProps) {
-  const theme = useTheme();
-  const dimensions = sizeMap[size];
+const LogoContainer = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  transition: 'all 0.3s ease',
+  textDecoration: 'none'
+});
 
-  const content = (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-      <Box
-        sx={{
-          width: dimensions.image,
-          height: dimensions.image,
-          borderRadius: 2,
-          overflow: 'hidden',
-          flexShrink: 0,
-          boxShadow: `0 2px 8px rgba(0, 0, 0, 0.1)`,
-        }}
-      >
-        <Image
-          src={APP_CONFIG.logo.url}
-          alt={APP_CONFIG.logo.alt}
-          width={dimensions.image}
-          height={dimensions.image}
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '100%',
-          }}
-          priority
-        />
-      </Box>
-      {showText && (
-        <Typography
-          variant="h6"
-          noWrap
-          sx={{
-            fontWeight: 700,
-            fontSize: dimensions.fontSize,
-            color: theme.palette.text.primary,
-            letterSpacing: '-0.01em',
-          }}
-        >
-          {APP_CONFIG.name}
-        </Typography>
+export const Logo: React.FC<LogoProps> = ({ 
+  sx, 
+  size = 40, 
+  app = 'flow', 
+  variant = 'full',
+  component,
+  href
+}) => {
+  const configs = {
+    root: { color1: "#00F5FF", color2: "#00A3FF", name: "KYLRIX", desc: "Ecosystem Hub" },
+    vault: { color1: "#00F5FF", color2: "#222222", name: "VAULT", desc: "Zero-Knowledge Storage" },
+    flow: { color1: "#00FF94", color2: "#00B2FF", name: "FLOW", desc: "AI Orchestration" },
+    note: { color1: "#6366F1", color2: "#A855F7", name: "NOTE", desc: "Structured Intelligence" },
+    connect: { color1: "#F43F5E", color2: "#FB923C", name: "CONNECT", desc: "P2P Encryption" }
+  };
+
+  const current = configs[app];
+
+  return (
+    <LogoContainer sx={sx} component={component} href={href}>
+      <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id={`grad-${app}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={current.color1} />
+            <stop offset="100%" stopColor={current.color2} />
+          </linearGradient>
+          <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="noise" /><feComposite operator="in" in="noise" in2="SourceGraphic" result="composite" /><feBlend mode="overlay" in="composite" in2="SourceGraphic" /></filter>
+        </defs>
+
+        {app === 'flow' && (
+          <>
+            <path d="M30 20V80" stroke={`url(#grad-${app})`} strokeWidth="8" strokeLinecap="round" />
+            <path
+              d="M70 20L35 50L70 80"
+              stroke={`url(#grad-${app})`}
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="10 5"
+              style={{ animation: `${flowOffset} 5s linear infinite` }}
+            />
+          </>
+        )}
+        
+        {(app === 'root' || app === 'vault' || app === 'note' || app === 'connect') && (
+           <g filter="url(#grain)">
+             <path d="M30 20V80" stroke={`url(#grad-${app})`} strokeWidth="10" strokeLinecap="round" />
+             <path d="M70 20L35 50L70 80" stroke={`url(#grad-${app})`} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+             <circle cx="35" cy="50" r="5" fill="#fff" />
+           </g>
+        )}
+      </svg>
+      {variant === 'full' && (
+        <Box>
+          <Typography sx={{ fontWeight: 900, letterSpacing: '-0.04em', color: '#fff', fontSize: `${size * 0.7}px`, lineHeight: 1, textTransform: 'uppercase', fontFamily: 'inherit' }}>
+            {current.name}
+          </Typography>
+        </Box>
       )}
-    </Box>
+    </LogoContainer>
   );
-
-  if (linkToHome) {
-    return (
-      <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-        {content}
-      </Link>
-    );
-  }
-
-  return content;
-}
+};

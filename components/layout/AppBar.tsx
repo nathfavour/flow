@@ -155,10 +155,10 @@ export default function AppBar() {
 
         {/* Logo */}
         <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
-          <Logo size="medium" showText={true} />
+          <Logo size={32} variant="full" app="flow" />
         </Box>
         <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
-          <Logo size="small" showText={false} />
+          <Logo size={28} variant="icon" app="flow" />
         </Box>
 
         {/* Search */}
