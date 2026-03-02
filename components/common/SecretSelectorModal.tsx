@@ -50,7 +50,7 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
         try {
           const res = await secretsApi.list();
           setSecrets((res.rows || (res as any).documents) as any[]);
-        } catch (err) {
+        } catch (_err: unknown) {
           console.error('Failed to fetch secrets:', err);
         } finally {
           setLoading(false);
@@ -103,7 +103,7 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
             size="small"
             placeholder="Search credentials..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(_e) => setSearch(e.target.value)}
             variant="filled"
             InputProps={{
               disableUnderline: true,

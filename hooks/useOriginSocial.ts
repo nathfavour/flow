@@ -20,7 +20,7 @@ export const useOriginSocial = () => {
         ],
       };
       setSocialContext(placeholder);
-    } catch (e) {
+    } catch (_e: unknown) {
       console.error("Origin social placeholder failed", e);
     } finally {
       setLoading(false);

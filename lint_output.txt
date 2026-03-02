@@ -1,0 +1,420 @@
+
+> kylrix-flow@0.1.0 lint /home/nathfavour/code/kylrix/flow
+> eslint
+
+
+/home/nathfavour/code/kylrix/flow/app/api/ai/generate/route.ts
+   8:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/app/events/[eventId]/page.tsx
+  11:3   warning  'Chip' is defined but never used                       @typescript-eslint/no-unused-vars
+  16:3   warning  'Tooltip' is defined but never used                    @typescript-eslint/no-unused-vars
+  18:3   warning  'Alert' is defined but never used                      @typescript-eslint/no-unused-vars
+  21:20  warning  'CalendarIcon' is defined but never used               @typescript-eslint/no-unused-vars
+  22:17  warning  'TimeIcon' is defined but never used                   @typescript-eslint/no-unused-vars
+  23:17  warning  'LocationIcon' is defined but never used               @typescript-eslint/no-unused-vars
+  24:18  warning  'CheckCircleIcon' is defined but never used            @typescript-eslint/no-unused-vars
+  26:11  warning  'LockIcon' is defined but never used                   @typescript-eslint/no-unused-vars
+  27:13  warning  'PublicIcon' is defined but never used                 @typescript-eslint/no-unused-vars
+  35:10  warning  'eventPermissions' is defined but never used           @typescript-eslint/no-unused-vars
+  38:52  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  38:64  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  76:10  warning  'isPrivateEvent' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  80:10  warning  'shareTooltipOpen' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  81:46  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  95:21  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/Logo.tsx
+   8:8   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/ai/AICommandModal.tsx
+  18:3  warning  'alpha' is defined but never used           @typescript-eslint/no-unused-vars
+  24:3  warning  'Calendar' is defined but never used        @typescript-eslint/no-unused-vars
+  64:9  warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/calendar/CalendarView.tsx
+   11:3   warning  'Tooltip' is defined but never used    @typescript-eslint/no-unused-vars
+   14:3   warning  'Grid' is defined but never used       @typescript-eslint/no-unused-vars
+   28:3   warning  'isSameDay' is defined but never used  @typescript-eslint/no-unused-vars
+  268:44  warning  'date' is defined but never used       @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/common/EcosystemPortal.tsx
+  26:18  warning  'AnimatePresence' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  32:33  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  47:10  warning  'EcosystemWidgets' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  56:11  warning  'theme' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  67:9   error    Error: This value cannot be modified
+
+Modifying a variable defined outside a component or hook is not allowed. Consider using an effect.
+
+/home/nathfavour/code/kylrix/flow/components/common/EcosystemPortal.tsx:67:9
+  65 |
+  66 |     const handleAppClick = (subdomain: string) => {
+> 67 |         window.location.href = getEcosystemUrl(subdomain);
+     |         ^^^^^^^^^^^^^^^ value cannot be modified
+  68 |         onClose();
+  69 |     };
+  70 |  react-hooks/immutability
+
+/home/nathfavour/code/kylrix/flow/components/common/Logo.tsx
+   7:8   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/common/NoteSelectorModal.tsx
+  18:3   warning  'alpha' is defined but never used           @typescript-eslint/no-unused-vars
+  41:9   warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:41  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  52:60  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/common/SecretSelectorModal.tsx
+  18:3   warning  'alpha' is defined but never used           @typescript-eslint/no-unused-vars
+  41:9   warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:43  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  52:62  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/common/SudoGuard.tsx
+   5:35  warning  'CircularProgress' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  17:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nathfavour/code/kylrix/flow/components/common/SudoGuard.tsx:17:9
+  15 |
+  16 |     useEffect(() => {
+> 17 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |     }, []);
+  19 |
+  20 |     if (!mounted) return null;  react-hooks/set-state-in-effect
+
+/home/nathfavour/code/kylrix/flow/components/common/SudoModal.tsx
+  56:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  86:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx
+   17:3   warning  'TrendingUp' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   18:3   warning  'TrendingDown' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   44:58  warning  'trend' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  104:58  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  112:9   warning  'theme' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  117:9   warning  The 'today' object construction makes the dependencies of useCallback Hook (at line 200) change on every render. To fix this, wrap the initialization of 'today' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  118:9   warning  The 'tomorrow' object construction makes the dependencies of useCallback Hook (at line 200) change on every render. To fix this, wrap the initialization of 'tomorrow' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+  209:49  error    Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:209:49
+  207 |   ];
+  208 |
+> 209 |   const randomTip = productivityTips[Math.floor(Math.random() * productivityTips.length)];
+      |                                                 ^^^^^^^^^^^^^ Cannot call impure function
+  210 |
+  211 |   return (
+  212 |     <Box sx={{ animation: 'fadeIn 0.6s ease-out' }}>  react-hooks/purity
+
+/home/nathfavour/code/kylrix/flow/components/events/EventCard.tsx
+  14:3  warning  'alpha' is defined but never used           @typescript-eslint/no-unused-vars
+  35:9  warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/events/EventDetails.tsx
+   31:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   63:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   64:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/events/EventDialog.tsx
+  40:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/events/EventList.tsx
+  19:10  warning  'addDays' is defined but never used            @typescript-eslint/no-unused-vars
+  19:19  warning  'addHours' is defined but never used           @typescript-eslint/no-unused-vars
+  28:9   warning  'isMobile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  72:47  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/focus/FocusMode.tsx
+   20:3  warning  'Checkbox' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   23:3  warning  'Select' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   24:3  warning  'MenuItem' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   25:3  warning  'FormControl' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+   26:3  warning  'InputLabel' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+   34:3  warning  'MusicNote' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+  113:6  warning  React Hook useEffect has a missing dependency: 'userId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/nathfavour/code/kylrix/flow/components/focus/OriginFocusSection.tsx
+   3:28  warning  'useState' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  19:6   warning  React Hook useEffect has a missing dependency: 'fetchPlaylists'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  36:37  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/layout/AppBar.tsx
+   30:3   warning  'HelpCircle' is defined but never used                @typescript-eslint/no-unused-vars
+   31:3   warning  'Keyboard' is defined but never used                  @typescript-eslint/no-unused-vars
+   87:16  warning  'err' is defined but never used                       @typescript-eslint/no-unused-vars
+  100:9   warning  'handleAppsClick' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/layout/MainLayout.tsx
+  6:40  warning  'alpha' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/layout/Sidebar.tsx
+   18:3   warning  'Tooltip' is defined but never used                      @typescript-eslint/no-unused-vars
+   33:25  warning  'TagIcon' is defined but never used                      @typescript-eslint/no-unused-vars
+   34:10  warning  'PlusIcon' is defined but never used                     @typescript-eslint/no-unused-vars
+   37:18  warning  'StarIcon' is defined but never used                     @typescript-eslint/no-unused-vars
+   41:23  warning  'SettingsIcon' is defined but never used                 @typescript-eslint/no-unused-vars
+   57:9   warning  'theme' is assigned a value but never used               @typescript-eslint/no-unused-vars
+   63:5   warning  'labels' is assigned a value but never used              @typescript-eslint/no-unused-vars
+   73:10  warning  'labelsOpen' is assigned a value but never used          @typescript-eslint/no-unused-vars
+   73:22  warning  'setLabelsOpen' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  129:9   warning  'viewModes' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  188:9   warning  'toggleFavorite' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  198:9   warning  'getProjectProgress' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  205:9   warning  'favoriteProjects' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/tasks/OriginSocialSection.tsx
+  43:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/tasks/TaskDetails.tsx
+   20:3   warning  'LinearProgress' is defined but never used  @typescript-eslint/no-unused-vars
+   23:3   warning  'Paper' is defined but never used           @typescript-eslint/no-unused-vars
+   30:17  warning  'ScheduleIcon' is defined but never used    @typescript-eslint/no-unused-vars
+   34:13  warning  'FolderIcon' is defined but never used      @typescript-eslint/no-unused-vars
+   35:17  warning  'LabelIcon' is defined but never used       @typescript-eslint/no-unused-vars
+   37:20  warning  'EventIcon' is defined but never used       @typescript-eslint/no-unused-vars
+   74:9   warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  107:69  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/components/tasks/TaskDialog.tsx
+  17:3   warning  'OutlinedInput' is defined but never used   @typescript-eslint/no-unused-vars
+  28:20  warning  'CalendarIcon' is defined but never used    @typescript-eslint/no-unused-vars
+  29:13  warning  'FolderIcon' is defined but never used      @typescript-eslint/no-unused-vars
+  30:12  warning  'LabelIcon' is defined but never used       @typescript-eslint/no-unused-vars
+  53:9   warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/tasks/TaskItem.tsx
+   6:3   warning  'Paper' is defined but never used           @typescript-eslint/no-unused-vars
+  10:3   warning  'Chip' is defined but never used            @typescript-eslint/no-unused-vars
+  11:3   warning  'Tooltip' is defined but never used         @typescript-eslint/no-unused-vars
+  16:3   warning  'alpha' is defined but never used           @typescript-eslint/no-unused-vars
+  27:17  warning  'AttachmentIcon' is defined but never used  @typescript-eslint/no-unused-vars
+  57:9   warning  'theme' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/components/tasks/TaskList.tsx
+   14:3   warning  'Chip' is defined but never used               @typescript-eslint/no-unused-vars
+   15:3   warning  'ToggleButtonGroup' is defined but never used  @typescript-eslint/no-unused-vars
+   16:3   warning  'ToggleButton' is defined but never used       @typescript-eslint/no-unused-vars
+   17:3   warning  'Tooltip' is defined but never used            @typescript-eslint/no-unused-vars
+   19:3   warning  'alpha' is defined but never used              @typescript-eslint/no-unused-vars
+   28:15  warning  'TimelineIcon' is defined but never used       @typescript-eslint/no-unused-vars
+   29:13  warning  'MatrixIcon' is defined but never used         @typescript-eslint/no-unused-vars
+   30:17  warning  'ExpandMoreIcon' is defined but never used     @typescript-eslint/no-unused-vars
+  121:13  warning  'to' is assigned a value but never used        @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/context/LayoutContext.tsx
+  11:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:72  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/context/NotificationContext.tsx
+   52:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+   65:39  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:22  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:27  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/context/TaskContext.tsx
+  470:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  471:24  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  547:34  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `state.tasks`, but the source dependencies were []. Inferred dependency not present in source.
+
+/home/nathfavour/code/kylrix/flow/context/TaskContext.tsx:547:34
+  545 |   );
+  546 |
+> 547 |   const updateTask = useCallback(async (id: string, updates: Partial<Task>) => {
+      |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 548 |     try {
+      | ^^^^^^^^^
+> 549 |       // Optimistic update
+      …
+      | ^^^^^^^^^
+> 591 |     }
+      | ^^^^^^^^^
+> 592 |   }, []);
+      | ^^^^ Could not preserve existing manual memoization
+  593 |
+  594 |   const deleteTask = useCallback(async (id: string) => {
+  595 |     try {  react-hooks/preserve-manual-memoization
+  552:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  563:13  error    'finalTags' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            prefer-const
+  592:6   warning  React Hook useCallback has a missing dependency: 'state.tasks'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  678:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/context/auth/AuthContext.tsx
+  113:6   warning  React Hook useCallback has a missing dependency: 'checkSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  131:21  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  246:14  warning  'e' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  260:14  warning  'e' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/context/origin/OriginProvider.tsx
+  27:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nathfavour/code/kylrix/flow/context/origin/OriginProvider.tsx:27:5
+  25 |
+  26 |   useEffect(() => {
+> 27 |     setIsClient(true);
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |   }, []);
+  29 |
+  30 |   return (  react-hooks/set-state-in-effect
+
+/home/nathfavour/code/kylrix/flow/ecosystem/contributions/FocusStatus.tsx
+  27:23  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nathfavour/code/kylrix/flow/ecosystem/contributions/FocusStatus.tsx:31:13
+  29 |             interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
+  30 |         } else if (timeLeft === 0) {
+> 31 |             setIsActive(false);
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |         }
+  33 |         return () => clearInterval(interval);
+  34 |     }, [isActive, timeLeft]);  react-hooks/set-state-in-effect
+
+/home/nathfavour/code/kylrix/flow/generated/appwrite/databases.ts
+    6:64  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+    7:70  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+    8:70  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+    9:80  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+   10:76  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+   11:86  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+   12:70  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+   18:73  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+   18:85  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+   73:7   warning  'tablesWithRelationships' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  102:20  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+  117:32  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+  134:38  error    Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/hooks/useEcosystemIntents.ts
+  5:27  warning  'EcosystemIntent' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/hooks/useEcosystemNode.ts
+   4:37  warning  'NodeIdentity' is defined but never used  @typescript-eslint/no-unused-vars
+  48:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:31  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/hooks/useOriginEnricher.ts
+  10:13  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+/home/nathfavour/code/kylrix/flow/hooks/useOriginFocus.ts
+  8:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/hooks/useOriginSocial.ts
+  8:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/hooks/useRealtimeTable.ts
+  10:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/hooks/useSettings.ts
+  16:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nathfavour/code/kylrix/flow/hooks/useSettings.ts:16:9
+  14 |     if (storedSettings) {
+  15 |       try {
+> 16 |         setUserSettings(JSON.parse(storedSettings));
+     |         ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  17 |       } catch (e) {
+  18 |         console.error('Failed to parse settings', e);
+  19 |       }  react-hooks/set-state-in-effect
+
+/home/nathfavour/code/kylrix/flow/lib/appwrite.ts
+  25:63   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:49   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:49   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:112  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  63:65   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:38   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:130  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/lib/config.ts
+  3:7  warning  'getRequiredEnv' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/lib/constants.ts
+  1:10  warning  'APPWRITE_CONFIG' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/lib/ecosystem/bridge.ts
+  19:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/lib/ecosystem/identity.ts
+    1:20  warning  'account' is defined but never used          @typescript-eslint/no-unused-vars
+    2:10  warning  'APPWRITE_CONFIG' is defined but never used  @typescript-eslint/no-unused-vars
+   14:50  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   37:21  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   63:40  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   74:37  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  127:35  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/lib/ecosystem/mesh.ts
+  17:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/lib/ecosystem/security.ts
+  77:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  88:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/lib/kylrixflow.ts
+   39:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  175:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  196:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/lib/profile-preview.ts
+  14:12  warning  'e' is defined but never used    @typescript-eslint/no-unused-vars
+  33:12  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/lib/user-utils.ts
+   1:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   1:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/next.config.ts
+  106:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/nathfavour/code/kylrix/flow/theme/ThemeProvider.tsx
+  15:15  warning  'mode' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/nathfavour/code/kylrix/flow/theme/theme.ts
+   3:37  warning  'alpha' is defined but never used         @typescript-eslint/no-unused-vars
+  88:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 203 problems (95 errors, 108 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
+ ELIFECYCLE  Command failed with exit code 1.

@@ -17,7 +17,7 @@ export const useOriginFocus = () => {
         { id: "origin-demo-chill", name: "Origin Chill Focus" },
       ];
       setPlaylists(placeholder);
-    } catch (e) {
+    } catch (_e: unknown) {
       console.error("Origin focus placeholder failed", e);
     } finally {
       setLoading(false);

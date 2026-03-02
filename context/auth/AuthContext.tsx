@@ -128,7 +128,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         url.searchParams.delete('auth');
         window.history.replaceState({}, '', url.toString());
       }
-    } catch (error: any) {
+    } catch (_error: unknown) {
       // Check for auth=success signal in URL - this means we just came from IDM
       const hasAuthSignal = typeof window !== 'undefined' && window.location.search.includes('auth=success');
       
@@ -243,7 +243,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         return;
       }
-    } catch (e) {
+    } catch (_e: unknown) {
       // No session, proceed to silent check
     }
 
@@ -257,7 +257,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setIsAuthenticating(false);
         return;
       }
-    } catch (e) {
+    } catch (_e: unknown) {
       // Still no session
     }
 
@@ -301,7 +301,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!isOnPublicRoute) {
         setShowAuthOverlay(true);
       }
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Logout failed', error);
     }
   };

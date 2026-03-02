@@ -59,7 +59,7 @@ export default function EventList() {
           updatedAt: new Date(doc.$updatedAt),
         }));
         setEvents(mapped);
-      } catch (error) {
+      } catch (_error: unknown) {
         console.error('Failed to fetch events', error);
       } finally {
         setIsLoading(false);
@@ -116,7 +116,7 @@ export default function EventList() {
 
       setEvents([newEvent, ...events]);
       setIsDialogOpen(false);
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Failed to create event', error);
     }
   };
@@ -174,7 +174,7 @@ export default function EventList() {
       </Box>
 
       <Grid container spacing={3}>
-        {events.map((event) => (
+        {events.map((_event) => (
           <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={event.id}>
             <EventCard 
               event={event} 

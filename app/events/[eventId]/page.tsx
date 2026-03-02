@@ -92,7 +92,7 @@ export default function EventPage() {
           return;
         }
         setEvent(eventData);
-      } catch (err: any) {
+      } catch (_err: unknown) {
         if (err?.code === 401 || err?.code === 404) {
           setIsPrivateEvent(true);
           setError('This event is private or does not exist.');

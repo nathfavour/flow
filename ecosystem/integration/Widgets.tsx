@@ -12,7 +12,7 @@ const QuickNote = () => {
                 <Box sx={{ p: 1, borderRadius: '10px', bgcolor: alpha('#00F5FF', 0.1), color: '#00F5FF' }}><NoteIcon sx={{ fontSize: 20 }} /></Box>
                 <Typography sx={{ fontWeight: 800, fontSize: '0.875rem', color: 'white' }}>Quick Note</Typography>
             </Box>
-            <TextField fullWidth multiline rows={2} placeholder="Jot summary..." value={note} onChange={(e) => setNote(e.target.value)} variant="standard" InputProps={{ disableUnderline: true, sx: { color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.8125rem' } }} />
+            <TextField fullWidth multiline rows={2} placeholder="Jot summary..." value={note} onChange={(_e) => setNote(e.target.value)} variant="standard" InputProps={{ disableUnderline: true, sx: { color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.8125rem' } }} />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}><IconButton size="small" sx={{ color: '#00F5FF' }}><SendIcon sx={{ fontSize: 16 }} /></IconButton></Box>
         </Paper>
     );

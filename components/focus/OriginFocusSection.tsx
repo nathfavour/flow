@@ -27,7 +27,7 @@ export default function OriginFocusSection({ onPlaylistSelect, selectedPlaylist 
         <Select
           value={selectedPlaylist}
           label="Focus Music (Spotify)"
-          onChange={(e) => onPlaylistSelect(e.target.value)}
+          onChange={(_e) => onPlaylistSelect(e.target.value)}
           disabled={loadingPlaylists}
         >
           <MenuItem value="">

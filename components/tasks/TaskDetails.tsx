@@ -116,7 +116,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
             }
         });
       }
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error("Failed to generate subtasks", error);
     } finally {
       setIsGeneratingSubtasks(false);
@@ -204,7 +204,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
           <Chip
             label={statusLabels[task.status]}
             size="small"
-            onClick={(e) => setStatusAnchor(e.currentTarget)}
+            onClick={(_e) => setStatusAnchor(e.currentTarget)}
             sx={{ 
               cursor: 'pointer',
               bgcolor: 'rgba(255, 255, 255, 0.05)',
@@ -236,7 +236,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               fullWidth
               variant="standard"
               value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
+              onChange={(_e) => setEditTitle(e.target.value)}
               placeholder="Task title"
               autoFocus
               sx={{ mb: 2 }}
@@ -255,7 +255,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               rows={3}
               variant="outlined"
               value={editDescription}
-              onChange={(e) => setEditDescription(e.target.value)}
+              onChange={(_e) => setEditDescription(e.target.value)}
               placeholder="Add more context..."
               sx={{ 
                 '& .MuiOutlinedInput-root': {
@@ -310,7 +310,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>Priority</Typography>
             <Box 
-                onClick={(e) => setPriorityAnchor(e.currentTarget)}
+                onClick={(_e) => setPriorityAnchor(e.currentTarget)}
                 sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -451,8 +451,8 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               placeholder="Add sub-task..."
               value={newSubtask}
               variant="standard"
-              onChange={(e) => setNewSubtask(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddSubtask()}
+              onChange={(_e) => setNewSubtask(e.target.value)}
+              onKeyDown={(_e) => e.key === 'Enter' && handleAddSubtask()}
               InputProps={{ 
                 disableUnderline: true,
                 sx: { px: 1.5, fontSize: '0.85rem' }
@@ -547,8 +547,8 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               placeholder="Write a comment..."
               variant="standard"
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
+              onChange={(_e) => setNewComment(e.target.value)}
+              onKeyDown={(_e) => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
               multiline
               maxRows={6}
               InputProps={{ 

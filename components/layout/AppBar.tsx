@@ -84,7 +84,7 @@ export default function AppBar() {
           const url = await fetchProfilePreview(profilePicId, 64, 64);
           if (mounted) setProfileUrl(url as unknown as string);
         } else if (mounted) setProfileUrl(null);
-      } catch (err) {
+      } catch (_err: unknown) {
         if (mounted) setProfileUrl(null);
       }
     };
@@ -194,7 +194,7 @@ export default function AppBar() {
           <InputBase
             placeholder="Search tasks... (Ctrl+K)"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(_e) => setSearchQuery(e.target.value)}
             sx={{
               color: '#F2F2F2',
               width: '100%',

@@ -123,7 +123,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               label="Event title"
               placeholder="Event Name"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(_e) => setTitle(e.target.value)}
               fullWidth
               required
               InputProps={{
@@ -136,7 +136,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               label="Description"
               placeholder="Add details..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(_e) => setDescription(e.target.value)}
               fullWidth
               multiline
               rows={3}
@@ -163,7 +163,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               label="Location"
               placeholder="Add location or link"
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(_e) => setLocation(e.target.value)}
               fullWidth
               InputProps={{
                 startAdornment: (
@@ -179,7 +179,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               label="Event Link"
               placeholder="https://..."
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(_e) => setUrl(e.target.value)}
               fullWidth
               InputProps={{
                 startAdornment: (
@@ -195,7 +195,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               label="Cover Image URL"
               placeholder="https://..."
               value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
+              onChange={(_e) => setCoverImage(e.target.value)}
               fullWidth
               InputProps={{
                 startAdornment: (

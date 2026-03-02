@@ -14,7 +14,7 @@ export const useSettings = () => {
     if (storedSettings) {
       try {
         setUserSettings(JSON.parse(storedSettings));
-      } catch (e) {
+      } catch (_e: unknown) {
         console.error('Failed to parse settings', e);
       }
     }

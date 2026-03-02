@@ -50,7 +50,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
         try {
           const res = await notesApi.list();
           setNotes((res.rows || (res as any).documents) as any[]);
-        } catch (err) {
+        } catch (_err: unknown) {
           console.error('Failed to fetch notes:', err);
         } finally {
           setLoading(false);
@@ -103,7 +103,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
             size="small"
             placeholder="Search notes..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(_e) => setSearch(e.target.value)}
             variant="filled"
             InputProps={{
               disableUnderline: true,

@@ -15,6 +15,12 @@ export const APPWRITE_CONFIG = {
   ENDPOINT,
   PROJECT_ID,
   DATABASE_ID: 'whisperrflow',
+  DATABASES: {
+    NOTE: '67ff05a9000296822396',
+    VAULT: 'passwordManagerDb',
+    FLOW: 'whisperrflow',
+    CHAT: 'chat'
+  },
   TABLES: {
     CALENDARS: 'calendars',
     TASKS: 'tasks',
@@ -22,6 +28,19 @@ export const APPWRITE_CONFIG = {
     EVENT_GUESTS: 'eventGuests',
     FOCUS_SESSIONS: 'focusSessions',
     NOTES: '67ff05f3002502ef239e',
+    VAULT: {
+      CREDENTIALS: 'credentials',
+      TOTP_SECRETS: 'totpSecrets',
+      FOLDERS: 'folders',
+      SECURITY_LOGS: 'securityLogs',
+      USER: 'user',
+      KEYCHAIN: 'keychain'
+    },
+    FLOW: {
+      TASKS: 'tasks',
+      EVENTS: 'events',
+      GUESTS: 'eventGuests'
+    }
   },
   NOTE_DATABASE_ID: '67ff05a9000296822396',
   BUCKETS: {

@@ -9,40 +9,7 @@
      · optimizePackageImports
 
    Creating an optimized production build ...
- ⚠ Compiled with warnings in 22.3s
-
-./components/common/SudoModal.tsx
-Attempted import error: 'AppwriteService' is not exported from '@/lib/appwrite' (imported as 'AppwriteService').
-
-Import trace for requested module:
-./components/common/SudoModal.tsx
-./context/SudoContext.tsx
-./components/common/SudoGuard.tsx
-
-./components/common/SudoModal.tsx
-Attempted import error: 'AppwriteService' is not exported from '@/lib/appwrite' (imported as 'AppwriteService').
-
-Import trace for requested module:
-./components/common/SudoModal.tsx
-./context/SudoContext.tsx
-./components/common/SudoGuard.tsx
-
-./components/common/SudoModal.tsx
-Attempted import error: 'AppwriteService' is not exported from '@/lib/appwrite' (imported as 'AppwriteService').
-
-Import trace for requested module:
-./components/common/SudoModal.tsx
-./context/SudoContext.tsx
-./components/common/SudoGuard.tsx
-
-./components/common/SudoModal.tsx
-Attempted import error: 'AppwriteService' is not exported from '@/lib/appwrite' (imported as 'AppwriteService').
-
-Import trace for requested module:
-./components/common/SudoModal.tsx
-./context/SudoContext.tsx
-./components/common/SudoGuard.tsx
-
+ ✓ Compiled successfully in 15.2s
    Skipping validation of types
    Collecting page data using 7 workers ...
 [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
@@ -58,7 +25,7 @@ Import trace for requested module:
    Generating static pages using 7 workers (2/10) 
    Generating static pages using 7 workers (4/10) 
    Generating static pages using 7 workers (7/10) 
- ✓ Generating static pages using 7 workers (10/10) in 1212.5ms
+ ✓ Generating static pages using 7 workers (10/10) in 844.3ms
    Finalizing page optimization ...
    Collecting build traces ...
 

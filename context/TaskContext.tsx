@@ -440,7 +440,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           const user = await account.get();
           userId = user.$id;
           dispatch({ type: 'SET_USER', payload: userId });
-        } catch (e) {
+        } catch (_e: unknown) {
           console.warn('Not logged in', e);
         }
 
@@ -454,7 +454,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const projects = calendarsList.rows.map(mapAppwriteCalendarToProject);
 
         dispatch({ type: 'SET_DATA', payload: { tasks, projects } });
-      } catch (error) {
+      } catch (_error: unknown) {
         console.error('Failed to fetch data', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to load data' });
       }
@@ -536,7 +536,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         });
 
         dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(newTask) });
-      } catch (error) {
+      } catch (_error: unknown) {
         console.error('Failed to create task', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to create task' });
       }
@@ -585,7 +585,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       }
 
       await taskApi.update(id, apiUpdates);
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Failed to update task', error);
       // Revert?
     }
@@ -595,7 +595,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
     try {
       await taskApi.delete(id);
       dispatch({ type: 'DELETE_TASK', payload: id });
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Failed to delete task', error);
     }
   }, []);
@@ -608,7 +608,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       const newStatus = task.status === 'done' ? 'todo' : 'done';
       await taskApi.update(id, { status: newStatus });
       dispatch({ type: 'COMPLETE_TASK', payload: id });
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Failed to complete task', error);
     }
   }, [state.tasks]);
@@ -664,7 +664,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           userId: userId,
         });
         dispatch({ type: 'ADD_PROJECT', payload: mapAppwriteCalendarToProject(newCalendar) });
-      } catch (error) {
+      } catch (_error: unknown) {
         console.error('Failed to create project', error);
       }
     },
@@ -680,7 +680,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       if (updates.color) apiUpdates.color = updates.color;
       
       await calendarApi.update(id, apiUpdates);
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Failed to update project', error);
     }
   }, []);
@@ -689,7 +689,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
     try {
       await calendarApi.delete(id);
       dispatch({ type: 'DELETE_PROJECT', payload: id });
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Failed to delete project', error);
     }
   }, []);

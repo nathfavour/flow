@@ -16,6 +16,27 @@ export const account = new Account(client);
 export const realtime = new Realtime(client);
 export { client };
 
+import { Query } from "appwrite";
+
+export const APPWRITE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.VAULT;
+export const APPWRITE_COLLECTION_KEYCHAIN_ID = APPWRITE_CONFIG.TABLES.VAULT.KEYCHAIN;
+
+export class AppwriteService {
+    static async listKeychainEntries(userId: string): Promise<any[]> {
+        try {
+            const res = await tablesDB.listRows<any>({
+                databaseId: APPWRITE_DATABASE_ID,
+                tableId: APPWRITE_COLLECTION_KEYCHAIN_ID,
+                queries: [Query.equal("userId", userId)]
+            });
+            return res.documents;
+        } catch (_e: unknown) {
+            console.error('listKeychainEntries error', e);
+            return [];
+        }
+    }
+}
+
 export function getFilePreview(bucketId: string, fileId: string, width: number = 64, height: number = 64) {
     return storage.getFilePreview(bucketId, fileId, width, height);
 }
@@ -65,7 +86,7 @@ export async function getCurrentUserFromRequest(req: { headers: { get(k: string)
         const data = await res.json();
         if (!data || typeof data !== 'object' || !data.$id) return null;
         return data;
-    } catch (e) {
+    } catch (_e: unknown) {
         console.error('getCurrentUserFromRequest error', e);
         return null;
     }

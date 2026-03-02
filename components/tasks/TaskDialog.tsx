@@ -168,7 +168,7 @@ export default function TaskDialog() {
               autoFocus
               placeholder="What's the primary objective?"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(_e) => setTitle(e.target.value)}
               fullWidth
               required
               variant="standard"
@@ -193,7 +193,7 @@ export default function TaskDialog() {
             <TextField
               placeholder="Detailed parameters and context..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(_e) => setDescription(e.target.value)}
               fullWidth
               multiline
               rows={3}
@@ -216,7 +216,7 @@ export default function TaskDialog() {
                     <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>PROJECT</InputLabel>
                     <Select
                     value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
+                    onChange={(_e) => setProjectId(e.target.value)}
                     disableUnderline
                     sx={{ borderRadius: 2, bgcolor: 'transparent' }}
                     renderValue={(selected) => {
@@ -252,7 +252,7 @@ export default function TaskDialog() {
                     <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>PRIORITY</InputLabel>
                     <Select
                     value={priority}
-                    onChange={(e) => setPriority(e.target.value as Priority)}
+                    onChange={(_e) => setPriority(e.target.value as Priority)}
                     disableUnderline
                     sx={{ borderRadius: 2, bgcolor: 'transparent' }}
                     renderValue={(selected) => (
@@ -297,7 +297,7 @@ export default function TaskDialog() {
                     <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>STATUS</InputLabel>
                     <Select
                     value={status}
-                    onChange={(e) => setStatus(e.target.value as TaskStatus)}
+                    onChange={(_e) => setStatus(e.target.value as TaskStatus)}
                     disableUnderline
                     sx={{ borderRadius: 2, bgcolor: 'transparent' }}
                     >

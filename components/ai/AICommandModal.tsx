@@ -119,7 +119,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
       const parsed = JSON.parse(jsonStr);
       
       setResult(parsed);
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('AI Analysis failed', error);
       // Handle error (maybe show a snackbar)
     } finally {
@@ -183,7 +183,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
       }
       
       handleClose();
-    } catch (error) {
+    } catch (_error: unknown) {
       console.error('Execution failed', error);
     } finally {
       setIsExecuting(false);
@@ -234,7 +234,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
               rows={3}
               placeholder="e.g., 'Schedule a team meeting for next Tuesday at 2 PM'..."
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              onChange={(_e) => setPrompt(e.target.value)}
               disabled={isLoading}
               variant="standard"
               InputProps={{

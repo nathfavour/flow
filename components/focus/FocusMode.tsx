@@ -76,7 +76,7 @@ export default function FocusMode() {
         const result = await generate(prompt);
         const refinedTitle = result.trim();
         updateTask(selectedTask.id, { title: refinedTitle });
-    } catch (error) {
+    } catch (_error: unknown) {
         console.error("Failed to refine goal", error);
     } finally {
         setIsRefining(false);
@@ -366,7 +366,7 @@ export default function FocusMode() {
             </Box>
             <IconButton
               color={selectedTask.status === 'done' ? 'success' : 'default'}
-              onClick={(e) => {
+              onClick={(_e) => {
                 e.stopPropagation();
                 updateTask(selectedTask.id, {
                   status: selectedTask.status === 'done' ? 'todo' : 'done',

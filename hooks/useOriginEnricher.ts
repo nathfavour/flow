@@ -11,7 +11,7 @@ export const useOriginEnricher = () => {
             // return await twitter.fetchUserByUsername(handle);
             console.log("Mocking Origin SDK fetchUserByUsername for", handle);
             return { name: handle, username: handle, profileImage: undefined };
-        } catch (e) {
+        } catch (_e: unknown) {
             console.warn("Origin SDK: Could not fetch user", e);
             return null;
         }
