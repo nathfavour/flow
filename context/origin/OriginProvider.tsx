@@ -24,10 +24,11 @@ export function OriginProvider({ children }: OriginProviderProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (!isClient) {
+    const handle = requestAnimationFrame(() => {
       setIsClient(true);
-    }
-  }, [isClient]);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

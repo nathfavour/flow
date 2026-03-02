@@ -14,10 +14,11 @@ export default function SudoGuard({ children }: SudoGuardProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!mounted) {
+        const handle = requestAnimationFrame(() => {
             setMounted(true);
-        }
-    }, [mounted]);
+        });
+        return () => cancelAnimationFrame(handle);
+    }, []);
 
     if (!mounted) return null;
 

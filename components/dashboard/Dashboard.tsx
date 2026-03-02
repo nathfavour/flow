@@ -108,6 +108,13 @@ function StatCard({ title, value, subtitle, icon, color, trend, onClick }: StatC
   );
 }
 
+const productivityTips = [
+  'Focus on one task at a time to increase efficiency.',
+  'Take regular breaks to maintain high energy levels.',
+  'Plan your day the night before for a smoother start.',
+  'Organize your workspace to reduce distractions.',
+];
+
 export default function Dashboard() {
   const theme = useTheme();
   const { tasks, setFilter, setTaskDialogOpen } = useTask();
@@ -199,14 +206,13 @@ export default function Dashboard() {
     }
   }, [setFilter, today, tomorrow]);
 
-  const productivityTips = [
-    'Focus on one task at a time to increase efficiency.',
-    'Take regular breaks to maintain high energy levels.',
-    'Plan your day the night before for a smoother start.',
-    'Organize your workspace to reduce distractions.',
-  ];
+  const [randomTip, setRandomTip] = useState('');
 
-  const randomTip = useMemo(() => productivityTips[Math.floor(Math.random() * productivityTips.length)], []);
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      setRandomTip(productivityTips[Math.floor(Math.random() * productivityTips.length)]);
+    });
+  }, []);
 
   return (
     <Box sx={{ animation: 'fadeIn 0.6s ease-out' }}>

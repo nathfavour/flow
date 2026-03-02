@@ -17,12 +17,14 @@ export const useSettings = () => {
       const parsed = JSON.parse(storedSettings);
       // Only update if it's different to avoid cycles
       if (JSON.stringify(parsed) !== JSON.stringify(userSettings)) {
-        setUserSettings(parsed);
+        requestAnimationFrame(() => {
+          setUserSettings(parsed);
+        });
       }
-      } catch (err: unknown) {
+    } catch (err: unknown) {
       console.error('Failed to parse settings', err);
-      }
-      }, [userSettings]);
+    }
+  }, [userSettings]);
 
   const updateSettings = (newSettings: Partial<UserSettings>) => {
     setUserSettings((prev) => {
