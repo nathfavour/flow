@@ -45,24 +45,57 @@
   5:35  warning  'CircularProgress' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
 /home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx
-   17:3   warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
-   18:3   warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
-   44:58  warning  'trend' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
-  119:9   warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
-  124:9   warning  The 'today' object construction makes the dependencies of useCallback Hook (at line 207) change on every render. To fix this, wrap the initialization of 'today' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
-  125:9   warning  The 'tomorrow' object construction makes the dependencies of useCallback Hook (at line 207) change on every render. To fix this, wrap the initialization of 'tomorrow' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
-  209:63  error    Error: Cannot call impure function during render
+   17:3   warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   18:3   warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   44:58  warning  'trend' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  119:9   warning  'theme' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  124:9   warning  The 'today' object construction makes the dependencies of useCallback Hook (at line 207) change on every render. To fix this, wrap the initialization of 'today' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  125:9   warning  The 'tomorrow' object construction makes the dependencies of useCallback Hook (at line 207) change on every render. To fix this, wrap the initialization of 'tomorrow' in its own useMemo() Hook                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+  176:45  error    Compilation Skipped: Existing memoization could not be preserved
 
-`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
 
-/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:209:63
-  207 |   }, [setFilter, today, tomorrow]);
+/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:176:45
+  174 |   }, [tasks]);
+  175 |
+> 176 |   const handleViewTasks = React.useCallback((filterType: string) => {
+      |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 177 |     switch (filterType) {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 178 |       case 'today':
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 206 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 207 |   }, [setFilter, today, tomorrow]);
+      | ^^^^ Could not preserve existing memoization
   208 |
-> 209 |   const randomTip = useMemo(() => productivityTips[Math.floor(Math.random() * productivityTips.length)], []);
-      |                                                               ^^^^^^^^^^^^^ Cannot call impure function
-  210 |
-  211 |   return (
-  212 |     <Box sx={{ animation: 'fadeIn 0.6s ease-out' }}>  react-hooks/purity
+  209 |   const [randomTip, setRandomTip] = useState('');
+  210 |  react-hooks/preserve-manual-memoization
+  207:18  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly.
+
+/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:207:18
+  205 |         break;
+  206 |     }
+> 207 |   }, [setFilter, today, tomorrow]);
+      |                  ^^^^^ This dependency may be modified later
+  208 |
+  209 |   const [randomTip, setRandomTip] = useState('');
+  210 |                                                                                                                                                                                                                                                                                                         react-hooks/preserve-manual-memoization
+  207:25  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly.
+
+/home/nathfavour/code/kylrix/flow/components/dashboard/Dashboard.tsx:207:25
+  205 |         break;
+  206 |     }
+> 207 |   }, [setFilter, today, tomorrow]);
+      |                         ^^^^^^^^ This dependency may be modified later
+  208 |
+  209 |   const [randomTip, setRandomTip] = useState('');
+  210 |                                                                                                                                                                                                                                                                                               react-hooks/preserve-manual-memoization
 
 /home/nathfavour/code/kylrix/flow/components/events/EventCard.tsx
   14:3  warning  'alpha' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
@@ -171,24 +204,6 @@ React Compiler has skipped optimizing this component because the existing manual
 /home/nathfavour/code/kylrix/flow/context/auth/AuthContext.tsx
   113:6  warning  React Hook useCallback has a missing dependency: 'checkSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
 
-/home/nathfavour/code/kylrix/flow/ecosystem/contributions/FocusStatus.tsx
-  31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
-
-Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
-* Update external systems with the latest state from React.
-* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
-
-Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
-
-/home/nathfavour/code/kylrix/flow/ecosystem/contributions/FocusStatus.tsx:31:13
-  29 |             interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-  30 |         } else if (timeLeft === 0) {
-> 31 |             setIsActive(false);
-     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
-  32 |         }
-  33 |         return () => clearInterval(interval);
-  34 |     }, [isActive, timeLeft]);  react-hooks/set-state-in-effect
-
 /home/nathfavour/code/kylrix/flow/generated/appwrite/databases.ts
   73:7  warning  'tablesWithRelationships' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
@@ -214,6 +229,6 @@ Calling setState synchronously within an effect body causes cascading renders th
 /home/nathfavour/code/kylrix/flow/theme/theme.ts
   3:37  warning  'alpha' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
-✖ 105 problems (3 errors, 102 warnings)
+✖ 106 problems (4 errors, 102 warnings)
 
  ELIFECYCLE  Command failed with exit code 1.

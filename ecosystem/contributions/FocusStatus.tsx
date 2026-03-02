@@ -27,8 +27,10 @@ export const FocusStatus = () => {
         let interval: any;
         if (isActive && timeLeft > 0) {
             interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-        } else if (timeLeft === 0) {
-            setIsActive(false);
+        } else if (timeLeft === 0 && isActive) {
+            requestAnimationFrame(() => {
+                setIsActive(false);
+            });
         }
         return () => clearInterval(interval);
     }, [isActive, timeLeft]);
