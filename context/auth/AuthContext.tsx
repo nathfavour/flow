@@ -261,23 +261,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Still no session
     }
 
-    // Open the auth app
     const width = 500;
     const height = 600;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
 
     const sourceUrl = window.location.href;
-    const mobileUrl = new URL(AUTH_URL);
-    mobileUrl.searchParams.set('source', sourceUrl);
+    const targetUrl = new URL(AUTH_URL);
+    targetUrl.searchParams.set('source', sourceUrl);
+    const targetUrlString = targetUrl.toString();
 
     if (isMobile()) {
-      window.location.assign(mobileUrl.toString());
+      window.location.assign(targetUrlString);
       return;
     }
 
     const win = window.open(
-      AUTH_URL,
+      targetUrlString,
       'KylrixAuth',
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
     );
