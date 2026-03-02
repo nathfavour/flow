@@ -29,9 +29,9 @@ export class AppwriteService {
                 tableId: APPWRITE_COLLECTION_KEYCHAIN_ID,
                 queries: [Query.equal("userId", userId)]
             });
-            return res.documents;
+            return res.rows;
         } catch (_e: unknown) {
-            console.error('listKeychainEntries error', e);
+            console.error('listKeychainEntries error', _e);
             return [];
         }
     }
@@ -87,7 +87,7 @@ export async function getCurrentUserFromRequest(req: { headers: { get(k: string)
         if (!data || typeof data !== 'object' || !data.$id) return null;
         return data;
     } catch (_e: unknown) {
-        console.error('getCurrentUserFromRequest error', e);
+        console.error('getCurrentUserFromRequest error', _e);
         return null;
     }
 }

@@ -62,16 +62,16 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     
     setIsLoading(true);
     try {
-      const res = await (databases as any).listDocuments(
-        APPWRITE_CONFIG.NOTE_DATABASE_ID,
-        APPWRITE_TABLE_ID_ACTIVITYLOG,
-        [Query.equal('userId', user.$id), Query.orderDesc('timestamp'), Query.limit(50)]
-      );
-      const logs = res.documents as unknown as ActivityLog[];
+      const res = await (databases as any).listRows({
+        databaseId: APPWRITE_CONFIG.NOTE_DATABASE_ID,
+        tableId: APPWRITE_TABLE_ID_ACTIVITYLOG,
+        queries: [Query.equal('userId', user.$id), Query.orderDesc('timestamp'), Query.limit(50)]
+      });
+      const logs = res.rows as unknown as ActivityLog[];
       setNotifications(logs);
       setUnreadCount(calculateUnread(logs));
     } catch (_error: unknown) {
-      console.error('Failed to fetch notifications:', error);
+      console.error('Failed to fetch notifications:', _error);
     } finally {
       setIsLoading(false);
     }
@@ -127,11 +127,14 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     try {
       setNotifications(prev => prev.map(n => n.$id === id ? { ...n, details: JSON.stringify(newMetadata) } : n));
-      await (databases as any).updateDocument(APPWRITE_CONFIG.NOTE_DATABASE_ID, APPWRITE_TABLE_ID_ACTIVITYLOG, id, {
-        details: JSON.stringify(newMetadata)
+      await (databases as any).updateRow({
+        databaseId: APPWRITE_CONFIG.NOTE_DATABASE_ID,
+        tableId: APPWRITE_TABLE_ID_ACTIVITYLOG,
+        rowId: id,
+        data: { details: JSON.stringify(newMetadata) }
       });
     } catch (_error: unknown) {
-      console.error('Cloud sync failed:', error);
+      console.error('Cloud sync failed:', _error);
     }
   };
 
