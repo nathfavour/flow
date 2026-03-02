@@ -24,8 +24,10 @@ export function OriginProvider({ children }: OriginProviderProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (!isClient) {
+      setIsClient(true);
+    }
+  }, [isClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

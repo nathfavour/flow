@@ -10,15 +10,19 @@ export const useSettings = () => {
   const [userSettings, setUserSettings] = useState<UserSettings>({});
 
   useEffect(() => {
-    const storedSettings = localStorage.getItem('kylrix_settings');
-    if (storedSettings) {
-      try {
-        setUserSettings(JSON.parse(storedSettings));
-      } catch (_e: unknown) {
-        console.error('Failed to parse settings', e);
+    const storedSettings = localStorage.getItem('kylrixflow-settings');
+    if (!storedSettings) return;
+
+    try {
+      const parsed = JSON.parse(storedSettings);
+      // Only update if it's different to avoid cycles
+      if (JSON.stringify(parsed) !== JSON.stringify(userSettings)) {
+        setUserSettings(parsed);
       }
-    }
-  }, []);
+      } catch (err: unknown) {
+      console.error('Failed to parse settings', err);
+      }
+      }, [userSettings]);
 
   const updateSettings = (newSettings: Partial<UserSettings>) => {
     setUserSettings((prev) => {

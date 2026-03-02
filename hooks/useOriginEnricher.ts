@@ -7,12 +7,12 @@ export const useOriginEnricher = () => {
     
     const enrichGuest = async (handle: string) => {
         try {
-            // @ts-ignore
+            // @ts-expect-error - origin is not typed correctly in our ecosystem for now
             // return await twitter.fetchUserByUsername(handle);
             console.log("Mocking Origin SDK fetchUserByUsername for", handle);
             return { name: handle, username: handle, profileImage: undefined };
-        } catch (_e: unknown) {
-            console.warn("Origin SDK: Could not fetch user", e);
+        } catch (_err: unknown) {
+            console.warn("Origin SDK: Could not fetch user", _err);
             return null;
         }
     };

@@ -64,7 +64,8 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
     );
 
     const handleAppClick = (subdomain: string) => {
-        window.location.href = getEcosystemUrl(subdomain);
+        const url = getEcosystemUrl(subdomain);
+        window.location.assign(url);
         onClose();
     };
 

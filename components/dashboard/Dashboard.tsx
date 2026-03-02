@@ -206,7 +206,7 @@ export default function Dashboard() {
     'Organize your workspace to reduce distractions.',
   ];
 
-  const randomTip = productivityTips[Math.floor(Math.random() * productivityTips.length)];
+  const randomTip = useMemo(() => productivityTips[Math.floor(Math.random() * productivityTips.length)], []);
 
   return (
     <Box sx={{ animation: 'fadeIn 0.6s ease-out' }}>

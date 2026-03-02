@@ -560,7 +560,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const projectId = updates.projectId || currentTask?.projectId;
         
         // Start with provided labels or current ones
-        let finalTags = updates.labels !== undefined ? [...updates.labels] : [...(currentTask?.labels || [])];
+        const finalTags = updates.labels !== undefined ? [...updates.labels] : [...(currentTask?.labels || [])];
         
         // Merge linked notes (source: tags)
         const notesToLink = updates.linkedNotes !== undefined ? updates.linkedNotes : (currentTask?.linkedNotes || []);
