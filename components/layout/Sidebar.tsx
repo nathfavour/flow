@@ -29,6 +29,7 @@ import {
   AccessTimeOutlined as ClockIcon,
   CheckCircleOutlined as CheckCircle2Icon,
   KeyboardArrowUp as ChevronUpIcon,
+  KeyboardArrowDown as ChevronDownIcon,
   SettingsOutlined as SettingsIcon,
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
