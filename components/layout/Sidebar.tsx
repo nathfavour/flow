@@ -29,7 +29,7 @@ import {
   AccessTimeOutlined as ClockIcon,
   CheckCircleOutlined as CheckCircle2Icon,
   KeyboardArrowUp as ChevronUpIcon,
-  KeyboardArrowDown as ChevronDownIcon,
+  SettingsOutlined as SettingsIcon,
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 
@@ -97,6 +97,7 @@ export default function Sidebar() {
     { id: 'calendar', label: 'Calendar', icon: <CalendarIcon sx={{ fontSize: 20 }} />, href: '/calendar' },
     { id: 'events', label: 'Events', icon: <ZapIcon sx={{ fontSize: 20 }} />, href: '/events' },
     { id: 'focus', label: 'Focus Mode', icon: <FlameIcon sx={{ fontSize: 20 }} />, href: '/focus' },
+    { id: 'settings', label: 'Settings', icon: <SettingsIcon sx={{ fontSize: 20 }} />, href: '/settings' },
   ];
 
   const smartLists: NavItem[] = [
