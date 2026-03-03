@@ -47,9 +47,7 @@ export default function RootLayout({
       <body>
         <AppProviders>
           <Suspense fallback={null}>
-            <MainLayout>
               {children}
-            </MainLayout>
           </Suspense>
         </AppProviders>
       </body>

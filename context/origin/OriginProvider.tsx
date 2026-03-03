@@ -32,13 +32,7 @@ export function OriginProvider({ children }: OriginProviderProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {isClient ? (
-         <CampProvider clientId={clientId}>
-            {children}
-         </CampProvider>
-      ) : (
-         <>{children}</>
-      )}
+        {children}
     </QueryClientProvider>
   );
 }
