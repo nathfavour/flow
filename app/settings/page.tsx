@@ -23,12 +23,8 @@ import {
 } from '@mui/material';
 import { 
     LockOutlined as LockIcon, 
-    ShieldOutlined as ShieldIcon, 
-    SettingsOutlined as SettingsIcon,
     FingerprintOutlined as FingerprintIcon,
-    VpnKeyOutlined as KeyIcon,
-    DeleteOutline as DeleteIcon,
-    WarningAmberOutlined as WarningIcon
+    DeleteOutline as DeleteIcon
 } from '@mui/icons-material';
 import { ecosystemSecurity } from '@/lib/ecosystem/security';
 import { AppwriteService, getCurrentUser } from '@/lib/appwrite';
@@ -87,6 +83,7 @@ export default function SettingsPage() {
     };
 
     const handleRemovePasskey = async (id: string) => {
+        if (!window.confirm("Are you sure you want to remove this passkey? This cannot be undone.")) return;
         try {
             await AppwriteService.deleteKeychainEntry(id);
             toast.success("Passkey removed");
