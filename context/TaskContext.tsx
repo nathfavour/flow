@@ -585,17 +585,17 @@ export function TaskProvider({ children }: TaskProviderProps) {
       }
 
       await taskApi.update(id, apiUpdates);
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Failed to update task', error);
       // Revert?
     }
-  }, []);
+  }, [state.tasks]);
 
   const deleteTask = useCallback(async (id: string) => {
     try {
       await taskApi.delete(id);
       dispatch({ type: 'DELETE_TASK', payload: id });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Failed to delete task', error);
     }
   }, []);
@@ -608,7 +608,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       const newStatus = task.status === 'done' ? 'todo' : 'done';
       await taskApi.update(id, { status: newStatus });
       dispatch({ type: 'COMPLETE_TASK', payload: id });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Failed to complete task', error);
     }
   }, [state.tasks]);
@@ -664,7 +664,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           userId: userId,
         });
         dispatch({ type: 'ADD_PROJECT', payload: mapAppwriteCalendarToProject(newCalendar) });
-      } catch (_error: unknown) {
+      } catch (error: unknown) {
         console.error('Failed to create project', error);
       }
     },
@@ -680,7 +680,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       if (updates.color) apiUpdates.color = updates.color;
       
       await calendarApi.update(id, apiUpdates);
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Failed to update project', error);
     }
   }, []);
@@ -689,7 +689,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
     try {
       await calendarApi.delete(id);
       dispatch({ type: 'DELETE_PROJECT', payload: id });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Failed to delete project', error);
     }
   }, []);

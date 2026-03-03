@@ -11,7 +11,6 @@ import {
   IconButton,
   Chip,
   useTheme,
-  alpha,
 } from '@mui/material';
 import {
   MapPin,
@@ -32,7 +31,6 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onClick }: EventCardProps) {
-  const theme = useTheme();
   const pattern = generatePattern(event.id);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   

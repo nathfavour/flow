@@ -14,14 +14,11 @@ import {
   Card,
   CardContent,
   IconButton,
-  useTheme,
-  alpha,
   Chip,
 } from '@mui/material';
 import {
   Sparkles,
   X,
-  Calendar,
   CheckCircle2,
   Clock,
   FileText,
@@ -61,7 +58,6 @@ interface AIResponse {
 }
 
 export default function AICommandModal({ open, onClose }: AICommandModalProps) {
-  const theme = useTheme();
   const { generate } = useAI();
   const { addTask, projects, userId } = useTask();
   const { user } = useAuth();
@@ -119,7 +115,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
       const parsed = JSON.parse(jsonStr);
       
       setResult(parsed);
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('AI Analysis failed', error);
       // Handle error (maybe show a snackbar)
     } finally {
@@ -183,7 +179,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
       }
       
       handleClose();
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Execution failed', error);
     } finally {
       setIsExecuting(false);
@@ -234,7 +230,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
               rows={3}
               placeholder="e.g., 'Schedule a team meeting for next Tuesday at 2 PM'..."
               value={prompt}
-              onChange={(_e) => setPrompt(e.target.value)}
+              onChange={(e) => setPrompt(e.target.value)}
               disabled={isLoading}
               variant="standard"
               InputProps={{

@@ -134,7 +134,11 @@ export default function Dashboard() {
 
   // Calculate stats
   const now = new Date();
-  const today = useMemo(() => new Date(now.getFullYear(), now.getMonth(), now.getDate()), [now.getFullYear(), now.getMonth(), now.getDate()]);
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const date = now.getDate();
+  
+  const today = useMemo(() => new Date(year, month, date), [year, month, date]);
   const tomorrow = useMemo(() => {
     const d = new Date(today);
     d.setDate(d.getDate() + 1);

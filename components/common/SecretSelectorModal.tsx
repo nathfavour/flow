@@ -15,8 +15,6 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
-  alpha,
-  useTheme
 } from '@mui/material';
 import {
   X,
@@ -38,7 +36,6 @@ interface SecretSelectorModalProps {
 }
 
 export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelectorModalProps) {
-  const theme = useTheme();
   const [secrets, setSecrets] = useState<Secret[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -50,8 +47,8 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
         try {
           const res = await secretsApi.list();
           setSecrets((res.rows || (res as any).documents) as any[]);
-        } catch (_err: unknown) {
-          console.error('Failed to fetch secrets:', err);
+        } catch (error: unknown) {
+          console.error('Failed to fetch secrets:', error);
         } finally {
           setLoading(false);
         }
@@ -103,7 +100,7 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
             size="small"
             placeholder="Search credentials..."
             value={search}
-            onChange={(_e) => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             variant="filled"
             InputProps={{
               disableUnderline: true,

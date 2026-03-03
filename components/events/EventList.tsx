@@ -16,7 +16,6 @@ import { Add as AddIcon } from '@mui/icons-material';
 import EventCard from './EventCard';
 import EventDialog from './EventDialog';
 import { Event } from '@/types';
-import { addDays, addHours } from 'date-fns';
 import { events as eventApi } from '@/lib/kylrixflow';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
@@ -25,7 +24,6 @@ import { permissions, EventVisibility } from '@/lib/permissions';
 
 export default function EventList() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useState(0);
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -174,7 +172,7 @@ export default function EventList() {
       </Box>
 
       <Grid container spacing={3}>
-        {events.map((_event) => (
+        {events.map((event) => (
           <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={event.id}>
             <EventCard 
               event={event} 

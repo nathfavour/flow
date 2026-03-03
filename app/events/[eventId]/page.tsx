@@ -8,23 +8,14 @@ import {
   Button,
   Avatar,
   AvatarGroup,
-  Chip,
   Paper,
   Container,
   Skeleton,
   useTheme,
-  Tooltip,
   alpha,
-  Alert,
 } from '@mui/material';
 import {
-  CalendarMonth as CalendarIcon,
-  AccessTime as TimeIcon,
-  LocationOn as LocationIcon,
-  CheckCircle as CheckCircleIcon,
   ContentCopy as ContentCopyIcon,
-  Lock as LockIcon,
-  Public as PublicIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/context/auth/AuthContext';
 import { events as eventApi, eventGuests as guestApi } from '@/lib/kylrixflow';
@@ -32,7 +23,6 @@ import { Event } from '@/types/kylrixflow';
 import { format } from 'date-fns';
 import { Query } from 'appwrite';
 import { generateEventPattern } from '@/utils/patternGenerator';
-import { eventPermissions } from '@/lib/permissions';
 import { fetchProfilePreview } from '@/lib/profile-preview';
 
 function AttendeeAvatar({ guest, theme }: { guest: any, theme: any }) {
@@ -73,11 +63,9 @@ export default function EventPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPrivateEvent, setIsPrivateEvent] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
-  const [shareTooltipOpen, setShareTooltipOpen] = useState(false);
   const [attendees, setAttendees] = useState<any[]>([]);
 
   // Fetch event details
@@ -87,14 +75,12 @@ export default function EventPage() {
         setLoading(true);
         const eventData = await eventApi.get(eventId);
         if (eventData.visibility === 'private' && (!user || eventData.userId !== user.$id)) {
-          setIsPrivateEvent(true);
           setError('This event is private.');
           return;
         }
         setEvent(eventData);
-      } catch (_err: unknown) {
+      } catch (err: any) {
         if (err?.code === 401 || err?.code === 404) {
-          setIsPrivateEvent(true);
           setError('This event is private or does not exist.');
         } else {
           setError('Event not found or failed to load.');
@@ -168,8 +154,6 @@ export default function EventPage() {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    setShareTooltipOpen(true);
-    setTimeout(() => setShareTooltipOpen(false), 2000);
   };
 
   if (loading) {

@@ -15,8 +15,6 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
-  alpha,
-  useTheme
 } from '@mui/material';
 import {
   X,
@@ -38,7 +36,6 @@ interface NoteSelectorModalProps {
 }
 
 export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorModalProps) {
-  const theme = useTheme();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -50,8 +47,8 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
         try {
           const res = await notesApi.list();
           setNotes((res.rows || (res as any).documents) as any[]);
-        } catch (_err: unknown) {
-          console.error('Failed to fetch notes:', err);
+        } catch (error: unknown) {
+          console.error('Failed to fetch notes:', error);
         } finally {
           setLoading(false);
         }
@@ -103,7 +100,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
             size="small"
             placeholder="Search notes..."
             value={search}
-            onChange={(_e) => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             variant="filled"
             InputProps={{
               disableUnderline: true,

@@ -8,10 +8,8 @@ import {
   IconButton,
   Button,
   Chip,
-  Tooltip,
   useTheme,
   alpha,
-  Grid,
 } from '@mui/material';
 import {
   ChevronLeft as ChevronLeftIcon,
@@ -25,7 +23,6 @@ import {
   endOfMonth,
   eachDayOfInterval,
   isSameMonth,
-  isSameDay,
   isToday,
   addMonths,
   subMonths,
@@ -265,7 +262,7 @@ export default function CalendarView() {
     openSecondarySidebar('task', taskId);
   }, [selectTask, openSecondarySidebar]);
 
-  const handleAddTask = React.useCallback((date: Date) => {
+  const handleAddTask = React.useCallback((_date: Date) => {
     // In a real implementation, this would pre-fill the date in the task dialog
     setTaskDialogOpen(true);
   }, [setTaskDialogOpen]);

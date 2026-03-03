@@ -10,7 +10,6 @@ import {
     Paper,
     InputBase,
     alpha,
-    useTheme
 } from '@mui/material';
 import {
     Search,
@@ -23,7 +22,7 @@ import {
     Waypoints,
     GripHorizontal
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 /**
  * Premium Icon Mapper
@@ -44,7 +43,6 @@ const PremiumIcon = ({ name, size = 20, color = 'currentColor' }: { name: string
 };
 
 import { ECOSYSTEM_APPS, getEcosystemUrl } from '@/lib/constants';
-import { EcosystemWidgets } from '@/ecosystem/integration/Widgets';
 
 interface EcosystemPortalProps {
     open: boolean;
@@ -53,7 +51,6 @@ interface EcosystemPortalProps {
 
 export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps) {
     const [search, setSearch] = useState('');
-    const theme = useTheme();
 
     const FLAGSHIP_APPS = ['note', 'vault', 'flow', 'connect'];
     const filteredApps = ECOSYSTEM_APPS.filter(app =>
@@ -151,7 +148,7 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                                 placeholder="Jump to app or search actions..."
                                 fullWidth
                                 value={search}
-                                onChange={(_e) => setSearch(e.target.value)}
+                                onChange={(e) => setSearch(e.target.value)}
                                 sx={{
                                     color: 'white',
                                     fontFamily: '"Inter", sans-serif',
