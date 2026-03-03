@@ -28,7 +28,10 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_URL = `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}/login`;
+const getAuthUrl = () => {
+    if (typeof APPWRITE_CONFIG === 'undefined' || !APPWRITE_CONFIG.AUTH) return '';
+    return `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}/login`;
+};
 
 const isMobile = () => {
   if (typeof window === 'undefined') return false;
@@ -90,7 +93,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }, 5000);
 
       const handleIframeMessage = (event: MessageEvent) => {
-        if (event.origin !== `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}`) return;
+        const expectedOrigin = `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}`;
+        if (event.origin !== expectedOrigin) return;
 
         if (event.data?.type === 'idm:auth-status' && event.data.status === 'authenticated') {
           console.log('Silent auth discovered active session in kylrixflow');
@@ -106,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const cleanup = () => {
         clearTimeout(timeout);
         window.removeEventListener('message', handleIframeMessage);
-        if (document.body.contains(iframe)) {
+        if (typeof document !== 'undefined' && document.body && document.body.contains(iframe)) {
           document.body.removeChild(iframe);
         }
       };
@@ -272,7 +276,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const top = window.screen.height / 2 - height / 2;
 
     const sourceUrl = window.location.href;
-    const targetUrl = new URL(AUTH_URL);
+    const authUrlString = getAuthUrl();
+    if (!authUrlString) {
+        setIsAuthenticating(false);
+        return;
+    }
+    const targetUrl = new URL(authUrlString);
     targetUrl.searchParams.set('source', sourceUrl);
     const targetUrlString = targetUrl.toString();
 
