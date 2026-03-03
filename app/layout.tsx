@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/providers";
-import { MainLayout } from "@/components/layout";
+import MainLayout from "@/components/layout/MainLayout";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
