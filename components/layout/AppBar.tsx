@@ -27,8 +27,6 @@ import {
   Settings,
   LogOut,
   User,
-  HelpCircle,
-  Keyboard,
   LayoutGrid,
   Sparkles,
   Download,
@@ -95,10 +93,6 @@ export default function AppBar() {
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  };
-
-  const handleAppsClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAppsAnchorEl(event.currentTarget);
   };
 
   const handleNotifClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -194,7 +188,7 @@ export default function AppBar() {
           <InputBase
             placeholder="Search tasks... (Ctrl+K)"
             value={searchQuery}
-            onChange={(_e) => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             sx={{
               color: '#F2F2F2',
               width: '100%',

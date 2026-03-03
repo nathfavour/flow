@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useOriginFocus } from '@/hooks/useOriginFocus';
 
@@ -16,7 +16,7 @@ export default function OriginFocusSection({ onPlaylistSelect, selectedPlaylist 
     if (isAuthenticated) {
       fetchPlaylists();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchPlaylists]);
 
   if (!isAuthenticated) return null;
 
@@ -27,7 +27,7 @@ export default function OriginFocusSection({ onPlaylistSelect, selectedPlaylist 
         <Select
           value={selectedPlaylist}
           label="Focus Music (Spotify)"
-          onChange={(_e) => onPlaylistSelect(e.target.value)}
+          onChange={(e) => onPlaylistSelect(e.target.value)}
           disabled={loadingPlaylists}
         >
           <MenuItem value="">

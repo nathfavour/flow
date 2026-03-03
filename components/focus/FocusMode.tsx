@@ -17,13 +17,8 @@ import {
   ListItemButton,
   ListItemText,
   ListItemIcon,
-  Checkbox,
   useTheme,
   Chip,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import {
   PlayArrow,
@@ -31,7 +26,6 @@ import {
   Stop,
   Fullscreen,
   FullscreenExit,
-  MusicNote,
   CheckCircle,
   RadioButtonUnchecked,
   AutoFixHigh as AutoFixHighIcon,
@@ -76,7 +70,7 @@ export default function FocusMode() {
         const result = await generate(prompt);
         const refinedTitle = result.trim();
         updateTask(selectedTask.id, { title: refinedTitle });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
         console.error("Failed to refine goal", error);
     } finally {
         setIsRefining(false);
@@ -110,7 +104,7 @@ export default function FocusMode() {
     }
 
     return () => clearInterval(interval);
-  }, [isActive, isPaused, timeLeft, selectedTask, initialTime]);
+  }, [isActive, isPaused, timeLeft, selectedTask, initialTime, userId]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -366,7 +360,7 @@ export default function FocusMode() {
             </Box>
             <IconButton
               color={selectedTask.status === 'done' ? 'success' : 'default'}
-              onClick={(_e) => {
+              onClick={(e) => {
                 e.stopPropagation();
                 updateTask(selectedTask.id, {
                   status: selectedTask.status === 'done' ? 'todo' : 'done',
