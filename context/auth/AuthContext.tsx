@@ -289,7 +289,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.warn('Popup blocked, falling back to redirect in kylrixflow');
       window.location.assign(targetUrlString);
     }
-  }, [authWindow, isAuthenticating, attemptSilentAuth, setIsAuthenticating, targetUrlString]);
+  }, [authWindow, isAuthenticating, attemptSilentAuth, setIsAuthenticating]);
 
 
   const logout = async () => {

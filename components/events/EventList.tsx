@@ -7,7 +7,6 @@ import {
   Button,
   Tabs,
   Tab,
-  useTheme,
   CircularProgress,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';

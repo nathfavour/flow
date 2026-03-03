@@ -190,7 +190,7 @@ export default function Dashboard() {
     };
   }, [tasks]);
 
-  const handleViewTasks = React.useCallback((filterType: string) => {
+  const handleViewTasks = (filterType: string) => {
     switch (filterType) {
       case 'today':
         setFilter({
@@ -221,7 +221,7 @@ export default function Dashboard() {
         });
         break;
     }
-  }, [setFilter, today, tomorrow]);
+  };
 
   const [randomTip, setRandomTip] = useState('');
 
