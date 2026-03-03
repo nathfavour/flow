@@ -15,10 +15,8 @@ import {
   Collapse,
   IconButton,
   Badge,
-  Tooltip,
   Divider,
   LinearProgress,
-  useTheme,
   alpha,
 } from '@mui/material';
 import {
@@ -30,15 +28,11 @@ import {
   InboxOutlined as InboxIcon,
   AccessTimeOutlined as ClockIcon,
   CheckCircleOutlined as CheckCircle2Icon,
-  LocalOfferOutlined as TagIcon,
-  Add as PlusIcon,
   KeyboardArrowUp as ChevronUpIcon,
   KeyboardArrowDown as ChevronDownIcon,
-  StarOutline as StarIcon,
   ViewColumnOutlined as ColumnsIcon,
   GridViewOutlined as Grid2X2Icon,
   BarChartOutlined as BarChart3Icon,
-  SettingsOutlined as SettingsIcon,
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 
@@ -54,23 +48,19 @@ interface NavItem {
 }
 
 export default function Sidebar() {
-  const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const {
     sidebarOpen,
     projects,
-    labels,
     tasks,
     selectedProjectId,
     selectProject,
     setFilter,
     filter,
-    updateProject,
   } = useTask();
 
   const [projectsOpen, setProjectsOpen] = useState(true);
-  const [labelsOpen, setLabelsOpen] = useState(true);
 
   // Calculate stats
   const now = new Date();
@@ -126,13 +116,6 @@ export default function Sidebar() {
     { id: 'completed', label: 'Completed', icon: <CheckCircle2Icon sx={{ fontSize: 18 }} />, badge: completedCount },
   ];
 
-  const viewModes: NavItem[] = [
-    { id: 'board', label: 'Board View', icon: <ColumnsIcon sx={{ fontSize: 18 }} /> },
-    { id: 'calendar', label: 'Calendar View', icon: <CalendarIcon sx={{ fontSize: 18 }} /> },
-    { id: 'timeline', label: 'Timeline', icon: <BarChart3Icon sx={{ fontSize: 18 }} /> },
-    { id: 'matrix', label: 'Priority Matrix', icon: <Grid2X2Icon sx={{ fontSize: 18 }} /> },
-  ];
-
   const handleSmartListClick = (id: string) => {
     router.push('/tasks');
     switch (id) {
@@ -185,24 +168,12 @@ export default function Sidebar() {
     setFilter({ ...filter, projectId, status: undefined, dueDate: undefined });
   };
 
-  const toggleFavorite = (projectId: string, isFavorite: boolean) => {
-    updateProject(projectId, { isFavorite: !isFavorite });
-  };
-
   const getProjectTaskCount = (projectId: string) => {
     return tasks.filter(
       (t) => t.projectId === projectId && t.status !== 'done' && !t.isArchived
     ).length;
   };
 
-  const getProjectProgress = (projectId: string) => {
-    const projectTasks = tasks.filter((t) => t.projectId === projectId && !t.isArchived);
-    if (projectTasks.length === 0) return 0;
-    const completed = projectTasks.filter((t) => t.status === 'done').length;
-    return (completed / projectTasks.length) * 100;
-  };
-
-  const favoriteProjects = projects.filter((p) => p.isFavorite && !p.isArchived);
   const regularProjects = projects.filter((p) => !p.isFavorite && !p.isArchived && p.id !== 'inbox');
 
   return (
