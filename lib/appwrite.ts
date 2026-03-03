@@ -35,6 +35,24 @@ export class AppwriteService {
             return [];
         }
     }
+
+    static async createKeychainEntry(data: any): Promise<any> {
+        const { ID } = await import("appwrite");
+        return await tablesDB.createRow(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_KEYCHAIN_ID,
+            ID.unique(),
+            data
+        );
+    }
+
+    static async deleteKeychainEntry(id: string): Promise<void> {
+        await tablesDB.deleteRow(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_KEYCHAIN_ID,
+            id
+        );
+    }
 }
 
 export function getFilePreview(bucketId: string, fileId: string, width: number = 64, height: number = 64) {

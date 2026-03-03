@@ -17,6 +17,7 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "@mui/x-date-pickers": "^8.19.0",
+    "@simplewebauthn/browser": "^13.2.2",
     "@tanstack/react-query": "^5.90.11",
     "@walletconnect/logger": "^3.0.0",
     "appwrite": "^21.4.0",
