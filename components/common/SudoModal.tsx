@@ -25,8 +25,10 @@ import {
 } from "lucide-react";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { AppwriteService } from "@/lib/appwrite";
-import { useAuth } from "@/hooks/useAuth"; // Assuming flow has a similar hook
+import { useAuth } from "@/hooks/useAuth"; 
 import toast from "react-hot-toast";
+import { unlockWithPasskey } from "@/lib/passkey";
+import { PasskeySetup } from "./PasskeySetup";
 
 interface SudoModalProps {
     isOpen: boolean;
@@ -47,30 +49,34 @@ export default function SudoModal({
     const [hasPasskey, setHasPasskey] = useState(false);
     const [hasPin, setHasPin] = useState(false);
     const [mode, setMode] = useState<"passkey" | "password" | "pin">("password");
+    const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
 
     // Check if user has passkey and PIN set up
     useEffect(() => {
         if (isOpen && user?.$id) {
-            // Check for passkey keychain entry
-            AppwriteService.listKeychainEntries(user.$id).then(entries => {
-                setHasPasskey(entries.some((e: any) => e.type === 'passkey'));
-            });
-            
             const pinSet = ecosystemSecurity.isPinSet();
             setHasPin(pinSet);
+
+            // Check for passkey keychain entry
+            AppwriteService.listKeychainEntries(user.$id).then(entries => {
+                const passkeyPresent = entries.some((e: any) => e.type === 'passkey');
+                setHasPasskey(passkeyPresent);
+                
+                if (passkeyPresent) {
+                    setMode("passkey");
+                    handlePasskeyVerify();
+                } else if (pinSet) {
+                    setMode("pin");
+                } else {
+                    setMode("password");
+                }
+            });
             
             // Reset state on open
             setPassword("");
             setPin("");
             setLoading(false);
             setPasskeyLoading(false);
-            
-            // Priority: PIN > Passkey > Password
-            if (pinSet) {
-                setMode("pin");
-            } else {
-                setMode("password");
-            }
         }
     }, [isOpen, user]);
 
@@ -93,12 +99,16 @@ export default function SudoModal({
 
             const isValid = await ecosystemSecurity.unlock(password, passwordEntry);
             if (isValid) {
-                toast.success("Verified");
-                onSuccess();
+                if (!hasPasskey) {
+                    setShowPasskeyIncentive(true);
+                } else {
+                    toast.success("Verified");
+                    onSuccess();
+                }
             } else {
                 toast.error("Incorrect master password");
             }
-        } catch (_error: unknown) {
+        } catch (error: unknown) {
             console.error(error);
             toast.error("Verification failed");
         } finally {
@@ -114,13 +124,17 @@ export default function SudoModal({
         try {
             const success = await ecosystemSecurity.unlockWithPin(pin);
             if (success) {
-                toast.success("Verified via PIN");
-                onSuccess();
+                if (!hasPasskey) {
+                    setShowPasskeyIncentive(true);
+                } else {
+                    toast.success("Verified via PIN");
+                    onSuccess();
+                }
             } else {
                 toast.error("Incorrect PIN");
                 setPin("");
             }
-        } catch (_error: unknown) {
+        } catch (error: unknown) {
             console.error(error);
             toast.error("PIN verification failed");
         } finally {
@@ -129,10 +143,46 @@ export default function SudoModal({
     };
 
     const handlePasskeyVerify = async () => {
-        toast.error("Passkey verification being integrated into Flow");
+        if (!user?.$id || !isOpen) return;
+        setPasskeyLoading(true);
+        try {
+            const success = await unlockWithPasskey(user.$id);
+            if (success && isOpen) {
+                toast.success("Verified via Passkey");
+                onSuccess();
+            }
+        } catch (e) {
+            console.error("Passkey verification failed or cancelled", e);
+        } finally {
+            setPasskeyLoading(false);
+        }
     };
 
-    return (
+    const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+        setPin(val);
+        if (val.length === 4) {
+            handlePinVerify();
+        }
+    };
+
+    if (showPasskeyIncentive && user) {
+        return (
+            <PasskeySetup 
+                isOpen={true} 
+                onClose={() => {
+                    setShowPasskeyIncentive(false);
+                    onSuccess();
+                }} 
+                userId={user.$id} 
+                onSuccess={() => {
+                    setShowPasskeyIncentive(false);
+                    onSuccess();
+                }}
+                trustUnlocked={true}
+            />
+        );
+    }
         <Dialog
             open={isOpen}
             onClose={onCancel}
