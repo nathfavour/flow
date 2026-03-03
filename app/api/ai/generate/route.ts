@@ -54,8 +54,10 @@ export async function POST(req: Request) {
       const result = await model.generateContent(prompt);
       return NextResponse.json({ text: result.response.text() });
     }
-  } catch (_error: unknown) {
+  } catch (error: unknown) {
     console.error("AI Generation Error:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-}
+  }
+

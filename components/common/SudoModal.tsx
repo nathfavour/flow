@@ -1,21 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Typography,
-  Button,
-  TextField,
-  Box,
-  IconButton,
-  CircularProgress,
-  Stack,
-  Fade,
-  alpha,
-  InputAdornment,
-} from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import Fade from "@mui/material/Fade";
+import { alpha } from "@mui/material/styles";
+import InputAdornment from "@mui/material/InputAdornment";
 import {
   Lock,
   Fingerprint,
@@ -25,7 +23,7 @@ import {
 } from "lucide-react";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { AppwriteService } from "@/lib/appwrite";
-import { useAuth } from "@/hooks/useAuth"; 
+import { useAuth } from "@/context/auth/AuthContext"; 
 import toast from "react-hot-toast";
 import { unlockWithPasskey } from "@/lib/passkey";
 import { PasskeySetup } from "./PasskeySetup";
@@ -183,6 +181,8 @@ export default function SudoModal({
             />
         );
     }
+
+    return (
         <Dialog
             open={isOpen}
             onClose={onCancel}
@@ -327,7 +327,7 @@ export default function SudoModal({
                         >
                             <Fingerprint size={40} color={passkeyLoading ? '#00F0FF' : 'rgba(255, 255, 255, 0.4)'} />
                         </Box>
-                        
+
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
                                 Use Face ID / Touch ID
@@ -395,7 +395,7 @@ export default function SudoModal({
                                         type="password"
                                         placeholder="Enter your master password"
                                         value={password}
-                                        onChange={(_e) => setPassword(e.target.value)}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         autoFocus
                                         InputProps={{
                                             startAdornment: (
@@ -482,7 +482,8 @@ export default function SudoModal({
                             </Button>
                         )}
                     </Stack>
-                )}
+                )
+}
             </DialogContent>
         </Dialog>
     );

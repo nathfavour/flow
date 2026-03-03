@@ -5,7 +5,11 @@ import { usePathname } from 'next/navigation';
 import { Models } from 'appwrite';
 import { account } from '@/lib/appwrite';
 import { APPWRITE_CONFIG } from '@/lib/config';
-import { Backdrop, CircularProgress, Typography, Box, Button } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Image from 'next/image';
 import { APP_CONFIG } from '@/lib/constants';
 
@@ -129,6 +133,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         window.history.replaceState({}, '', url.toString());
       }
     } catch (_error: unknown) {
+      const error = _error as any;
       // Check for auth=success signal in URL - this means we just came from IDM
       const hasAuthSignal = typeof window !== 'undefined' && window.location.search.includes('auth=success');
       

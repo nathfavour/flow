@@ -1,8 +1,13 @@
 'use client';
 
 import React from 'react';
-import { ThemeProvider } from '@/theme';
-import { TaskProvider, AuthProvider, LayoutProvider, OriginProvider, NotificationProvider, SudoProvider } from '@/context';
+import { ThemeProvider } from '@/theme/ThemeProvider';
+import { TaskProvider } from '@/context/TaskContext';
+import { AuthProvider } from '@/context/auth/AuthContext';
+import { LayoutProvider } from '@/context/LayoutContext';
+import { OriginProvider } from '@/context/origin/OriginProvider';
+import { NotificationProvider } from '@/context/NotificationContext';
+import { SudoProvider } from '@/context/SudoContext';
 import { useEcosystemIntents } from '@/hooks/useEcosystemIntents';
 import { useEcosystemNode } from '@/hooks/useEcosystemNode';
 

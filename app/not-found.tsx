@@ -1,9 +1,10 @@
 'use client';
 
 import Link from "next/link";
-import { Button, Box, Typography, Container } from "@mui/material";
-
-export const dynamic = 'force-dynamic';
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
 
 export default function NotFound() {
   return (

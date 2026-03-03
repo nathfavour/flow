@@ -1,21 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  IconButton,
-  Typography,
-  Box,
-  Stack,
-  CircularProgress,
-  alpha,
-  useTheme
-} from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import { alpha, useTheme } from "@mui/material/styles";
 import { startRegistration } from "@simplewebauthn/browser";
 import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
@@ -138,7 +135,7 @@ export function PasskeySetup({
         attestation: "none" as const,
       };
 
-      const regResp = await startRegistration(registrationOptions);
+      const regResp = await startRegistration({ optionsJSON: registrationOptions });
 
       const encoder = new TextEncoder();
       const credentialData = encoder.encode(regResp.id + userId);
