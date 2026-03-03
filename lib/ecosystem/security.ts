@@ -205,10 +205,14 @@ export class EcosystemSecurity {
       this.isUnlocked = true;
 
       return true;
-    } catch (_e: unknown) {
+    } catch (e: unknown) {
       console.error("[Security] Unlock failed", e);
       return false;
     }
+  }
+
+  getMasterKey(): CryptoKey | null {
+    return this.masterKey;
   }
 
   async encrypt(data: string): Promise<string> {
@@ -349,7 +353,7 @@ export class EcosystemSecurity {
 
       this.isUnlocked = true;
       return true;
-    } catch (_e: unknown) {
+    } catch (e: unknown) {
       console.error("[Security] PIN unlock failed", e);
       return false;
     }
