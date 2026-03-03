@@ -79,6 +79,63 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Check if current route is public
   const isOnPublicRoute = isPublicRoute(pathname);
 
+  const checkSession = useCallback(async (retryCount = 0) => {
+    try {
+      const currentUser = await account.get();
+      setUser(currentUser);
+      setShowAuthOverlay(false);
+      if (authWindow) {
+        authWindow.close();
+        setAuthWindow(null);
+      }
+      
+      // Clear the auth=success param from URL if it exists
+      if (typeof window !== 'undefined' && window.location.search.includes('auth=success')) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('auth');
+        window.history.replaceState({}, '', url.toString());
+      }
+    } catch (_error: unknown) {
+      const error = _error as any;
+      // Check for auth=success signal in URL - this means we just came from IDM
+      const hasAuthSignal = typeof window !== 'undefined' && window.location.search.includes('auth=success');
+      
+      if (hasAuthSignal && retryCount < 3) {
+        console.log(`Auth signal detected but session not found. Retrying... (${retryCount + 1})`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return checkSession(retryCount + 1);
+      }
+
+      // First try silent recovery
+      // Use the function name to call it, but it must be defined before this callback is executed
+      await attemptSilentAuth();
+
+      // Re-check after silent attempt (attemptSilentAuth calls checkSession but we want to be sure here)
+      try {
+        const retryUser = await account.get();
+        setUser(retryUser);
+        setShowAuthOverlay(false);
+        return;
+      } catch (error: any) {
+        // Fallback to offline awareness
+        const isNetworkError = !error.response && error.message?.includes('Network Error') || error.message?.includes('Failed to fetch');
+
+        if (!isNetworkError) {
+          setUser(null);
+          if (!isPublicRoute(pathname)) {
+            setShowAuthOverlay(true);
+          }
+        } else {
+          console.warn('Network issue detected in kylrixflow. Retaining last state.');
+        }
+      }
+    } finally {
+      if (retryCount === 0 || !user) {
+        setIsLoading(false);
+      }
+    }
+  }, [authWindow, pathname, user]); // Removed attemptSilentAuth from dependencies to break loop
+
   const attemptSilentAuth = useCallback(async () => {
     if (typeof window === 'undefined') return;
 
@@ -119,62 +176,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       document.body.appendChild(iframe);
     });
   }, [checkSession]);
-
-  const checkSession = useCallback(async (retryCount = 0) => {
-    try {
-      const currentUser = await account.get();
-      setUser(currentUser);
-      setShowAuthOverlay(false);
-      if (authWindow) {
-        authWindow.close();
-        setAuthWindow(null);
-      }
-      
-      // Clear the auth=success param from URL if it exists
-      if (typeof window !== 'undefined' && window.location.search.includes('auth=success')) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('auth');
-        window.history.replaceState({}, '', url.toString());
-      }
-    } catch (_error: unknown) {
-      const error = _error as any;
-      // Check for auth=success signal in URL - this means we just came from IDM
-      const hasAuthSignal = typeof window !== 'undefined' && window.location.search.includes('auth=success');
-      
-      if (hasAuthSignal && retryCount < 3) {
-        console.log(`Auth signal detected but session not found. Retrying... (${retryCount + 1})`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return checkSession(retryCount + 1);
-      }
-
-      // First try silent recovery
-      await attemptSilentAuth();
-
-      // Re-check after silent attempt (attemptSilentAuth calls checkSession but we want to be sure here)
-      try {
-        const retryUser = await account.get();
-        setUser(retryUser);
-        setShowAuthOverlay(false);
-        return;
-      } catch (error: any) {
-        // Fallback to offline awareness
-        const isNetworkError = !error.response && error.message?.includes('Network Error') || error.message?.includes('Failed to fetch');
-
-        if (!isNetworkError) {
-          setUser(null);
-          if (!isPublicRoute(pathname)) {
-            setShowAuthOverlay(true);
-          }
-        } else {
-          console.warn('Network issue detected in kylrixflow. Retaining last state.');
-        }
-      }
-    } finally {
-      if (retryCount === 0 || !user) {
-        setIsLoading(false);
-      }
-    }
-  }, [authWindow, pathname, attemptSilentAuth, user]);
 
   useEffect(() => {
     checkSession();
