@@ -3,18 +3,13 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Paper,
   Checkbox,
   Typography,
   IconButton,
-  Chip,
-  Tooltip,
   Menu,
   MenuItem,
   ListItemIcon,
   ListItemText,
-  alpha,
-  useTheme,
 } from '@mui/material';
 import {
   Flag as FlagIcon,
@@ -24,7 +19,6 @@ import {
   MoreVert as MoreIcon,
   List as SubtaskIcon,
   ChatBubbleOutline as CommentIcon,
-  AttachFile as AttachmentIcon,
   Archive as ArchiveIcon,
   ContentCopy as CopyIcon,
 } from '@mui/icons-material';
@@ -54,7 +48,6 @@ const priorityLabels: Record<Priority, string> = {
 };
 
 export default React.memo(function TaskItem({ task, onClick, compact = false }: TaskItemProps) {
-  const theme = useTheme();
   const { completeTask, deleteTask, updateTask, labels, projects, selectTask } = useTask();
   const { openSecondarySidebar } = useLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

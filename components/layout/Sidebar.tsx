@@ -30,9 +30,6 @@ import {
   CheckCircleOutlined as CheckCircle2Icon,
   KeyboardArrowUp as ChevronUpIcon,
   KeyboardArrowDown as ChevronDownIcon,
-  ViewColumnOutlined as ColumnsIcon,
-  GridViewOutlined as Grid2X2Icon,
-  BarChartOutlined as BarChart3Icon,
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 

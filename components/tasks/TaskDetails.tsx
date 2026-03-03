@@ -17,7 +17,6 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  useTheme,
   alpha,
   CircularProgress,
 } from '@mui/material';

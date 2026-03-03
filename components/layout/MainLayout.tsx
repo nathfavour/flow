@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Box, useTheme, useMediaQuery, alpha } from '@mui/material';
+import { Box, useTheme, useMediaQuery } from '@mui/material';
 import AppBar from '@/components/layout/AppBar';
 import Sidebar from '@/components/layout/Sidebar';
 import BottomNav from '@/components/layout/BottomNav';

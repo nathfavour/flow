@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { EcosystemBridge, EcosystemIntent } from '@/lib/ecosystem/bridge';
+import { EcosystemBridge } from '@/lib/ecosystem/bridge';
 import { useTask } from '@/context/TaskContext';
 
 export const useEcosystemIntents = () => {

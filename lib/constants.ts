@@ -1,5 +1,3 @@
-import { APPWRITE_CONFIG } from "./config";
-
 // Application constants for Kylrix Flow
 
 export const APP_CONFIG = {

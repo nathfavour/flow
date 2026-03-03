@@ -12,7 +12,7 @@ interface ThemeProviderProps {
 export const useThemeMode = () => {
   return {
     mode: 'dark',
-    setMode: (mode: 'light' | 'dark' | 'system') => {},
+    setMode: (_mode: 'light' | 'dark' | 'system') => {},
     toggleMode: () => {},
   };
 };

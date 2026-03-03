@@ -8,7 +8,6 @@ import {
   Tabs,
   Tab,
   useTheme,
-  useMediaQuery,
   CircularProgress,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -23,7 +22,6 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { permissions, EventVisibility } from '@/lib/permissions';
 
 export default function EventList() {
-  const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);

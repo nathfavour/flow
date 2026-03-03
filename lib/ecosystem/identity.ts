@@ -1,5 +1,4 @@
-import { tablesDB, account } from '../appwrite';
-import { APPWRITE_CONFIG } from '../config';
+import { tablesDB, account as _account } from '../appwrite';
 
 const CONNECT_DATABASE_ID = 'chat';
 const CONNECT_COLLECTION_ID_USERS = 'users';
@@ -34,8 +33,8 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                 tableId: CONNECT_COLLECTION_ID_USERS,
                 rowId: user.$id
             });
-        } catch (_e: unknown) {
-            if (e.code === 404) {
+        } catch (error: any) {
+            if (error.code === 404) {
                 // Create new global profile
                 const username = user.prefs?.username || `user${user.$id.slice(0, 6)}`;
                 const profilePicId = user.prefs?.profilePicId || null;
@@ -78,7 +77,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                     }
                 }
             } else {
-                throw e;
+                throw error;
             }
         }
 
@@ -98,7 +97,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
             localStorage.setItem(PROFILE_SYNC_KEY, Date.now().toString());
             sessionStorage.setItem(SESSION_SYNC_KEY, '1');
         }
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
         console.warn('[Identity] Global identity sync failed:', error);
     }
 }
@@ -132,7 +131,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             profilePicId: doc.avatarFileId || doc.profilePicId,
             apps: doc.appsActive || []
         }));
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
         console.error('[Identity] Global search failed:', error);
         return [];
     }

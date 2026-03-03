@@ -110,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       window.addEventListener('message', handleIframeMessage);
       document.body.appendChild(iframe);
     });
-  }, []);
+  }, [checkSession]);
 
   const checkSession = useCallback(async (retryCount = 0) => {
     try {
@@ -147,7 +147,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(retryUser);
         setShowAuthOverlay(false);
         return;
-      } catch {
+      } catch (error: any) {
         // Fallback to offline awareness
         const isNetworkError = !error.response && error.message?.includes('Network Error') || error.message?.includes('Failed to fetch');
 
@@ -287,9 +287,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } else {
       // Popup blocked - fallback to redirect
       console.warn('Popup blocked, falling back to redirect in kylrixflow');
-      window.location.assign(mobileUrl.toString());
+      window.location.assign(targetUrlString);
     }
-  }, [authWindow, isAuthenticating, attemptSilentAuth]);
+  }, [authWindow, isAuthenticating, attemptSilentAuth, setIsAuthenticating, targetUrlString]);
 
 
   const logout = async () => {
@@ -301,7 +301,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!isOnPublicRoute) {
         setShowAuthOverlay(true);
       }
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       console.error('Logout failed', error);
     }
   };

@@ -11,12 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Chip,
-  ToggleButtonGroup,
-  ToggleButton,
-  Tooltip,
   useTheme,
-  alpha,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -25,9 +20,6 @@ import {
   List as ListIcon,
   Dashboard as BoardIcon,
   CalendarMonth as CalendarIcon,
-  Timeline as TimelineIcon,
-  GridOn as MatrixIcon,
-  ExpandMore as ExpandMoreIcon,
   ArrowUpward as AscIcon,
   ArrowDownward as DescIcon,
   CheckCircle as CheckIcon,
@@ -118,7 +110,7 @@ export default function TaskList() {
     if (filter.status?.includes('done')) return 'Completed Tasks';
     if (filter.dueDate?.from && filter.dueDate?.to) {
       const from = new Date(filter.dueDate.from);
-      const to = new Date(filter.dueDate.to);
+      const _to = new Date(filter.dueDate.to);
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);

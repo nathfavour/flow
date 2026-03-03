@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -138,12 +138,9 @@ export default function Dashboard() {
   const month = now.getMonth();
   const date = now.getDate();
   
-  const today = useMemo(() => new Date(year, month, date), [year, month, date]);
-  const tomorrow = useMemo(() => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + 1);
-    return d;
-  }, [today]);
+  const today = new Date(year, month, date);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   const {
     activeTasks,
@@ -191,7 +188,7 @@ export default function Dashboard() {
       highPriorityTasks: highPriority,
       completionRate: rate,
     };
-  }, [tasks, today, tomorrow]);
+  }, [tasks]);
 
   const handleViewTasks = React.useCallback((filterType: string) => {
     switch (filterType) {

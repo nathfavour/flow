@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { MeshProtocol, MeshMessage, NodeIdentity } from '@/lib/ecosystem/mesh';
+import { MeshProtocol, MeshMessage } from '@/lib/ecosystem/mesh';
 
 export function useEcosystemNode(nodeId: string) {
   const [messages, setMessages] = useState<MeshMessage[]>([]);

@@ -10,7 +10,6 @@ import {
   AvatarGroup,
   IconButton,
   Chip,
-  useTheme,
 } from '@mui/material';
 import {
   MapPin,
