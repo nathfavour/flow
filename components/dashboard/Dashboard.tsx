@@ -232,7 +232,7 @@ export default function Dashboard() {
 
   return (
     <Box sx={{ animation: 'fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-      {/* Header / Command Center Section */}
+      {/* Header / Dashboard Section */}
       <Box sx={{ mb: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 3 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
@@ -240,7 +240,7 @@ export default function Dashboard() {
               <LayoutDashboard size={18} strokeWidth={2.5} />
             </Box>
             <Typography variant="overline" sx={{ fontWeight: 800, color: '#00F0FF', letterSpacing: '0.25em', fontFamily: 'var(--font-clash)' }}>
-              SYSTEM OVERVIEW
+              OVERVIEW
             </Typography>
           </Box>
           <Typography variant="h1" sx={{ 
@@ -253,7 +253,7 @@ export default function Dashboard() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}>
-            Control Center.
+            Dashboard.
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.85rem' }}>
@@ -263,7 +263,7 @@ export default function Dashboard() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Activity size={14} color="#00F0FF" />
               <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#00F0FF', fontWeight: 800 }}>{todayTasks.length} objectives</span> due today
+                  <span style={{ color: '#00F0FF', fontWeight: 800 }}>{todayTasks.length} tasks</span> due today
               </Typography>
             </Box>
           </Box>
@@ -290,7 +290,7 @@ export default function Dashboard() {
             }
           }}
         >
-          NEW ACTION ITEM
+          NEW TASK
         </Button>
       </Box>
 
@@ -328,20 +328,20 @@ export default function Dashboard() {
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
-            title="EFFICIENCY"
+            title="COMPLETION RATE"
             value={`${completionRate}%`}
-            subtitle="Overall execution rate"
+            subtitle="Overall progress"
             icon={<TrendingUp />}
             color="#10B981"
           />
         </Grid>
       </Grid>
 
-      {/* Main Orchestration Grid */}
+      {/* Main Task Grid */}
       <Grid container spacing={4}>
         {/* Left Column: Task Tracking */}
         <Grid size={{ xs: 12, lg: 8 }}>
-          {/* Critical Objectives Section */}
+          {/* Urgent Tasks Section */}
           {(urgentTasks.length > 0 || highPriorityTasks.length > 0) && (
             <Paper
               className="glass-panel"
@@ -371,7 +371,7 @@ export default function Dashboard() {
                     <Flag size={20} strokeWidth={2.5} />
                   </Box>
                   <Typography variant="h4" sx={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
-                    Critical Path
+                    Urgent
                   </Typography>
                   <Chip 
                     label={`${urgentTasks.length + highPriorityTasks.length} ITEMS`} 
@@ -399,7 +399,7 @@ export default function Dashboard() {
             </Paper>
           )}
 
-          {/* Active Objectives */}
+          {/* Active Tasks */}
           <Paper
             className="glass-panel"
             sx={{
@@ -414,7 +414,7 @@ export default function Dashboard() {
                   <Calendar size={20} strokeWidth={2.5} />
                 </Box>
                 <Typography variant="h4" sx={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
-                    Active Track
+                    Active Tasks
                 </Typography>
                 <Chip 
                   label={`${todayTasks.length} PENDING`}
@@ -469,7 +469,7 @@ export default function Dashboard() {
                   <CheckCircle size={32} color={alpha('#F2F2F2', 0.1)} strokeWidth={1} />
                 </Box>
                 <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.disabled', letterSpacing: '0.1em', fontFamily: 'var(--font-clash)' }}>
-                  SYSTEMS OPTIMIZED / NO PENDING TASKS
+                  ALL TASKS COMPLETED
                 </Typography>
                 <Button
                   variant="outlined"
@@ -485,16 +485,16 @@ export default function Dashboard() {
                     '&:hover': { borderColor: '#00F0FF', bgcolor: 'rgba(0, 240, 255, 0.05)' }
                   }}
                 >
-                  NEW ACTION ITEM
+                  NEW TASK
                 </Button>
               </Box>
             )}
           </Paper>
         </Grid>
 
-        {/* Right Column: Metrics & Neural Insights */}
+        {/* Right Column: Metrics & Tips */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          {/* Recovery Metrics */}
+          {/* Statistics */}
           <Paper
             className="glass-panel"
             sx={{
@@ -506,7 +506,7 @@ export default function Dashboard() {
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
               <Typography variant="overline" sx={{ fontWeight: 900, color: 'text.secondary', letterSpacing: '0.2em', fontFamily: 'var(--font-clash)' }}>
-                RECOVERY METRICS
+                STATISTICS
               </Typography>
               <IconButton size="small" sx={{ color: 'text.disabled' }}>
                 <MoreVertical size={16} />
@@ -517,7 +517,7 @@ export default function Dashboard() {
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 2 }}>
                 <Box>
                   <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, display: 'block', mb: 0.5 }}>
-                    EXECUTION QUOTA
+                    TASKS COMPLETED
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)' }}>
                     {completedTasks.length} <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400 }}>/ {activeTasks.length}</span>
@@ -574,7 +574,7 @@ export default function Dashboard() {
               </Box>
               <Box>
                 <Typography variant="caption" sx={{ color: 'rgba(0, 240, 255, 0.7)', fontWeight: 800, letterSpacing: '0.1em', display: 'block', mb: 0.5, fontSize: '0.65rem' }}>
-                  FOCUS STREAK
+                  STREAK
                 </Typography>
                 <Typography variant="h4" sx={{ color: '#00F0FF', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'var(--font-clash)' }}>
                   5 DAYS
@@ -583,7 +583,7 @@ export default function Dashboard() {
             </Box>
           </Paper>
 
-          {/* Productivity Tip: Neural Insight */}
+          {/* Productivity Tip */}
           <Paper
             className="glass-panel"
             sx={{
@@ -608,7 +608,7 @@ export default function Dashboard() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
               <Lightbulb size={20} color="#00F0FF" strokeWidth={2} />
               <Typography variant="caption" sx={{ fontWeight: 900, color: '#00F0FF', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'var(--font-clash)' }}>
-                NEURAL INSIGHT
+                PRO TIP
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, fontWeight: 500, fontSize: '0.875rem' }}>
@@ -625,7 +625,7 @@ export default function Dashboard() {
                 '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
               }}
             >
-              GENERATE NEW STRATEGY
+              GET ANOTHER TIP
             </Button>
           </Paper>
         </Grid>
