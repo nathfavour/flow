@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Grid,
@@ -9,11 +9,9 @@ import {
   LinearProgress,
   Chip,
   Button,
-  useTheme,
   alpha,
   Divider,
   IconButton,
-  Tooltip,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -132,14 +130,16 @@ const productivityTips = [
 ];
 
 export default function Dashboard() {
-  const theme = useTheme();
   const { tasks, setFilter, setTaskDialogOpen } = useTask();
 
   // Calculate stats
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const today = useMemo(() => new Date(now.getFullYear(), now.getMonth(), now.getDate()), [now.getFullYear(), now.getMonth(), now.getDate()]);
+  const tomorrow = useMemo(() => {
+    const d = new Date(today);
+    d.setDate(d.getDate() + 1);
+    return d;
+  }, [today]);
 
   const {
     activeTasks,
@@ -187,7 +187,7 @@ export default function Dashboard() {
       highPriorityTasks: highPriority,
       completionRate: rate,
     };
-  }, [tasks]);
+  }, [tasks, today, tomorrow]);
 
   const handleViewTasks = React.useCallback((filterType: string) => {
     switch (filterType) {

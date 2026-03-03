@@ -440,8 +440,8 @@ export function TaskProvider({ children }: TaskProviderProps) {
           const user = await account.get();
           userId = user.$id;
           dispatch({ type: 'SET_USER', payload: userId });
-        } catch (_e: unknown) {
-          console.warn('Not logged in', e);
+        } catch (error: unknown) {
+          console.warn('Not logged in', error);
         }
 
         // Fetch tasks and calendars
@@ -454,7 +454,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const projects = calendarsList.rows.map(mapAppwriteCalendarToProject);
 
         dispatch({ type: 'SET_DATA', payload: { tasks, projects } });
-      } catch (_error: unknown) {
+      } catch (error: unknown) {
         console.error('Failed to fetch data', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to load data' });
       }
@@ -536,7 +536,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         });
 
         dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(newTask) });
-      } catch (_error: unknown) {
+      } catch (error: unknown) {
         console.error('Failed to create task', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to create task' });
       }
