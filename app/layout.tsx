@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -45,9 +46,11 @@ export default function RootLayout({
       </head>
       <body>
         <AppProviders>
-          <MainLayout>
-            {children}
-          </MainLayout>
+          <Suspense fallback={null}>
+            <MainLayout>
+              {children}
+            </MainLayout>
+          </Suspense>
         </AppProviders>
       </body>
     </html>
