@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 import { format, isToday, isTomorrow, isPast } from 'date-fns';
-import TaskItem from '@/components/tasks/TaskItem';
+import TaskItem from '../tasks/TaskItem';
 
 interface StatCardProps {
   title: string;

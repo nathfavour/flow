@@ -6,10 +6,10 @@ import dynamic from 'next/dynamic';
 import { Box, useTheme, useMediaQuery } from '@mui/material';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
+import AppBar from '@/components/layout/AppBar';
+import Sidebar from '@/components/layout/Sidebar';
+import BottomNav from '@/components/layout/BottomNav';
 
-const AppBar = dynamic(() => import('@/components/layout/AppBar'), { ssr: false });
-const Sidebar = dynamic(() => import('@/components/layout/Sidebar'), { ssr: false });
-const BottomNav = dynamic(() => import('@/components/layout/BottomNav'), { ssr: false });
 const RightSidebar = dynamic(() => import('@/components/layout/RightSidebar'), { ssr: false });
 const TaskDialog = dynamic(() => import('@/components/tasks/TaskDialog'), { ssr: false });
 

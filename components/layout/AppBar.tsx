@@ -37,7 +37,7 @@ import {
 import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
-import { Logo } from '@/components/common';
+import { Logo } from '@/components/common/Logo';
 import { ECOSYSTEM_APPS } from '@/lib/constants';
 import dynamic from 'next/dynamic';
 import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-preview';

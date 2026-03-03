@@ -4,7 +4,7 @@ import React from 'react';
 import { Drawer, Box, IconButton, useTheme, useMediaQuery, alpha } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { useLayout } from '@/context/LayoutContext';
-import TaskDetails from '@/components/tasks/TaskDetails';
+import TaskDetails from '../tasks/TaskDetails';
 import EventDetails from '@/components/events/EventDetails';
 
 const DRAWER_WIDTH = 440;
