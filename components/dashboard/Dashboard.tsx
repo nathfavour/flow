@@ -263,7 +263,7 @@ export default function Dashboard() {
             value={inProgressTasks.length}
             subtitle={`${urgentTasks.length} identified as urgent`}
             icon={<Flag />}
-            color="#FFBD2E"
+            color="#00F5FF"
             onClick={() => handleViewTasks('in-progress')}
           />
         </Grid>
@@ -429,26 +429,26 @@ export default function Dashboard() {
                 }}
               />
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, p: 3, borderRadius: 3, backgroundColor: 'rgba(255, 189, 46, 0.05)', border: '1px solid rgba(255, 189, 46, 0.1)' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, p: 3, borderRadius: 3, backgroundColor: 'rgba(0, 245, 255, 0.05)', border: '1px solid rgba(0, 245, 255, 0.1)' }}>
               <Box
                 sx={{
                   width: 48,
                   height: 48,
                   borderRadius: 2,
-                  backgroundColor: 'rgba(255, 189, 46, 0.1)',
+                  backgroundColor: 'rgba(0, 245, 255, 0.1)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#FFBD2E'
+                  color: '#00F5FF'
                 }}
               >
                 <Flame size={24} strokeWidth={1.5} />
               </Box>
               <Box>
-                <Typography variant="caption" sx={{ color: 'rgba(255, 189, 46, 0.7)', fontWeight: 800, letterSpacing: '0.05em', display: 'block', mb: 0.5 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(0, 245, 255, 0.7)', fontWeight: 800, letterSpacing: '0.05em', display: 'block', mb: 0.5 }}>
                   FOCUS STREAK
                 </Typography>
-                <Typography variant="h4" sx={{ color: '#FFBD2E', fontWeight: 900, letterSpacing: '-0.02em' }}>
+                <Typography variant="h4" sx={{ color: '#00F5FF', fontWeight: 900, letterSpacing: '-0.02em' }}>
                   5 DAYS
                 </Typography>
               </Box>
