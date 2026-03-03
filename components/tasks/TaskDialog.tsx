@@ -14,20 +14,15 @@ import {
   Select,
   MenuItem,
   Chip,
-  OutlinedInput,
   IconButton,
   Typography,
   Divider,
-  useTheme,
   alpha,
   Autocomplete,
 } from '@mui/material';
 import {
   Close as CloseIcon,
   Flag as FlagIcon,
-  CalendarToday as CalendarIcon,
-  Folder as FolderIcon,
-  Label as LabelIcon,
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -50,7 +45,6 @@ const statusOptions: { value: TaskStatus; label: string }[] = [
 ];
 
 export default function TaskDialog() {
-  const theme = useTheme();
   const {
     taskDialogOpen,
     setTaskDialogOpen,
@@ -168,7 +162,7 @@ export default function TaskDialog() {
               autoFocus
               placeholder="What's the primary objective?"
               value={title}
-              onChange={(_e) => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               fullWidth
               required
               variant="standard"
@@ -193,7 +187,7 @@ export default function TaskDialog() {
             <TextField
               placeholder="Detailed parameters and context..."
               value={description}
-              onChange={(_e) => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               fullWidth
               multiline
               rows={3}
@@ -216,7 +210,7 @@ export default function TaskDialog() {
                     <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>PROJECT</InputLabel>
                     <Select
                     value={projectId}
-                    onChange={(_e) => setProjectId(e.target.value)}
+                    onChange={(e) => setProjectId(e.target.value)}
                     disableUnderline
                     sx={{ borderRadius: 2, bgcolor: 'transparent' }}
                     renderValue={(selected) => {
@@ -252,7 +246,7 @@ export default function TaskDialog() {
                     <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>PRIORITY</InputLabel>
                     <Select
                     value={priority}
-                    onChange={(_e) => setPriority(e.target.value as Priority)}
+                    onChange={(e) => setPriority(e.target.value as Priority)}
                     disableUnderline
                     sx={{ borderRadius: 2, bgcolor: 'transparent' }}
                     renderValue={(selected) => (
@@ -297,7 +291,7 @@ export default function TaskDialog() {
                     <InputLabel sx={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>STATUS</InputLabel>
                     <Select
                     value={status}
-                    onChange={(_e) => setStatus(e.target.value as TaskStatus)}
+                    onChange={(e) => setStatus(e.target.value as TaskStatus)}
                     disableUnderline
                     sx={{ borderRadius: 2, bgcolor: 'transparent' }}
                     >
