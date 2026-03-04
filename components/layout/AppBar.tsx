@@ -207,21 +207,21 @@ export default function AppBar() {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {/* Actions */}
+          {/* Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* AI Assistant Button */}
           <Tooltip title="AI Assistant">
             <IconButton
               onClick={() => setAiModalOpen(true)}
               sx={{
-                backgroundColor: 'rgba(0, 245, 255, 0.05)',
-                color: '#00F5FF',
+                backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                color: '#10B981',
                 borderRadius: '12px',
                 p: 1.25,
-                border: '1px solid rgba(0, 245, 255, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.1)',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 245, 255, 0.1)',
-                  borderColor: '#00F5FF',
+                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                  borderColor: '#10B981',
                 },
               }}
             >
@@ -234,14 +234,14 @@ export default function AppBar() {
             <IconButton
               onClick={() => setTaskDialogOpen(true)}
               sx={{
-                background: 'linear-gradient(135deg, #00F5FF 0%, #00D1DA 100%)',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 color: '#000000',
                 borderRadius: '12px',
                 p: 1.25,
-                boxShadow: '0 8px 16px rgba(0, 245, 255, 0.15)',
+                boxShadow: '0 8px 16px rgba(16, 185, 129, 0.15)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #00E5FF 0%, #00C1CA 100%)',
-                  boxShadow: '0 10px 20px rgba(0, 245, 255, 0.25)',
+                  background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
+                  boxShadow: '0 10px 20px rgba(16, 185, 129, 0.25)',
                   transform: 'translateY(-1px)',
                 },
                 '&:active': {
@@ -258,16 +258,16 @@ export default function AppBar() {
             <IconButton
               onClick={() => setPortalOpen(true)}
               sx={{
-                color: '#00F5FF',
+                color: '#10B981',
                 display: { xs: 'none', sm: 'flex' },
                 borderRadius: '12px',
                 p: 1.25,
-                bgcolor: 'rgba(0, 245, 255, 0.03)',
-                border: '1px solid rgba(0, 245, 255, 0.1)',
+                bgcolor: 'rgba(16, 185, 129, 0.03)',
+                border: '1px solid rgba(16, 185, 129, 0.1)',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 245, 255, 0.05)',
-                  borderColor: '#00F5FF',
-                  color: '#00F5FF',
+                  backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                  borderColor: '#10B981',
+                  color: '#10B981',
                 }
               }}
             >
@@ -280,10 +280,10 @@ export default function AppBar() {
             <IconButton
               onClick={handleNotifClick}
               sx={{
-                color: unreadCount > 0 ? '#00F5FF' : '#A1A1AA',
+                color: unreadCount > 0 ? '#10B981' : '#A1A1AA',
                 borderRadius: '12px',
                 p: 1.25,
-                bgcolor: unreadCount > 0 ? 'rgba(0, 245, 255, 0.03)' : 'rgba(255, 255, 255, 0.03)',
+                bgcolor: unreadCount > 0 ? 'rgba(16, 185, 129, 0.03)' : 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 '&:hover': {
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -300,7 +300,7 @@ export default function AppBar() {
                     fontFamily: 'var(--font-mono)',
                     fontWeight: 800,
                     fontSize: '0.65rem',
-                    backgroundColor: '#00F5FF',
+                    backgroundColor: '#10B981',
                     color: '#000000',
                   }
                 }}
@@ -319,7 +319,7 @@ export default function AppBar() {
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '14px',
                 bgcolor: 'rgba(255, 255, 255, 0.03)',
-                '&:hover': { borderColor: 'rgba(0, 245, 255, 0.3)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
+                '&:hover': { borderColor: 'rgba(16, 185, 129, 0.3)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
               }}>
                 <Avatar
                   src={profileUrl || undefined}
@@ -328,7 +328,7 @@ export default function AppBar() {
                     height: 32,
                     borderRadius: '10px',
                     bgcolor: '#050505',
-                    color: '#00F5FF',
+                    color: '#10B981',
                     fontSize: '0.85rem',
                     fontFamily: 'var(--font-mono)',
                     fontWeight: 700,
@@ -345,15 +345,15 @@ export default function AppBar() {
               size="large"
               sx={{
                 ml: 1,
-                background: 'linear-gradient(135deg, #00F5FF 0%, #00D1DA 100%)',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 color: '#000',
                 fontWeight: 800,
                 fontFamily: 'var(--font-satoshi)',
                 borderRadius: '14px',
                 textTransform: 'none',
                 px: 3,
-                boxShadow: '0 8px 16px rgba(0, 245, 255, 0.15)',
-                '&:hover': { background: 'linear-gradient(135deg, #00E5FF 0%, #00C1CA 100%)' }
+                boxShadow: '0 8px 16px rgba(16, 185, 129, 0.15)',
+                '&:hover': { background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }
               }}
             >
               Connect
