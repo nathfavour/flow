@@ -148,7 +148,7 @@ export default function TaskList() {
             {getViewTitle()}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#00F5FF', boxShadow: '0 0 8px #00F5FF' }} />
+            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#10B981', boxShadow: '0 0 8px #10B981' }} />
             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 {tasks.length} {tasks.length === 1 ? 'Action Item' : 'Action Items'}
             </Typography>
@@ -178,8 +178,8 @@ export default function TaskList() {
                     sx={{
                         borderRadius: 1.5,
                         px: 1.5,
-                        color: viewMode === mode.id ? '#00F5FF' : 'text.disabled',
-                        bgcolor: viewMode === mode.id ? 'rgba(0, 245, 255, 0.05)' : 'transparent',
+                        color: viewMode === mode.id ? '#10B981' : 'text.disabled',
+                        bgcolor: viewMode === mode.id ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
                         '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
                     }}
                 >
@@ -211,7 +211,7 @@ export default function TaskList() {
             >
                 Filter
                 {(filter.status?.length || filter.labels?.length) && (
-                <Box sx={{ ml: 1, width: 16, height: 16, borderRadius: '50%', bgcolor: '#00F5FF', color: '#000', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
+                <Box sx={{ ml: 1, width: 16, height: 16, borderRadius: '50%', bgcolor: '#10B981', color: '#000', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
                     {(filter.status?.length || 0) + (filter.labels?.length || 0)}
                 </Box>
                 )}
@@ -227,7 +227,7 @@ export default function TaskList() {
             sx={{ 
                 borderRadius: 2,
                 px: 3,
-                boxShadow: '0 8px 20px rgba(0, 245, 255, 0.2)'
+                boxShadow: '0 8px 20px rgba(16, 185, 129, 0.2)'
             }}
           >
             New Task
@@ -278,7 +278,7 @@ export default function TaskList() {
             </ListItemIcon>
             <ListItemText primaryTypographyProps={{ fontSize: '0.85rem' }}>{item.label}</ListItemText>
             {filter.status?.includes(item.status) && (
-              <CheckIcon sx={{ fontSize: 18, color: '#00F5FF' }} />
+              <CheckIcon sx={{ fontSize: 18, color: '#10B981' }} />
             )}
           </MenuItem>
         ))}
@@ -288,7 +288,7 @@ export default function TaskList() {
           sx={{ borderRadius: 1.5 }}
         >
           <ListItemText primaryTypographyProps={{ fontSize: '0.85rem' }}>Include Completed</ListItemText>
-          {filter.showCompleted && <CheckIcon sx={{ fontSize: 18, color: '#00F5FF' }} />}
+          {filter.showCompleted && <CheckIcon sx={{ fontSize: 18, color: '#10B981' }} />}
         </MenuItem>
         <Divider sx={{ my: 1.5, opacity: 0.05 }} />
         <MenuItem

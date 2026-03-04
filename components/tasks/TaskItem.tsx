@@ -146,10 +146,10 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
               mt: 0.25,
               color: 'rgba(255, 255, 255, 0.1)',
               '&.Mui-checked': {
-                color: '#00F5FF',
+                color: '#10B981',
               },
               '&:hover': {
-                backgroundColor: 'rgba(0, 245, 255, 0.05)',
+                backgroundColor: 'rgba(16, 185, 129, 0.05)',
               }
             }}
           />
