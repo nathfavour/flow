@@ -391,11 +391,11 @@ export default function AppBar() {
                 sx={{ 
                   width: 44, 
                   height: 44, 
-                  bgcolor: 'rgba(0, 245, 255, 0.1)',
-                  color: '#00F5FF',
+                  bgcolor: 'rgba(99, 102, 241, 0.1)',
+                  color: '#6366F1',
                   borderRadius: '12px',
                   fontWeight: 900,
-                  border: '1px solid rgba(0, 245, 255, 0.1)'
+                  border: '1px solid rgba(99, 102, 241, 0.1)'
                 }}
               >
                 {getInitials(user)}
@@ -577,7 +577,7 @@ export default function AppBar() {
               <Typography
                 variant="caption"
                 onClick={() => { markAllAsRead(); handleClose(); }}
-                sx={{ cursor: 'pointer', color: '#00F5FF', fontWeight: 700, '&:hover': { textDecoration: 'underline' } }}
+                sx={{ cursor: 'pointer', color: '#6366F1', fontWeight: 700, '&:hover': { textDecoration: 'underline' } }}
               >
                 Clear all
               </Typography>
@@ -604,10 +604,10 @@ export default function AppBar() {
                       px: 2,
                       mb: 1,
                       borderRadius: '16px',
-                      borderLeft: isRead ? '1px solid rgba(255,255,255,0.05)' : '3px solid #00F5FF',
+                      borderLeft: isRead ? '1px solid rgba(255,255,255,0.05)' : '3px solid #6366F1',
                       backgroundColor: isRead
                         ? 'transparent'
-                        : 'rgba(0, 245, 255, 0.02)',
+                        : 'rgba(99, 102, 241, 0.02)',
                       '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' }
                     }}
                   >
@@ -626,7 +626,7 @@ export default function AppBar() {
                         {notif.action.toLowerCase().includes('delete') ? (
                           <XCircle size={18} color="#FF4D4D" />
                         ) : (
-                          <CheckCircle size={18} color="#00F5FF" />
+                          <CheckCircle size={18} color="#6366F1" />
                         )}
                       </Box>
                       <Box sx={{ minWidth: 0, flexGrow: 1 }}>
@@ -647,8 +647,8 @@ export default function AppBar() {
             )}
           </Box>
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', my: 1 }} />
-          <MenuItem sx={{ justifyContent: 'center', py: 2, borderRadius: '16px', '&:hover': { bgcolor: 'rgba(0, 245, 255, 0.05)' } }}>
-            <Typography variant="caption" sx={{ color: '#00F5FF', fontWeight: 800, letterSpacing: '0.05em' }}>
+          <MenuItem sx={{ justifyContent: 'center', py: 2, borderRadius: '16px', '&:hover': { bgcolor: 'rgba(99, 102, 241, 0.05)' } }}>
+            <Typography variant="caption" sx={{ color: '#6366F1', fontWeight: 800, letterSpacing: '0.05em' }}>
               REVEAL ALL ACTIVITY
             </Typography>
           </MenuItem>

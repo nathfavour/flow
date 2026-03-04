@@ -65,7 +65,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: '0 12px 32px rgba(0, 0, 0, 0.4)',
-          borderColor: 'rgba(0, 245, 255, 0.3)',
+          borderColor: 'rgba(99, 102, 241, 0.3)',
           '& .event-image': {
             transform: 'scale(1.05)',
           },
@@ -114,7 +114,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
             fontWeight="800" 
             sx={{ 
               textTransform: 'uppercase',
-              color: '#00F5FF',
+              color: '#6366F1',
               fontSize: '0.65rem',
               letterSpacing: '0.05em',
             }}

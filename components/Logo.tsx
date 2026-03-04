@@ -35,8 +35,8 @@ const Logo: React.FC<LogoProps> = ({
   href
 }) => {
   const configs = {
-    root: { color1: "#00F5FF", color2: "#00A3FF", name: "KYLRIX", desc: "Ecosystem Hub" },
-    vault: { color1: "#00F5FF", color2: "#222222", name: "VAULT", desc: "Zero-Knowledge Storage" },
+    root: { color1: "#6366F1", color2: "#00A3FF", name: "KYLRIX", desc: "Ecosystem Hub" },
+    vault: { color1: "#6366F1", color2: "#222222", name: "VAULT", desc: "Zero-Knowledge Storage" },
     flow: { color1: "#00FF94", color2: "#00B2FF", name: "FLOW", desc: "AI Orchestration" },
     note: { color1: "#6366F1", color2: "#A855F7", name: "NOTE", desc: "Structured Intelligence" },
     connect: { color1: "#F43F5E", color2: "#FB923C", name: "CONNECT", desc: "P2P Encryption" }

@@ -6,7 +6,7 @@ const getDesignTokens = (): ThemeOptions => ({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#00F5FF', // Electric Teal
+      main: '#6366F1', // Electric Teal
       contrastText: '#000000',
     },
     secondary: {
@@ -131,12 +131,12 @@ const getDesignTokens = (): ThemeOptions => ({
           }
         },
         containedPrimary: {
-          backgroundColor: '#00F5FF',
+          backgroundColor: '#6366F1',
           color: '#000000',
           border: 'none',
           '&:hover': {
             backgroundColor: '#00D1DB',
-            boxShadow: '0 0 20px rgba(0, 245, 255, 0.3)',
+            boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)',
           },
         },
         outlined: {
@@ -179,7 +179,7 @@ const getDesignTokens = (): ThemeOptions => ({
               borderColor: 'rgba(255, 255, 255, 0.2)',
             },
             '&.Mui-focused fieldset': {
-              borderColor: 'rgba(0, 245, 255, 0.5)',
+              borderColor: 'rgba(99, 102, 241, 0.5)',
               borderWidth: '1px',
             },
           },

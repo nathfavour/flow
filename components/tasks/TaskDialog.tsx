@@ -378,7 +378,7 @@ export default function TaskDialog() {
                 fontWeight: 800,
                 letterSpacing: '0.05em',
                 fontSize: '0.75rem',
-                bgcolor: '#00F5FF',
+                bgcolor: '#6366F1',
                 color: '#000',
                 '&:hover': {
                     bgcolor: '#00D1D9',

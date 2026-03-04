@@ -243,7 +243,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
                   fontSize: '1rem',
                   color: 'white',
                   fontFamily: 'var(--font-inter)',
-                  '&:focus-within': { borderColor: 'rgba(0, 245, 255, 0.3)' }
+                  '&:focus-within': { borderColor: 'rgba(99, 102, 241, 0.3)' }
                 },
               }}
             />
@@ -277,8 +277,8 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
                     label={result.intent === 'create_task' ? 'TASK' : 'EVENT'} 
                     size="small"
                     sx={{
-                      bgcolor: result.intent === 'create_task' ? 'rgba(0, 245, 255, 0.1)' : 'rgba(168, 85, 247, 0.1)',
-                      color: result.intent === 'create_task' ? '#00F5FF' : '#A855F7',
+                      bgcolor: result.intent === 'create_task' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(168, 85, 247, 0.1)',
+                      color: result.intent === 'create_task' ? '#6366F1' : '#A855F7',
                       fontWeight: 900,
                       fontSize: '0.65rem',
                       borderRadius: '6px',
@@ -329,14 +329,14 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
             fullWidth
             sx={{
               borderRadius: '12px',
-              bgcolor: '#00F5FF',
+              bgcolor: '#6366F1',
               color: 'black',
               fontWeight: 900,
               py: 1.5,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
-              boxShadow: '0 8px 20px rgba(0, 245, 255, 0.2)',
-              '&:hover': { bgcolor: '#00D1DA', boxShadow: '0 12px 28px rgba(0, 245, 255, 0.3)' }
+              boxShadow: '0 8px 20px rgba(99, 102, 241, 0.2)',
+              '&:hover': { bgcolor: '#00D1DA', boxShadow: '0 12px 28px rgba(99, 102, 241, 0.3)' }
             }}
           >
             {isLoading ? <CircularProgress size={20} color="inherit" /> : 'Analyze Intent'}
@@ -364,7 +364,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
               fullWidth
               sx={{
                 borderRadius: '12px',
-                bgcolor: '#00F5FF',
+                bgcolor: '#6366F1',
                 color: 'black',
                 fontWeight: 900,
                 textTransform: 'uppercase',

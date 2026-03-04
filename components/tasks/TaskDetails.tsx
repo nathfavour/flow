@@ -46,7 +46,7 @@ const OriginSocialSection = dynamic(() => import('./OriginSocialSection'), {
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
-  medium: '#00F5FF',
+  medium: '#6366F1',
   high: '#F59E0B',
   urgent: '#EF4444',
 };
@@ -189,8 +189,8 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
             sx={{
               p: 0,
               color: 'rgba(255, 255, 255, 0.2)',
-              '&.Mui-checked': { color: '#00F5FF' },
-              '&:hover': { bgcolor: 'rgba(0, 245, 255, 0.05)' }
+              '&.Mui-checked': { color: '#6366F1' },
+              '&:hover': { bgcolor: 'rgba(99, 102, 241, 0.05)' }
             }}
           />
           <Chip
@@ -293,7 +293,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>Project</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: project?.color || '#00F5FF' }} />
+                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: project?.color || '#6366F1' }} />
                  <Typography variant="body2" fontWeight={600}>{project?.name || 'Inbox'}</Typography>
             </Box>
           </Box>
@@ -376,8 +376,8 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
                     sx={{ 
                         height: '100%', 
                         width: `${subtaskProgress}%`, 
-                        bgcolor: '#00F5FF', 
-                        boxShadow: '0 0 10px rgba(0, 245, 255, 0.4)',
+                        bgcolor: '#6366F1', 
+                        boxShadow: '0 0 10px rgba(99, 102, 241, 0.4)',
                         transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)' 
                     }} 
                 />
@@ -417,7 +417,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
                     sx={{
                         p: 0,
                         color: 'rgba(255, 255, 255, 0.1)',
-                        '&.Mui-checked': { color: '#00F5FF' }
+                        '&.Mui-checked': { color: '#6366F1' }
                     }}
                   />
                 </ListItemIcon>
@@ -454,7 +454,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
                 size="small" 
                 onClick={handleGenerateSubtasks} 
                 disabled={isGeneratingSubtasks}
-                sx={{ color: '#00F5FF' }}
+                sx={{ color: '#6366F1' }}
             >
                 {isGeneratingSubtasks ? <CircularProgress size={16} color="inherit" /> : <AutoFixHighIcon sx={{ fontSize: 18 }} />}
             </IconButton>
@@ -552,7 +552,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               size="small"
               onClick={handleAddComment}
               disabled={!newComment.trim()}
-              sx={{ color: '#00F5FF', p: 0.5 }}
+              sx={{ color: '#6366F1', p: 0.5 }}
             >
               <SendIcon sx={{ fontSize: 18 }} />
             </IconButton>

@@ -115,7 +115,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
 
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-              <CircularProgress size={24} sx={{ color: '#00F5FF' }} />
+              <CircularProgress size={24} sx={{ color: '#6366F1' }} />
             </Box>
           ) : filteredNotes.length === 0 ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, opacity: 0.2 }}>
@@ -134,14 +134,14 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
                     border: '1px solid rgba(255, 255, 255, 0.05)',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      bgcolor: 'rgba(0, 245, 255, 0.05)',
-                      borderColor: 'rgba(0, 245, 255, 0.2)',
+                      bgcolor: 'rgba(99, 102, 241, 0.05)',
+                      borderColor: 'rgba(99, 102, 241, 0.2)',
                       transform: 'translateX(4px)',
                     }
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 40 }}>
-                    <FileText size={20} color="#00F5FF" strokeWidth={1.5} />
+                    <FileText size={20} color="#6366F1" strokeWidth={1.5} />
                   </ListItemIcon>
                   <ListItemText
                     primary={note.title || 'Untitled Note'}
