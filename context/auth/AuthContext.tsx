@@ -29,8 +29,7 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const getAuthUrl = () => {
-    if (typeof APPWRITE_CONFIG === 'undefined' || !APPWRITE_CONFIG.AUTH) return '';
-    return `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}/login`;
+    return `https://accounts.kylrix.space/login`;
 };
 
 const isMobile = () => {
@@ -141,7 +140,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     return new Promise<void>((resolve) => {
       const iframe = document.createElement('iframe');
-      iframe.src = `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}/silent-check`;
+      iframe.src = `https://accounts.kylrix.space/silent-check`;
       iframe.style.display = 'none';
 
       const timeout = setTimeout(() => {
@@ -150,7 +149,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }, 5000);
 
       const handleIframeMessage = (event: MessageEvent) => {
-        const expectedOrigin = `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}`;
+        const expectedOrigin = `https://accounts.kylrix.space`;
         if (event.origin !== expectedOrigin) return;
 
         if (event.data?.type === 'idm:auth-status' && event.data.status === 'authenticated') {
@@ -184,7 +183,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Listen for postMessage from IDM window
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const expectedOrigin = `https://${APPWRITE_CONFIG.AUTH.SUBDOMAIN}.${APPWRITE_CONFIG.AUTH.DOMAIN}`;
+      const expectedOrigin = `https://accounts.kylrix.space`;
       if (event.origin !== expectedOrigin) return;
 
       if (event.data?.type === 'idm:auth-success') {
