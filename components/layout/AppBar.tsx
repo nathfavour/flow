@@ -208,7 +208,7 @@ export default function AppBar() {
         <Box sx={{ flexGrow: 1 }} />
 
           {/* Actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
           {/* AI Assistant Button */}
           <Tooltip title="AI Assistant">
             <IconButton
@@ -217,7 +217,7 @@ export default function AppBar() {
                 backgroundColor: 'rgba(16, 185, 129, 0.05)',
                 color: '#10B981',
                 borderRadius: '12px',
-                p: 1.25,
+                p: { xs: 1, sm: 1.25 },
                 border: '1px solid rgba(16, 185, 129, 0.1)',
                 '&:hover': {
                   backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -225,7 +225,7 @@ export default function AppBar() {
                 },
               }}
             >
-              <Sparkles size={20} strokeWidth={1.5} />
+              <Sparkles size={18} strokeWidth={1.5} />
             </IconButton>
           </Tooltip>
 
@@ -237,7 +237,7 @@ export default function AppBar() {
                 background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 color: '#000000',
                 borderRadius: '12px',
-                p: 1.25,
+                p: { xs: 1, sm: 1.25 },
                 boxShadow: '0 8px 16px rgba(16, 185, 129, 0.15)',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
@@ -249,7 +249,7 @@ export default function AppBar() {
                 },
               }}
             >
-              <Plus size={20} strokeWidth={2.5} />
+              <Plus size={18} strokeWidth={2.5} />
             </IconButton>
           </Tooltip>
 
@@ -282,7 +282,7 @@ export default function AppBar() {
               sx={{
                 color: unreadCount > 0 ? '#10B981' : '#A1A1AA',
                 borderRadius: '12px',
-                p: 1.25,
+                p: { xs: 1, sm: 1.25 },
                 bgcolor: unreadCount > 0 ? 'rgba(16, 185, 129, 0.03)' : 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 '&:hover': {
@@ -305,7 +305,7 @@ export default function AppBar() {
                   }
                 }}
               >
-                <Bell size={20} strokeWidth={1.5} />
+                <Bell size={18} strokeWidth={1.5} />
               </Badge>
             </IconButton>
           </Tooltip>
@@ -324,8 +324,8 @@ export default function AppBar() {
                 <Avatar
                   src={profileUrl || undefined}
                   sx={{
-                    width: 32,
-                    height: 32,
+                    width: { xs: 28, sm: 32 },
+                    height: { xs: 28, sm: 32 },
                     borderRadius: '10px',
                     bgcolor: '#050505',
                     color: '#10B981',
