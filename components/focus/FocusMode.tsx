@@ -203,7 +203,7 @@ export default function FocusMode() {
         p: 3,
         position: 'relative',
         background: isActive && !isPaused 
-          ? `radial-gradient(circle at center, ${theme.palette.primary.main}08 0%, transparent 70%)`
+          ? `radial-gradient(circle at center, #10B98108 0%, transparent 70%)`
           : 'transparent',
         transition: 'background 0.5s ease',
       }}
@@ -238,7 +238,7 @@ export default function FocusMode() {
               position: 'absolute',
               inset: -20,
               borderRadius: '50%',
-              background: `radial-gradient(circle, ${theme.palette.primary.main}20 0%, transparent 70%)`,
+              background: `radial-gradient(circle, #10B98120 0%, transparent 70%)`,
               animation: 'pulse 3s ease-in-out infinite',
             }}
           />
@@ -256,12 +256,12 @@ export default function FocusMode() {
           size={280}
           thickness={3}
           sx={{
-            color: isActive && !isPaused ? theme.palette.primary.main : theme.palette.grey[400],
+            color: isActive && !isPaused ? '#10B981' : theme.palette.grey[400],
             position: 'absolute',
             left: 0,
             strokeLinecap: 'round',
             transition: 'color 0.3s ease',
-            filter: isActive && !isPaused ? `drop-shadow(0 0 8px ${theme.palette.primary.main}60)` : 'none',
+            filter: isActive && !isPaused ? `drop-shadow(0 0 8px #10B98160)` : 'none',
           }}
         />
         <Box
@@ -292,11 +292,13 @@ export default function FocusMode() {
           <Chip
             label={isActive ? (isPaused ? 'PAUSED' : 'FOCUSING') : 'READY'}
             size="small"
-            color={isActive && !isPaused ? 'primary' : 'default'}
             sx={{ 
               mt: 1,
               fontWeight: 600,
               letterSpacing: '0.05em',
+              bgcolor: isActive && !isPaused ? alpha('#10B981', 0.1) : 'default',
+              color: isActive && !isPaused ? '#10B981' : 'inherit',
+              border: isActive && !isPaused ? `1px solid ${alpha('#10B981', 0.2)}` : 'none',
             }}
           />
         </Box>

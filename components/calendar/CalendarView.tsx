@@ -66,12 +66,12 @@ const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTas
         backgroundColor: !isCurrentMonth
           ? alpha(theme.palette.text.primary, 0.02)
           : today 
-            ? alpha(theme.palette.primary.main, 0.04)
+            ? alpha('#10B981', 0.04)
             : 'transparent',
         transition: 'all 0.2s ease',
         position: 'relative',
         '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.06),
+          backgroundColor: alpha('#10B981', 0.06),
           '& .add-task-btn': {
             opacity: 1,
           },
@@ -87,7 +87,7 @@ const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTas
             left: 0,
             right: 0,
             height: 2,
-            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${alpha(theme.palette.primary.main, 0.3)})`,
+            background: `linear-gradient(90deg, #10B981, ${alpha('#10B981', 0.3)})`,
           }}
         />
       )}
@@ -111,14 +111,14 @@ const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTas
               justifyContent: 'center',
               borderRadius: '50%',
               fontWeight: today ? 700 : isCurrentMonth ? 500 : 400,
-              backgroundColor: today ? theme.palette.primary.main : 'transparent',
+              backgroundColor: today ? '#10B981' : 'transparent',
               color: today
                 ? theme.palette.primary.contrastText
                 : isCurrentMonth
                 ? 'text.primary'
                 : 'text.disabled',
               fontSize: '0.8rem',
-              boxShadow: today ? `0 2px 8px ${alpha(theme.palette.primary.main, 0.4)}` : 'none',
+              boxShadow: today ? `0 2px 8px ${alpha('#10B981', 0.4)}` : 'none',
             }}
           >
             {format(date, 'd')}
@@ -129,7 +129,7 @@ const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTas
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                backgroundColor: theme.palette.primary.main,
+                backgroundColor: '#10B981',
                 opacity: 0.6,
               }}
             />
@@ -145,7 +145,7 @@ const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTas
             width: 24,
             height: 24,
             '&:hover': { 
-              backgroundColor: alpha(theme.palette.primary.main, 0.1),
+              backgroundColor: alpha('#10B981', 0.1),
             },
           }}
         >
@@ -191,7 +191,7 @@ const DayCell = React.memo(function DayCell({ date, tasks, isCurrentMonth, onTas
             variant="caption" 
             sx={{ 
               pl: 0.5, 
-              color: theme.palette.primary.main,
+              color: '#10B981',
               fontWeight: 500,
               fontSize: '0.65rem',
             }}
