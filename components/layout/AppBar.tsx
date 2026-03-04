@@ -35,10 +35,11 @@ import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
 import { Logo } from '@/components/common/Logo';
-import { ECOSYSTEM_APPS } from '@/lib/constants';
+import { ECOSYSTEM_APPS, KYLRIX_AUTH_URI } from '@/lib/constants';
 import dynamic from 'next/dynamic';
 import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-preview';
 import { getUserProfilePicId } from '@/lib/user-utils';
+import { Button } from '@mui/material';
 
 const AICommandModal = dynamic(() => import('@/components/ai/AICommandModal'), { ssr: false });
 const EcosystemPortal = dynamic(() => import('@/components/common/EcosystemPortal'), { ssr: false });
@@ -309,31 +310,49 @@ export default function AppBar() {
           </Tooltip>
 
           {/* Profile */}
-          <Tooltip title="User Profile">
-            <IconButton onClick={handleProfileClick} sx={{ 
-              ml: 0.5,
-              p: 0.5,
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              '&:hover': { borderColor: 'rgba(0, 240, 255, 0.2)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
-            }}>
-              <Avatar
-                src={profileUrl || undefined}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '10px',
-                  bgcolor: '#0A0A0A',
-                  color: '#00F0FF',
-                  fontSize: '0.85rem',
-                  fontFamily: 'var(--font-mono)',
-                  fontWeight: 700,
-                }}
-              >
-                {getInitials(user)}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
+          {user ? (
+            <Tooltip title="User Profile">
+              <IconButton onClick={handleProfileClick} sx={{ 
+                ml: 0.5,
+                p: 0.5,
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px',
+                '&:hover': { borderColor: 'rgba(0, 240, 255, 0.2)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
+              }}>
+                <Avatar
+                  src={profileUrl || undefined}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: '10px',
+                    bgcolor: '#0A0A0A',
+                    color: '#00F0FF',
+                    fontSize: '0.85rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 700,
+                  }}
+                >
+                  {getInitials(user)}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Button
+              href={`${KYLRIX_AUTH_URI}/login?source=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
+              variant="contained"
+              size="small"
+              sx={{
+                ml: 1,
+                bgcolor: '#00F0FF',
+                color: '#000',
+                fontWeight: 800,
+                borderRadius: '10px',
+                '&:hover': { bgcolor: alpha('#00F0FF', 0.8) }
+              }}
+            >
+              Connect
+            </Button>
+          )}
         </Box>
 
         {/* Profile Menu */}
