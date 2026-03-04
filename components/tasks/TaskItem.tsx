@@ -35,7 +35,7 @@ interface TaskItemProps {
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
-  medium: '#00F5FF',
+  medium: '#10B981',
   high: '#F59E0B',
   urgent: '#EF4444',
 };
@@ -114,7 +114,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
           borderRadius: 3,
           backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.02)',
           border: '1px solid',
-          borderColor: isHovered ? 'rgba(0, 245, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+          borderColor: isHovered ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
           opacity: task.status === 'done' ? 0.6 : 1,
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'relative',
