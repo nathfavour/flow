@@ -124,12 +124,12 @@ export default function AppBar() {
       elevation={0}
       sx={{
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(5, 5, 5, 0.03)',
         backdropFilter: 'blur(25px) saturate(180%)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}
     >
-      <Toolbar sx={{ gap: 1, minHeight: '64px' }}>
+      <Toolbar sx={{ gap: 2, minHeight: '88px' }}>
         {/* Menu Toggle - only on desktop */}
         <IconButton
           edge="start"
@@ -139,7 +139,10 @@ export default function AppBar() {
           sx={{
             color: '#F2F2F2',
             display: { xs: 'none', md: 'flex' },
-            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
+            bgcolor: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)' }
           }}
         >
           <LucideMenu size={20} strokeWidth={1.5} />
@@ -147,7 +150,7 @@ export default function AppBar() {
 
         {/* Logo */}
         <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
-          <Logo size={32} variant="full" app="flow" />
+          <Logo size={32} variant="full" app="flow" sx={{ fontFamily: 'var(--font-clash)', fontWeight: 900, letterSpacing: '-0.04em' }} />
         </Box>
         <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
           <Logo size={28} variant="icon" app="flow" />
@@ -157,7 +160,7 @@ export default function AppBar() {
         <Box
           sx={{
             position: 'relative',
-            borderRadius: '12px',
+            borderRadius: '14px',
             backgroundColor: 'rgba(255, 255, 255, 0.03)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             '&:hover': {
@@ -192,7 +195,7 @@ export default function AppBar() {
               width: '100%',
               fontFamily: 'var(--font-mono)',
               '& .MuiInputBase-input': {
-                padding: theme.spacing(1.25, 1.5, 1.25, 0),
+                padding: theme.spacing(1.5, 1.5, 1.5, 0),
                 paddingLeft: `calc(1em + ${theme.spacing(4)})`,
                 width: '100%',
                 fontSize: '0.85rem',
@@ -205,20 +208,20 @@ export default function AppBar() {
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* AI Assistant Button */}
           <Tooltip title="AI Assistant">
             <IconButton
               onClick={() => setAiModalOpen(true)}
               sx={{
-                backgroundColor: 'rgba(0, 240, 255, 0.05)',
-                color: '#00F0FF',
+                backgroundColor: 'rgba(0, 245, 255, 0.05)',
+                color: '#00F5FF',
                 borderRadius: '12px',
                 p: 1.25,
-                border: '1px solid rgba(0, 240, 255, 0.1)',
+                border: '1px solid rgba(0, 245, 255, 0.1)',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 240, 255, 0.1)',
-                  borderColor: '#00F0FF',
+                  backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                  borderColor: '#00F5FF',
                 },
               }}
             >
@@ -231,20 +234,22 @@ export default function AppBar() {
             <IconButton
               onClick={() => setTaskDialogOpen(true)}
               sx={{
-                backgroundColor: '#00F0FF',
+                background: 'linear-gradient(135deg, #00F5FF 0%, #00D1DA 100%)',
                 color: '#000000',
                 borderRadius: '12px',
                 p: 1.25,
+                boxShadow: '0 8px 16px rgba(0, 245, 255, 0.15)',
                 '&:hover': {
-                  backgroundColor: alpha('#00F0FF', 0.8),
-                  boxShadow: '0 0 20px rgba(0, 240, 255, 0.4)',
+                  background: 'linear-gradient(135deg, #00E5FF 0%, #00C1CA 100%)',
+                  boxShadow: '0 10px 20px rgba(0, 245, 255, 0.25)',
+                  transform: 'translateY(-1px)',
                 },
                 '&:active': {
                   transform: 'scale(0.95)',
                 },
               }}
             >
-              <Plus size={20} strokeWidth={2} />
+              <Plus size={20} strokeWidth={2.5} />
             </IconButton>
           </Tooltip>
 
@@ -253,22 +258,16 @@ export default function AppBar() {
             <IconButton
               onClick={() => setPortalOpen(true)}
               sx={{
-                color: '#00F0FF',
+                color: '#00F5FF',
                 display: { xs: 'none', sm: 'flex' },
                 borderRadius: '12px',
                 p: 1.25,
-                bgcolor: 'rgba(0, 240, 255, 0.05)',
-                border: '1px solid rgba(0, 240, 255, 0.1)',
-                animation: 'pulse 3s infinite ease-in-out',
-                '@keyframes pulse': {
-                  '0%': { boxShadow: '0 0 0 0 rgba(0, 240, 255, 0.4)' },
-                  '70%': { boxShadow: '0 0 0 10px rgba(0, 240, 255, 0)' },
-                  '100%': { boxShadow: '0 0 0 0 rgba(0, 240, 255, 0)' },
-                },
+                bgcolor: 'rgba(0, 245, 255, 0.03)',
+                border: '1px solid rgba(0, 245, 255, 0.1)',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 240, 255, 0.1)',
-                  borderColor: '#00F0FF',
-                  color: '#00F0FF',
+                  backgroundColor: 'rgba(0, 245, 255, 0.05)',
+                  borderColor: '#00F5FF',
+                  color: '#00F5FF',
                 }
               }}
             >
@@ -281,12 +280,14 @@ export default function AppBar() {
             <IconButton
               onClick={handleNotifClick}
               sx={{
-                color: unreadCount > 0 ? '#00F0FF' : '#A1A1AA',
+                color: unreadCount > 0 ? '#00F5FF' : '#A1A1AA',
                 borderRadius: '12px',
                 p: 1.25,
-                bgcolor: unreadCount > 0 ? 'rgba(0, 240, 255, 0.05)' : 'transparent',
+                bgcolor: unreadCount > 0 ? 'rgba(0, 245, 255, 0.03)' : 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 '&:hover': {
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
                   color: '#F2F2F2',
                 }
               }}
@@ -299,7 +300,7 @@ export default function AppBar() {
                     fontFamily: 'var(--font-mono)',
                     fontWeight: 800,
                     fontSize: '0.65rem',
-                    backgroundColor: '#00F0FF',
+                    backgroundColor: '#00F5FF',
                     color: '#000000',
                   }
                 }}
@@ -315,9 +316,10 @@ export default function AppBar() {
               <IconButton onClick={handleProfileClick} sx={{ 
                 ml: 0.5,
                 p: 0.5,
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                borderRadius: '12px',
-                '&:hover': { borderColor: 'rgba(0, 240, 255, 0.2)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '14px',
+                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                '&:hover': { borderColor: 'rgba(0, 245, 255, 0.3)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
               }}>
                 <Avatar
                   src={profileUrl || undefined}
@@ -325,8 +327,8 @@ export default function AppBar() {
                     width: 32,
                     height: 32,
                     borderRadius: '10px',
-                    bgcolor: '#0A0A0A',
-                    color: '#00F0FF',
+                    bgcolor: '#050505',
+                    color: '#00F5FF',
                     fontSize: '0.85rem',
                     fontFamily: 'var(--font-mono)',
                     fontWeight: 700,
@@ -340,14 +342,18 @@ export default function AppBar() {
             <Button
               href={`${KYLRIX_AUTH_URI}/login?source=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
               variant="contained"
-              size="small"
+              size="large"
               sx={{
                 ml: 1,
-                bgcolor: '#00F0FF',
+                background: 'linear-gradient(135deg, #00F5FF 0%, #00D1DA 100%)',
                 color: '#000',
                 fontWeight: 800,
-                borderRadius: '10px',
-                '&:hover': { bgcolor: alpha('#00F0FF', 0.8) }
+                fontFamily: 'var(--font-satoshi)',
+                borderRadius: '14px',
+                textTransform: 'none',
+                px: 3,
+                boxShadow: '0 8px 16px rgba(0, 245, 255, 0.15)',
+                '&:hover': { background: 'linear-gradient(135deg, #00E5FF 0%, #00C1CA 100%)' }
               }}
             >
               Connect
@@ -364,52 +370,55 @@ export default function AppBar() {
           PaperProps={{
             elevation: 0,
             sx: {
-              width: 240,
-              mt: 1.5,
-              borderRadius: '16px',
-              bgcolor: 'rgba(10, 10, 10, 0.95)',
-              backdropFilter: 'blur(25px) saturate(180%)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              width: 260,
+              mt: 2,
+              borderRadius: '24px',
+              bgcolor: 'rgba(5, 5, 5, 0.05)',
+              backdropFilter: 'blur(30px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundImage: 'none',
+              p: 1,
+              color: 'white'
             },
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           {user && (
-            <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ px: 2.5, py: 2.5, display: 'flex', alignItems: 'center', gap: 2 }}>
               <Avatar 
                 src={profileUrl || undefined}
                 sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  bgcolor: 'rgba(0, 240, 255, 0.1)',
-                  color: 'primary.main',
+                  width: 44, 
+                  height: 44, 
+                  bgcolor: 'rgba(0, 245, 255, 0.1)',
+                  color: '#00F5FF',
                   borderRadius: '12px',
-                  fontWeight: 900
+                  fontWeight: 900,
+                  border: '1px solid rgba(0, 245, 255, 0.1)'
                 }}
               >
                 {getInitials(user)}
               </Avatar>
               <Box sx={{ minWidth: 0 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: '"Space Grotesk", sans-serif', lineHeight: 1.2 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'var(--font-satoshi)', lineHeight: 1.2 }}>
                   {user.name}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }} noWrap>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'var(--font-mono)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }} noWrap>
                   {user.email}
                 </Typography>
               </Box>
             </Box>
           )}
-          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-          <MenuItem sx={{ py: 1.2, '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}>
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', my: 1 }} />
+          <MenuItem sx={{ py: 1.5, px: 2.5, borderRadius: '14px', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' } }}>
             <ListItemIcon>
-              <User size={20} strokeWidth={1.5} />
+              <User size={18} strokeWidth={1.5} color="rgba(255, 255, 255, 0.6)" />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontWeight: 600 }}>Profile</ListItemText>
+            <ListItemText primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}>Profile</ListItemText>
           </MenuItem>
           <MenuItem
-            sx={{ py: 1.2, '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+            sx={{ py: 1.5, px: 2.5, borderRadius: '14px', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' } }}
             onClick={() => {
               handleClose();
               const domain = process.env.NEXT_PUBLIC_DOMAIN || 'kylrix.space';
@@ -418,28 +427,28 @@ export default function AppBar() {
             }}
           >
             <ListItemIcon>
-              <Settings size={20} strokeWidth={1.5} />
+              <Settings size={18} strokeWidth={1.5} color="rgba(255, 255, 255, 0.6)" />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontWeight: 600 }}>Settings</ListItemText>
+            <ListItemText primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}>Account Settings</ListItemText>
           </MenuItem>
           <MenuItem
-            sx={{ py: 1.2, '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+            sx={{ py: 1.5, px: 2.5, borderRadius: '14px', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' } }}
             onClick={() => {
               alert('Exporting your data...');
               handleClose();
             }}
           >
             <ListItemIcon>
-              <Download size={20} strokeWidth={1.5} color="#FFC107" />
+              <Download size={18} strokeWidth={1.5} color="#FFC107" />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontWeight: 700, color: '#FFC107' }}>Export Data</ListItemText>
+            <ListItemText primaryTypographyProps={{ fontWeight: 700, color: '#FFC107', fontSize: '0.9rem' }}>Export Data</ListItemText>
           </MenuItem>
-          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-          <MenuItem sx={{ py: 1.2, color: 'error.main', '&:hover': { bgcolor: 'rgba(255, 0, 0, 0.05)' } }} onClick={() => logout()}>
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', my: 1 }} />
+          <MenuItem sx={{ py: 1.5, px: 2.5, borderRadius: '14px', color: '#FF4D4D', '&:hover': { bgcolor: 'rgba(255, 77, 77, 0.05)' } }} onClick={() => logout()}>
             <ListItemIcon>
-              <LogOut size={20} strokeWidth={1.5} color={theme.palette.error.main} />
+              <LogOut size={18} strokeWidth={1.5} color="#FF4D4D" />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontWeight: 700 }}>Sign out</ListItemText>
+            <ListItemText primaryTypographyProps={{ fontWeight: 700, fontSize: '0.9rem' }}>Sign out</ListItemText>
           </MenuItem>
         </Menu>
 
@@ -452,29 +461,29 @@ export default function AppBar() {
           PaperProps={{
             elevation: 0,
             sx: {
-              width: 320,
-              mt: 1.5,
-              p: 1,
-              borderRadius: '20px',
-              bgcolor: 'rgba(10, 10, 10, 0.95)',
-              backdropFilter: 'blur(25px) saturate(180%)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              width: 340,
+              mt: 2,
+              p: 2,
+              borderRadius: '28px',
+              bgcolor: 'rgba(5, 5, 5, 0.05)',
+              backdropFilter: 'blur(30px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundImage: 'none',
+              color: 'white'
             },
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <Typography variant="overline" sx={{ px: 2, color: 'text.secondary', fontWeight: 800, letterSpacing: '0.1em' }}>
-            Kylrix Ecosystem
+          <Typography variant="overline" sx={{ px: 1.5, color: 'rgba(255, 255, 255, 0.4)', fontWeight: 800, letterSpacing: '0.15em', fontFamily: 'var(--font-mono)' }}>
+            Ecosystem
           </Typography>
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 1,
-              mt: 1,
-              p: 1
+              gap: 1.5,
+              mt: 2
             }}
           >
             {ECOSYSTEM_APPS.map((app) => (
@@ -484,30 +493,32 @@ export default function AppBar() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  p: 1.5,
-                  borderRadius: '16px',
+                  p: 2,
+                  borderRadius: '20px',
                   cursor: 'pointer',
-                  backgroundColor: 'transparent',
-                  border: '1px solid transparent',
-                  transition: 'all 0.2s ease',
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    transform: 'translateY(-2px)'
+                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                    borderColor: alpha(app.color, 0.3),
+                    transform: 'translateY(-4px)',
+                    boxShadow: `0 10px 20px ${alpha(app.color, 0.05)}`
                   },
                 }}
               >
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: '12px',
-                    backgroundColor: alpha(app.color, 0.15),
+                    width: 48,
+                    height: 48,
+                    borderRadius: '14px',
+                    backgroundColor: alpha(app.color, 0.1),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.5rem',
-                    mb: 1,
-                    border: `1px solid ${alpha(app.color, 0.2)}`
+                    fontSize: '1.6rem',
+                    mb: 1.5,
+                    border: `1px solid ${alpha(app.color, 0.15)}`
                   }}
                 >
                   {app.icon}
@@ -517,7 +528,8 @@ export default function AppBar() {
                   sx={{
                     fontWeight: 700,
                     textAlign: 'center',
-                    color: 'text.primary'
+                    fontFamily: 'var(--font-satoshi)',
+                    color: 'white'
                   }}
                 >
                   {app.label}
@@ -535,13 +547,15 @@ export default function AppBar() {
           PaperProps={{
             elevation: 0,
             sx: {
-              width: 360,
-              mt: 1.5,
-              borderRadius: '20px',
-              bgcolor: 'rgba(10, 10, 10, 0.95)',
-              backdropFilter: 'blur(25px) saturate(180%)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              width: 380,
+              mt: 2,
+              borderRadius: '28px',
+              bgcolor: 'rgba(5, 5, 5, 0.05)',
+              backdropFilter: 'blur(35px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundImage: 'none',
+              color: 'white',
+              p: 1
             },
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -550,32 +564,32 @@ export default function AppBar() {
           <Box
             sx={{
               px: 2.5,
-              py: 2,
+              py: 2.5,
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: '"Space Grotesk", sans-serif' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
               Intelligence Feed
             </Typography>
             {unreadCount > 0 && (
               <Typography
                 variant="caption"
                 onClick={() => { markAllAsRead(); handleClose(); }}
-                sx={{ cursor: 'pointer', color: 'primary.main', fontWeight: 700 }}
+                sx={{ cursor: 'pointer', color: '#00F5FF', fontWeight: 700, '&:hover': { textDecoration: 'underline' } }}
               >
-                Mark all read
+                Clear all
               </Typography>
             )}
           </Box>
-          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-          <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', mb: 1 }} />
+          <Box sx={{ maxHeight: 440, overflowY: 'auto', px: 1 }}>
             {notifications.length === 0 ? (
-              <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Clock size={32} color="rgba(255, 255, 255, 0.1)" style={{ marginBottom: 12, marginLeft: 'auto', marginRight: 'auto' }} />
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600 }}>
-                  No recent activity detected
+              <Box sx={{ p: 6, textAlign: 'center' }}>
+                <Clock size={40} color="rgba(255, 255, 255, 0.05)" style={{ marginBottom: 16, marginLeft: 'auto', marginRight: 'auto' }} />
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.3)', fontWeight: 600, fontFamily: 'var(--font-satoshi)' }}>
+                  Silence in the void
                 </Typography>
               </Box>
             ) : (
@@ -586,25 +600,28 @@ export default function AppBar() {
                     key={notif.$id}
                     onClick={() => { markAsRead(notif.$id); handleClose(); }}
                     sx={{
-                      py: 2,
-                      px: 2.5,
-                      borderLeft: isRead ? 'none' : '3px solid #00F5FF',
+                      py: 2.5,
+                      px: 2,
+                      mb: 1,
+                      borderRadius: '16px',
+                      borderLeft: isRead ? '1px solid rgba(255,255,255,0.05)' : '3px solid #00F5FF',
                       backgroundColor: isRead
                         ? 'transparent'
-                        : 'rgba(0, 245, 255, 0.03)',
-                      '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
+                        : 'rgba(0, 245, 255, 0.02)',
+                      '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' }
                     }}
                   >
                     <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
                       <Box sx={{ 
-                        width: 36, 
-                        height: 36, 
-                        borderRadius: '10px', 
+                        width: 40, 
+                        height: 40, 
+                        borderRadius: '12px', 
                         bgcolor: 'rgba(255, 255, 255, 0.03)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
                       }}>
                         {notif.action.toLowerCase().includes('delete') ? (
                           <XCircle size={18} color="#FF4D4D" />
@@ -613,13 +630,13 @@ export default function AppBar() {
                         )}
                       </Box>
                       <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'white', lineHeight: 1.2 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 800, color: 'white', lineHeight: 1.2, fontFamily: 'var(--font-satoshi)' }}>
                           {notif.action.toUpperCase()}
                         </Typography>
-                        <Typography variant="body2" noWrap sx={{ color: 'text.secondary', fontSize: '0.75rem', mt: 0.5, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <Typography variant="body2" noWrap sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.75rem', mt: 0.5, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {notif.targetType}: {notif.details || notif.targetId}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5, display: 'block' }}>
+                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', mt: 0.5, display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.65rem' }}>
                           {new Date(notif.timestamp).toLocaleString()}
                         </Typography>
                       </Box>
@@ -629,10 +646,10 @@ export default function AppBar() {
               })
             )}
           </Box>
-          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-          <MenuItem sx={{ justifyContent: 'center', py: 1.5 }}>
-            <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 700 }}>
-              View all activity
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', my: 1 }} />
+          <MenuItem sx={{ justifyContent: 'center', py: 2, borderRadius: '16px', '&:hover': { bgcolor: 'rgba(0, 245, 255, 0.05)' } }}>
+            <Typography variant="caption" sx={{ color: '#00F5FF', fontWeight: 800, letterSpacing: '0.05em' }}>
+              REVEAL ALL ACTIVITY
             </Typography>
           </MenuItem>
         </Menu>
