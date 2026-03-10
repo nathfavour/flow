@@ -70,8 +70,6 @@ tableIdMap["whisperrflow"]["events"] = "events";
 tableIdMap["whisperrflow"]["calendars"] = "calendars";
 tableIdMap["whisperrflow"]["tasks"] = "tasks";
 
-const tablesWithRelationships = new Set<string>();
-
 const roleBuilder: RoleBuilder = {
   any: () => Role.any() as RoleString,
   user: (userId, status?) => Role.user(userId, status) as RoleString,
