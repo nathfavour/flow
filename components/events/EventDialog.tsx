@@ -33,6 +33,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { addHours } from 'date-fns';
 import { EventVisibility } from '@/lib/permissions';
+import UserSearch from '@/components/UserSearch';
+
+interface User {
+  id: string;
+  title: string;
+  subtitle: string;
+  avatar?: string | null;
+  profilePicId?: string | null;
+}
 
 interface EventDialogProps {
   open: boolean;
@@ -50,6 +59,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
   const [url, setUrl] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [visibility, setVisibility] = useState<EventVisibility>('public');
+  const [selectedGuests, setSelectedGuests] = useState<User[]>([]);
 
   const handleSubmit = () => {
     if (!title.trim() || !startTime || !endTime) return;
@@ -63,6 +73,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
       url,
       coverImage,
       visibility,
+      guests: selectedGuests.map(g => g.id),
     });
 
     resetForm();
@@ -77,6 +88,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
     setUrl('');
     setCoverImage('');
     setVisibility('public');
+    setSelectedGuests([]);
   };
 
   const handleClose = () => {
@@ -261,6 +273,17 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
                 {visibility === 'private' && 'Only you can see this event. Others cannot access it.'}
               </Typography>
             </Box>
+
+            <Divider />
+
+            {/* Guests */}
+            <UserSearch
+              label="INVITE GUESTS"
+              placeholder="Search people to invite..."
+              selectedUsers={selectedGuests}
+              onSelect={(user) => setSelectedGuests(prev => [...prev, user])}
+              onRemove={(userId) => setSelectedGuests(prev => prev.filter(u => u.id !== userId))}
+            />
           </Box>
         </DialogContent>
 

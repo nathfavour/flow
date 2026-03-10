@@ -27,8 +27,17 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import UserSearch from '@/components/UserSearch';
 import { useTask } from '@/context/TaskContext';
 import { Priority, TaskStatus } from '@/types';
+
+interface User {
+  id: string;
+  title: string;
+  subtitle: string;
+  avatar?: string | null;
+  profilePicId?: string | null;
+}
 
 const priorityOptions: { value: Priority; label: string; color: string }[] = [
   { value: 'low', label: 'Low', color: '#94a3b8' },
@@ -52,6 +61,7 @@ export default function TaskDialog() {
     projects,
     labels,
     selectedProjectId,
+    userId: creatorId,
   } = useTask();
 
   const [title, setTitle] = useState('');
@@ -62,6 +72,7 @@ export default function TaskDialog() {
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [estimatedTime, setEstimatedTime] = useState('');
+  const [selectedAssignees, setSelectedAssignees] = useState<User[]>([]);
 
   const handleClose = () => {
     setTaskDialogOpen(false);
@@ -77,6 +88,7 @@ export default function TaskDialog() {
     setSelectedLabels([]);
     setDueDate(null);
     setEstimatedTime('');
+    setSelectedAssignees([]);
   };
 
   const handleSubmit = () => {
@@ -96,8 +108,8 @@ export default function TaskDialog() {
       attachments: [],
       reminders: [],
       timeEntries: [],
-      assigneeIds: ['user-1'],
-      creatorId: 'user-1',
+      assigneeIds: selectedAssignees.length > 0 ? selectedAssignees.map(u => u.id) : [creatorId],
+      creatorId: creatorId,
       isArchived: false,
     });
 
@@ -350,6 +362,17 @@ export default function TaskDialog() {
                   <Typography sx={{ fontWeight: 500 }}>{option.name}</Typography>
                 </Box>
               )}
+            />
+
+            <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
+
+            {/* Assignees */}
+            <UserSearch
+              label="ASSIGN TO"
+              selectedUsers={selectedAssignees}
+              onSelect={(user) => setSelectedAssignees(prev => [...prev, user])}
+              onRemove={(userId) => setSelectedAssignees(prev => prev.filter(u => u.id !== userId))}
+              excludeIds={creatorId ? [creatorId] : []}
             />
           </Box>
         </DialogContent>

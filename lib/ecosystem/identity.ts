@@ -119,6 +119,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
                     Query.startsWith('username', query.toLowerCase()),
                     Query.startsWith('displayName', query)
                 ]),
+                Query.contains('appsActive', 'flow'),
                 Query.limit(limit)
             ]
         });
