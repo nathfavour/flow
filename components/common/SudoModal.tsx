@@ -325,7 +325,7 @@ export default function SudoModal({
                                     <span>Waiting for Passkey...</span>
                                 </Stack>
                             ) : "Verify with Passkey"}
-                        </Button
+                        </Button>
 
                         <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
                             <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />

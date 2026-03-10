@@ -74,8 +74,51 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
 
+  const checkSessionRef = useRef<any>(null);
+
   // Check if current route is public
   const isOnPublicRoute = isPublicRoute(pathname);
+
+  const attemptSilentAuth = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+
+    return new Promise<void>((resolve) => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://accounts.kylrix.space/silent-check`;
+      iframe.style.display = 'none';
+
+      const timeout = setTimeout(() => {
+        cleanup();
+        resolve();
+      }, 5000);
+
+      const handleIframeMessage = (event: MessageEvent) => {
+        const expectedOrigin = `https://accounts.kylrix.space`;
+        if (event.origin !== expectedOrigin) return;
+
+        if (event.data?.type === 'idm:auth-status' && event.data.status === 'authenticated') {
+          console.log('Silent auth discovered active session in kylrixflow');
+          if (checkSessionRef.current) checkSessionRef.current();
+          cleanup();
+          resolve();
+        } else if (event.data?.type === 'idm:auth-status') {
+          cleanup();
+          resolve();
+        }
+      };
+
+      const cleanup = () => {
+        clearTimeout(timeout);
+        window.removeEventListener('message', handleIframeMessage);
+        if (typeof document !== 'undefined' && document.body && document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      };
+
+      window.addEventListener('message', handleIframeMessage);
+      document.body.appendChild(iframe);
+    });
+  }, []);
 
   const checkSession = useCallback(async (retryCount = 0) => {
     try {
@@ -104,10 +147,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       // First try silent recovery
-      // Use the function name to call it, but it must be defined before this callback is executed
       await attemptSilentAuth();
 
-      // Re-check after silent attempt (attemptSilentAuth calls checkSession but we want to be sure here)
+      // Re-check after silent attempt
       try {
         const retryUser = await account.get();
         setUser(retryUser);
@@ -131,47 +173,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setIsLoading(false);
       }
     }
-  }, [authWindow, pathname, user]); // Removed attemptSilentAuth from dependencies to break loop
+  }, [authWindow, pathname, user, attemptSilentAuth]);
 
-  const attemptSilentAuth = useCallback(async () => {
-    if (typeof window === 'undefined') return;
-
-    return new Promise<void>((resolve) => {
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://accounts.kylrix.space/silent-check`;
-      iframe.style.display = 'none';
-
-      const timeout = setTimeout(() => {
-        cleanup();
-        resolve();
-      }, 5000);
-
-      const handleIframeMessage = (event: MessageEvent) => {
-        const expectedOrigin = `https://accounts.kylrix.space`;
-        if (event.origin !== expectedOrigin) return;
-
-        if (event.data?.type === 'idm:auth-status' && event.data.status === 'authenticated') {
-          console.log('Silent auth discovered active session in kylrixflow');
-          checkSession();
-          cleanup();
-          resolve();
-        } else if (event.data?.type === 'idm:auth-status') {
-          cleanup();
-          resolve();
-        }
-      };
-
-      const cleanup = () => {
-        clearTimeout(timeout);
-        window.removeEventListener('message', handleIframeMessage);
-        if (typeof document !== 'undefined' && document.body && document.body.contains(iframe)) {
-          document.body.removeChild(iframe);
-        }
-      };
-
-      window.addEventListener('message', handleIframeMessage);
-      document.body.appendChild(iframe);
-    });
+  // Update ref
+  useEffect(() => {
+    checkSessionRef.current = checkSession;
   }, [checkSession]);
 
   useEffect(() => {
