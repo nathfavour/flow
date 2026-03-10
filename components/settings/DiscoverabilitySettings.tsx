@@ -12,8 +12,7 @@ import {
     alpha
 } from '@mui/material';
 import { 
-    PersonOutline as UserIcon, 
-    SearchOutlined as SearchIcon 
+    PersonOutline as UserIcon
 } from '@mui/icons-material';
 import { UsersService } from '@/lib/services/users';
 import { useAuth } from '@/context/auth/AuthContext';
@@ -26,23 +25,23 @@ export const DiscoverabilitySettings = () => {
     const [profile, setProfile] = useState<any>(null);
     const [username, setUsername] = useState('');
 
-    useEffect(() => {
-        if (user?.$id) {
-            loadProfile();
-        }
-    }, [user]);
-
-    const loadProfile = async () => {
+    const loadProfile = React.useCallback(async () => {
         try {
             const p = await UsersService.getProfileById(user!.$id);
             setProfile(p);
             if (p) setUsername(p.username);
-        } catch (e) {
-            console.error("Failed to load profile", e);
+        } catch (_e) {
+            console.error("Failed to load profile", _e);
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.$id) {
+            loadProfile();
+        }
+    }, [user, loadProfile]);
 
     const handleToggleDiscoverability = async (checked: boolean) => {
         if (!user?.$id || !profile) return;
@@ -60,7 +59,7 @@ export const DiscoverabilitySettings = () => {
             await UsersService.updateProfile(user.$id, { appsActive });
             setProfile({ ...profile, appsActive });
             toast.success(checked ? "You are now discoverable in Flow" : "Discovery disabled for Flow");
-        } catch (e) {
+        } catch (_e) {
             toast.error("Failed to update preference");
         } finally {
             setSaving(false);
