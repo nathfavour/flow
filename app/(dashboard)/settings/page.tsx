@@ -24,7 +24,8 @@ import {
 import { 
     LockOutlined as LockIcon, 
     FingerprintOutlined as FingerprintIcon,
-    DeleteOutline as DeleteIcon
+    DeleteOutline as DeleteIcon,
+    ShieldOutlined as ShieldIcon
 } from '@mui/icons-material';
 import { ecosystemSecurity } from '@/lib/ecosystem/security';
 import { AppwriteService, getCurrentUser } from '@/lib/appwrite';
