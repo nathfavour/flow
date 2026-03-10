@@ -29,6 +29,7 @@ import {
 import { ecosystemSecurity } from '@/lib/ecosystem/security';
 import { AppwriteService, getCurrentUser } from '@/lib/appwrite';
 import { PasskeySetup } from '@/components/common/PasskeySetup';
+import { DiscoverabilitySettings } from '@/components/settings/DiscoverabilitySettings';
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
@@ -336,6 +337,9 @@ export default function SettingsPage() {
                         </Stack>
                     </Paper>
                 </Box>
+
+                {/* Discoverability Section */}
+                <DiscoverabilitySettings />
 
                 {/* Workflow Section ... unchanged */}
             </Stack>
