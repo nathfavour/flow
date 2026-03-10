@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { Models } from 'appwrite';
 import { account } from '@/lib/appwrite';
