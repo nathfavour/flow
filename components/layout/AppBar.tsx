@@ -253,13 +253,12 @@ export default function AppBar() {
             </IconButton>
           </Tooltip>
 
-          {/* Ecosystem Apps - hidden on mobile */}
+          {/* Ecosystem Apps */}
           <Tooltip title="Kylrix Portal (Ctrl+Space)">
             <IconButton
               onClick={() => setPortalOpen(true)}
               sx={{
                 color: '#10B981',
-                display: { xs: 'none', sm: 'flex' },
                 borderRadius: '12px',
                 p: 1.25,
                 bgcolor: 'rgba(16, 185, 129, 0.03)',
