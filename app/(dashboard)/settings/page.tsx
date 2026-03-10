@@ -31,7 +31,6 @@ import { DiscoverabilitySettings } from '@/components/settings/DiscoverabilitySe
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
-    const theme = useTheme();
     const [isUnlocked, setIsUnlocked] = useState(ecosystemSecurity.status.isUnlocked);
     const [oldPin, setOldPin] = useState('');
     const [pin, setPin] = useState('');
@@ -44,7 +43,7 @@ export default function SettingsPage() {
     // Passkey state
     const [passkeySetupOpen, setPasskeySetupOpen] = useState(false);
     const [passkeyEntries, setPasskeyEntries] = useState<any[]>([]);
-    const [loadingPasskeys, setLoadingPasskeys] = useState(true);
+    const [, setLoadingPasskeys] = useState(true);
 
     useEffect(() => {
         setIsPinSet(ecosystemSecurity.isPinSet());
@@ -74,8 +73,8 @@ export default function SettingsPage() {
             }));
             
             setPasskeyEntries(pkEntries);
-        } catch (e) {
-            console.error("Failed to load passkeys", e);
+        } catch (_e) {
+            console.error("Failed to load passkeys", _e);
         } finally {
             setLoadingPasskeys(false);
         }
@@ -87,7 +86,7 @@ export default function SettingsPage() {
             await AppwriteService.deleteKeychainEntry(id);
             toast.success("Passkey removed");
             if (user?.$id) loadPasskeys(user.$id);
-        } catch (e) {
+        } catch (_e) {
             toast.error("Failed to remove passkey");
         }
     };
@@ -129,7 +128,7 @@ export default function SettingsPage() {
             } else {
                 setMessage({ type: 'error', text: 'Failed to setup PIN. Ensure your vault is active.' });
             }
-        } catch (err: unknown) {
+        } catch (_err: unknown) {
             setMessage({ type: 'error', text: 'An unexpected error occurred.' });
         } finally {
             setLoading(false);
