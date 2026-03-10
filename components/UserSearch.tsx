@@ -18,8 +18,7 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  Close as CloseIcon,
-  Person as PersonIcon
+  Close as CloseIcon
 } from '@mui/icons-material';
 import { searchGlobalUsers } from '@/lib/ecosystem/identity';
 import { fetchProfilePreview } from '@/lib/profile-preview';
@@ -49,7 +48,7 @@ export default function UserSearch({
   onSelect,
   onRemove,
   excludeIds = [],
-  multiple = true
+  multiple: _multiple = true
 }: UserSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<User[]>([]);
