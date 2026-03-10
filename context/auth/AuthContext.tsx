@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState, useCallback, Rea
 import { usePathname } from 'next/navigation';
 import { Models } from 'appwrite';
 import { account } from '@/lib/appwrite';
-import { APPWRITE_CONFIG } from '@/lib/config';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -95,7 +94,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         window.history.replaceState({}, '', url.toString());
       }
     } catch (_error: unknown) {
-      const error = _error as any;
       // Check for auth=success signal in URL - this means we just came from IDM
       const hasAuthSignal = typeof window !== 'undefined' && window.location.search.includes('auth=success');
       
