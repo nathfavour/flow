@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -19,7 +19,8 @@ import {
     Fingerprint,
     X,
     Shield,
-    LayoutGrid
+    LayoutGrid,
+    KeyRound
 } from "lucide-react";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { AppwriteService } from "@/lib/appwrite";
@@ -48,9 +49,95 @@ export default function SudoModal({
     const [passkeyLoading, setPasskeyLoading] = useState(false);
     const [hasPasskey, setHasPasskey] = useState(false);
     const [hasPin, setHasPin] = useState(false);
-    const [mode, setMode] = useState<"passkey" | "password" | "pin" | null>(null);
+    const [mode, setMode] = useState<"passkey" | "password" | "pin" | "initialize" | null>(null);
     const [isDetecting, setIsDetecting] = useState(true);
     const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
+
+    const handlePasswordVerify = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        if (!password || !user?.$id) return;
+
+        setLoading(true);
+        try {
+            const entries = await AppwriteService.listKeychainEntries(user.$id);
+            const entry = entries.find((e: any) => e.type === 'password');
+
+            if (!entry) {
+                toast.error("Security profile corrupted");
+                return;
+            }
+
+            const success = await ecosystemSecurity.unlock(password, entry);
+            if (success) {
+                toast.success("Identity Verified");
+                onSuccess();
+            } else {
+                toast.error("Incorrect Master Password");
+            }
+        } catch (_e: unknown) {
+            toast.error("Verification failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePinVerify = async () => {
+        if (pin.length !== 4) return;
+        setLoading(true);
+        try {
+            const success = await ecosystemSecurity.unlockWithPin(pin);
+            if (success) {
+                toast.success("Unlocked with PIN");
+                onSuccess();
+            } else {
+                toast.error("Incorrect PIN");
+                setPin("");
+            }
+        } catch (_e: unknown) {
+            toast.error("PIN verification failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleInitialize = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!password || !user?.$id) return;
+
+        setLoading(true);
+        try {
+            // 1. Generate new MEK
+            const mek = await ecosystemSecurity.generateRandomMEK();
+            
+            // 2. Derive salt and wrap MEK
+            const salt = crypto.getRandomValues(new Uint8Array(32));
+            const wrappedKey = await ecosystemSecurity.wrapMEK(mek, password, salt);
+            
+            // 3. Save to Appwrite
+            await AppwriteService.createKeychainEntry({
+                userId: user.$id,
+                type: 'password',
+                wrappedKey,
+                salt: btoa(String.fromCharCode(...salt)),
+                createdAt: new Date().toISOString()
+            });
+
+            // 4. Update user flag in database
+            await AppwriteService.setMasterpassFlag(user.$id, user.email || '');
+
+            // 5. Unlock locally
+            const rawMek = await crypto.subtle.exportKey("raw", mek);
+            await ecosystemSecurity.importMasterKey(rawMek);
+
+            toast.success("MasterPass Initialized");
+            onSuccess();
+        } catch (_e: unknown) {
+            console.error(_e);
+            toast.error("Initialization failed");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handlePasskeyVerify = useCallback(async () => {
         if (!user?.$id || !isOpen) return;
@@ -80,11 +167,10 @@ export default function SudoModal({
                 const passwordPresent = entries.some((e: any) => e.type === 'password');
                 setHasPasskey(passkeyPresent);
 
-                // Enforce Master Password first
+                // Enforce Master Password setup if missing
                 if (!passwordPresent && isOpen) {
-                    toast.error("Master password required for security actions");
-                    router.push("/masterpass");
-                    onCancel();
+                    setMode("initialize");
+                    setIsDetecting(false);
                     return;
                 }
 

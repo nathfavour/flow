@@ -58,6 +58,34 @@ export class AppwriteService {
             id
         );
     }
+
+    static async setMasterpassFlag(userId: string, email: string): Promise<void> {
+        try {
+            const FLOW_DB = APPWRITE_CONFIG.DATABASES.FLOW;
+            const USERS_TABLE = 'users'; // Standard user table in Flow
+
+            const res = await tablesDB.listRows<any>({
+                databaseId: FLOW_DB,
+                tableId: USERS_TABLE,
+                queries: [Query.equal("userId", userId)]
+            });
+
+            if (res.total > 0) {
+                await tablesDB.updateRow(FLOW_DB, USERS_TABLE, res.rows[0].$id, {
+                    hasMasterpass: true
+                });
+            } else {
+                const { ID } = await import("appwrite");
+                await tablesDB.createRow(FLOW_DB, USERS_TABLE, ID.unique(), {
+                    userId,
+                    email,
+                    hasMasterpass: true
+                });
+            }
+        } catch (_e: unknown) {
+            console.error('setMasterpassFlag error', _e);
+        }
+    }
 }
 
 export function getFilePreview(bucketId: string, fileId: string, width: number = 64, height: number = 64) {
