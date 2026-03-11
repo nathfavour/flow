@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { UsersService } from '@/lib/services/users';
 import { useAuth } from '@/context/auth/AuthContext';
+import { ecosystemSecurity } from '@/lib/ecosystem/security';
 import toast from 'react-hot-toast';
 
 export const DiscoverabilitySettings = () => {
@@ -101,16 +102,19 @@ export const DiscoverabilitySettings = () => {
 
         setSaving(true);
         try {
+            let publicKeyStr: string | undefined = undefined;
+
             if (profile) {
-                await UsersService.updateProfile(user.$id, { username: normalized });
+                await UsersService.updateProfile(user.$id, { username: normalized, publicKey: publicKeyStr });
                 setUsername(normalized);
-                setProfile({ ...profile, username: normalized });
+                setProfile({ ...profile, username: normalized, publicKey: publicKeyStr });
                 toast.success("Handle updated");
             } else {
                 // Creation with intelligent defaults
                 const p = await UsersService.createProfile(user.$id, normalized, {
                     displayName: user.name || normalized,
-                    appsActive: ['flow']
+                    appsActive: ['flow'],
+                    publicKey: publicKeyStr
                 });
                 setProfile(p);
                 setUsername(normalized);
@@ -168,149 +172,150 @@ export const DiscoverabilitySettings = () => {
 
                     <Divider sx={{ opacity: 0.05 }} />
 
-                    <Box sx={{ flex: 1 }}>
-                        {isEditing ? (
-                            <TextField
-                                fullWidth
-                                size="small"
-                                variant="standard"
-                                value={newUsername}
-                                onChange={(e) => setNewUsername(e.target.value)}
-                                placeholder="Your handle"
-                                autoFocus
-                                inputProps={{
-                                    style: {
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ flex: 1 }}>
+                            {isEditing ? (
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    variant="standard"
+                                    value={newUsername}
+                                    onChange={(e) => setNewUsername(e.target.value)}
+                                    placeholder="Your handle"
+                                    autoFocus
+                                    inputProps={{
+                                        style: {
+                                            fontFamily: 'JetBrains Mono, monospace',
+                                            fontWeight: 700,
+                                            fontSize: '1.1rem',
+                                            color: 'white'
+                                        }
+                                    }}
+                                    InputProps={{
+                                        disableUnderline: true,
+                                        startAdornment: <Typography sx={{ color: '#00F0FF', fontWeight: 800, mr: 0.5 }}>@</Typography>,
+                                    }}
+                                />
+                            ) : (
+                                <>
+                                    <Typography sx={{
                                         fontFamily: 'JetBrains Mono, monospace',
                                         fontWeight: 700,
                                         fontSize: '1.1rem',
-                                        color: 'white'
-                                    }
-                                }}
-                                InputProps={{
-                                    disableUnderline: true,
-                                    startAdornment: <Typography sx={{ color: '#00F0FF', fontWeight: 800, mr: 0.5 }}>@</Typography>,
-                                }}
-                            />
-                        ) : (
-                            <>
-                                <Typography sx={{
-                                    fontFamily: 'JetBrains Mono, monospace',
-                                    fontWeight: 700,
-                                    fontSize: '1.1rem',
-                                    opacity: (isDiscoverable || !profile) ? 1 : 0.4,
-                                    color: !profile ? '#E2B714' : 'inherit'
+                                        opacity: (isDiscoverable || !profile) ? 1 : 0.4,
+                                        color: !profile ? '#E2B714' : 'inherit'
+                                    }}>
+                                        @{username || 'not_set'}
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ opacity: 0.4, display: 'block', mt: 0.5 }}>
+                                        {!profile ? 'Identity not set' : 'Universal Identity • Ecosystem Handle'}
+                                    </Typography>
+                                </>
+                            )}
+                        </Box>
+
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            {isEditing ? (
+                                <>
+                                    <Tooltip title="Cancel">
+                                        <IconButton size="small" onClick={() => { setIsEditing(false); setNewUsername(username); }} sx={{ color: 'error.main' }}>
+                                            <CloseIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Save">
+                                        <IconButton size="small" onClick={() => setShowConfirm(true)} sx={{ color: '#00F0FF' }} disabled={saving || !newUsername}>
+                                            <CheckIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </>
+                            ) : (
+                                <Tooltip title={profile ? "Change Handle" : "Setup Identity"}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => setIsEditing(true)}
+                                        sx={{
+                                            color: '#00F0FF',
+                                            bgcolor: !profile ? alpha('#00F0FF', 0.1) : 'transparent',
+                                            '&:hover': { bgcolor: alpha('#00F0FF', 0.15) }
+                                        }}
+                                    >
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+
+                            {isDiscoverable && !isEditing && (
+                                <Box sx={{
+                                    ml: 'auto',
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: '8px',
+                                    bgcolor: alpha('#00F0FF', 0.1),
+                                    border: '1px solid',
+                                    borderColor: alpha('#00F0FF', 0.2),
+                                    display: 'flex',
+                                    alignItems: 'center'
                                 }}>
-                                    @{username || 'not_set'}
-                                </Typography>
-                                <Typography variant="caption" sx={{ opacity: 0.4, display: 'block', mt: 0.5 }}>
-                                    {!profile ? 'Identity not set' : 'Universal Identity • Ecosystem Handle'}
-                                </Typography>
-                            </>
-                        )}
+                                    <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#00F0FF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                        Discoverable
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
                     </Box>
+                    <Typography variant="caption" sx={{ mt: 1.5, display: 'block', opacity: 0.4, fontStyle: 'italic' }}>
+                        This handle is shared across the entire Kylrix ecosystem.
+                    </Typography>
+                </Stack>
+            </Paper>
 
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                        {isEditing ? (
-                            <>
-                                <Tooltip title="Cancel">
-                                    <IconButton size="small" onClick={() => { setIsEditing(false); setNewUsername(username); }} sx={{ color: 'error.main' }}>
-                                        <CloseIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Save">
-                                    <IconButton size="small" onClick={() => setShowConfirm(true)} sx={{ color: '#00F0FF' }} disabled={saving || !newUsername}>
-                                        <CheckIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            </>
-                        ) : (
-                            <Tooltip title={profile ? "Change Handle" : "Setup Identity"}>
-                                <IconButton
-                                    size="small"
-                                    onClick={() => setIsEditing(true)}
-                                    sx={{
-                                        color: '#00F0FF',
-                                        bgcolor: !profile ? alpha('#00F0FF', 0.1) : 'transparent',
-                                        '&:hover': { bgcolor: alpha('#00F0FF', 0.15) }
-                                    }}
-                                >
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-
-                        {isDiscoverable && !isEditing && (
-                            <Box sx={{
-                                ml: 'auto',
-                                px: 1.5,
-                                py: 0.5,
-                                borderRadius: '8px',
-                                bgcolor: alpha('#00F0FF', 0.1),
-                                border: '1px solid',
-                                borderColor: alpha('#00F0FF', 0.2),
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}>
-                                <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#00F0FF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    Discoverable
-                                </Typography>
-                            </Box>
-                        )}
-                    </Box>
-                </Box>
-                <Typography variant="caption" sx={{ mt: 1.5, display: 'block', opacity: 0.4, fontStyle: 'italic' }}>
-                    This handle is shared across the entire Kylrix ecosystem.
-                </Typography>
-            </Stack>
-        </Paper>
-
-            {/* Confirmation Dialog */ }
-    <Dialog
-        open={showConfirm}
-        onClose={() => setShowConfirm(false)}
-        PaperProps={{
-            sx: {
-                borderRadius: '24px',
-                bgcolor: 'rgba(15, 15, 15, 0.95)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                maxWidth: '400px',
-                width: '100%'
-            }
-        }}
-    >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800 }}>
-            <ShieldIcon sx={{ color: '#00F0FF' }} />
-            Update Discovery Identity
-        </DialogTitle>
-        <DialogContent>
-            <Typography variant="body2" sx={{ opacity: 0.7, color: 'white', mb: 3 }}>
-                Changes to your universal handle will sync across Kylrix Connect, Note, and Vault instances.
-            </Typography>
-            <Box sx={{ p: 2, borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px dotted rgba(255, 255, 255, 0.2)' }}>
-                <Typography variant="caption" sx={{ opacity: 0.5, display: 'block', mb: 0.5 }}>NEW HANDLE</Typography>
-                <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: '#00F0FF' }}>@{newUsername.toLowerCase().trim()}</Typography>
-            </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 0 }}>
-            <Button onClick={() => setShowConfirm(false)} sx={{ color: 'white', opacity: 0.6 }}>Cancel</Button>
-            <Button
-                onClick={handleSaveUsername}
-                variant="contained"
-                disabled={saving}
-                sx={{
-                    borderRadius: '12px',
-                    bgcolor: '#00F0FF',
-                    color: '#000',
-                    fontWeight: 700,
-                    px: 3,
-                    '&:hover': { bgcolor: alpha('#00F0FF', 0.8) }
+            {/* Confirmation Dialog */}
+            <Dialog
+                open={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                PaperProps={{
+                    sx: {
+                        borderRadius: '24px',
+                        bgcolor: 'rgba(15, 15, 15, 0.95)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        maxWidth: '400px',
+                        width: '100%'
+                    }
                 }}
             >
-                {saving ? <CircularProgress size={20} color="inherit" /> : "Confirm Update"}
-            </Button>
-        </DialogActions>
-    </Dialog>
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800 }}>
+                    <ShieldIcon sx={{ color: '#00F0FF' }} />
+                    Update Discovery Identity
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" sx={{ opacity: 0.7, color: 'white', mb: 3 }}>
+                        Changes to your universal handle will sync across Kylrix Connect, Note, and Vault instances.
+                    </Typography>
+                    <Box sx={{ p: 2, borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px dotted rgba(255, 255, 255, 0.2)' }}>
+                        <Typography variant="caption" sx={{ opacity: 0.5, display: 'block', mb: 0.5 }}>NEW HANDLE</Typography>
+                        <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: '#00F0FF' }}>@{newUsername.toLowerCase().trim()}</Typography>
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ p: 3, pt: 0 }}>
+                    <Button onClick={() => setShowConfirm(false)} sx={{ color: 'white', opacity: 0.6 }}>Cancel</Button>
+                    <Button
+                        onClick={handleSaveUsername}
+                        variant="contained"
+                        disabled={saving}
+                        sx={{
+                            borderRadius: '12px',
+                            bgcolor: '#00F0FF',
+                            color: '#000',
+                            fontWeight: 700,
+                            px: 3,
+                            '&:hover': { bgcolor: alpha('#00F0FF', 0.8) }
+                        }}
+                    >
+                        {saving ? <CircularProgress size={20} color="inherit" /> : "Confirm Update"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box >
     );
 };

@@ -12,18 +12,61 @@ export const UsersService = {
                 tableId: TABLE_ID,
                 rowId: userId
             });
-        } catch (e) {
-            console.error("Profile not found", e);
-            return null;
+        } catch (e: any) {
+            try {
+                const { Query } = await import("appwrite");
+                const res = await tablesDB.listRows<any>({
+                    databaseId: DATABASE_ID,
+                    tableId: TABLE_ID,
+                    queries: [
+                        Query.or([
+                            Query.equal('userId', userId),
+                            Query.equal('$id', userId)
+                        ]),
+                        Query.limit(1)
+                    ]
+                });
+                return res.rows[0] || null;
+            } catch (inner) {
+                return null;
+            }
         }
     },
 
     async updateProfile(userId: string, data: any) {
-        return await tablesDB.updateRow({
-            databaseId: DATABASE_ID,
-            tableId: TABLE_ID,
-            rowId: userId,
-            data
-        });
+        const profile = await this.getProfileById(userId);
+        if (profile) {
+            return await tablesDB.updateRow(
+                DATABASE_ID,
+                TABLE_ID,
+                profile.$id,
+                data
+            );
+        }
+        return null;
+    },
+
+    async createProfile(userId: string, username: string, data: any = {}) {
+        const { ID, Permission, Role } = await import("appwrite");
+        return await tablesDB.createRow(
+            DATABASE_ID,
+            TABLE_ID,
+            userId,
+            {
+                userId,
+                username,
+                displayName: data.displayName || username,
+                appsActive: data.appsActive || ['flow'],
+                publicKey: data.publicKey || null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                bio: data.bio || ''
+            },
+            [
+                Permission.read(Role.any()),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId))
+            ]
+        );
     }
 };
