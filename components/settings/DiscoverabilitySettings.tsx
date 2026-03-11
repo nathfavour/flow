@@ -40,6 +40,8 @@ export const DiscoverabilitySettings = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState('');
     const [showConfirm, setShowConfirm] = useState(false);
+    const [checkingAvailability, setCheckingAvailability] = useState(false);
+    const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
     const loadProfile = React.useCallback(async () => {
         try {
@@ -61,6 +63,30 @@ export const DiscoverabilitySettings = () => {
             loadProfile();
         }
     }, [user, loadProfile]);
+
+    useEffect(() => {
+        const check = async () => {
+            const normalized = newUsername.toLowerCase().trim().replace(/^@/, '').replace(/[^a-z0-9_]/g, '');
+            if (!normalized || normalized === username || normalized.length < 3) {
+                setIsAvailable(null);
+                return;
+            }
+
+            setCheckingAvailability(true);
+            try {
+                const available = await UsersService.isUsernameAvailable(normalized);
+                setIsAvailable(available);
+            } catch (e) {
+                console.error("Check failed", e);
+                setIsAvailable(null);
+            } finally {
+                setCheckingAvailability(false);
+            }
+        };
+
+        const timeoutId = setTimeout(check, 500);
+        return () => clearTimeout(timeoutId);
+    }, [newUsername, username]);
 
     const handleToggleDiscoverability = async (checked: boolean) => {
         if (!user?.$id) return;
@@ -175,27 +201,41 @@ export const DiscoverabilitySettings = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Box sx={{ flex: 1 }}>
                             {isEditing ? (
-                                <TextField
-                                    fullWidth
-                                    size="small"
-                                    variant="standard"
-                                    value={newUsername}
-                                    onChange={(e) => setNewUsername(e.target.value)}
-                                    placeholder="Your handle"
-                                    autoFocus
-                                    inputProps={{
-                                        style: {
-                                            fontFamily: 'JetBrains Mono, monospace',
-                                            fontWeight: 700,
-                                            fontSize: '1.1rem',
-                                            color: 'white'
-                                        }
-                                    }}
-                                    InputProps={{
-                                        disableUnderline: true,
-                                        startAdornment: <Typography sx={{ color: '#00F0FF', fontWeight: 800, mr: 0.5 }}>@</Typography>,
-                                    }}
-                                />
+                                <Box>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        variant="standard"
+                                        value={newUsername}
+                                        onChange={(e) => setNewUsername(e.target.value)}
+                                        placeholder="Your handle"
+                                        autoFocus
+                                        inputProps={{
+                                            style: {
+                                                fontFamily: 'JetBrains Mono, monospace',
+                                                fontWeight: 700,
+                                                fontSize: '1.1rem',
+                                                color: 'white'
+                                            }
+                                        }}
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            startAdornment: <Typography sx={{ color: '#00F0FF', fontWeight: 800, mr: 0.5 }}>@</Typography>,
+                                            endAdornment: (
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    {checkingAvailability && <CircularProgress size={14} sx={{ color: '#00F0FF' }} />}
+                                                    {!checkingAvailability && isAvailable === true && <CheckIcon fontSize="small" sx={{ color: '#00F0FF' }} />}
+                                                    {!checkingAvailability && isAvailable === false && <CloseIcon fontSize="small" sx={{ color: '#FF5252' }} />}
+                                                </Box>
+                                            ),
+                                        }}
+                                    />
+                                    {isAvailable === false && (
+                                        <Typography variant="caption" sx={{ color: '#FF5252', fontWeight: 600, mt: 0.5, display: 'block' }}>
+                                            already taken
+                                        </Typography>
+                                    )}
+                                </Box>
                             ) : (
                                 <>
                                     <Typography sx={{
@@ -218,12 +258,17 @@ export const DiscoverabilitySettings = () => {
                             {isEditing ? (
                                 <>
                                     <Tooltip title="Cancel">
-                                        <IconButton size="small" onClick={() => { setIsEditing(false); setNewUsername(username); }} sx={{ color: 'error.main' }}>
+                                        <IconButton size="small" onClick={() => { setIsEditing(false); setNewUsername(username); setIsAvailable(null); }} sx={{ color: 'error.main' }}>
                                             <CloseIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip title="Save">
-                                        <IconButton size="small" onClick={() => setShowConfirm(true)} sx={{ color: '#00F0FF' }} disabled={saving || !newUsername}>
+                                        <IconButton 
+                                            size="small" 
+                                            onClick={() => setShowConfirm(true)} 
+                                            sx={{ color: '#00F0FF' }} 
+                                            disabled={saving || !newUsername || isAvailable === false || checkingAvailability || (newUsername === username && !!profile)}
+                                        >
                                             <CheckIcon fontSize="small" />
                                         </IconButton>
                                     </Tooltip>
