@@ -165,7 +165,10 @@ export default function SudoModal({
             AppwriteService.listKeychainEntries(user.$id).then(entries => {
                 const passkeyPresent = entries.some((e: any) => e.type === 'passkey');
                 const passwordPresent = entries.some((e: any) => e.type === 'password');
+                const pinPresent = entries.some((e: any) => e.type === 'pin') || pinSet;
+                
                 setHasPasskey(passkeyPresent);
+                setHasPin(pinPresent);
 
                 // Enforce Master Password setup if missing
                 if (!passwordPresent && isOpen) {
@@ -177,7 +180,7 @@ export default function SudoModal({
                 if (passkeyPresent) {
                     setMode("passkey");
                     handlePasskeyVerify();
-                } else if (pinSet) {
+                } else if (pinPresent) {
                     setMode("pin");
                 } else {
                     setMode("password");
@@ -357,6 +360,80 @@ export default function SudoModal({
                         >
                             Use Master Password
                         </Button>
+                    </Stack>
+                ) : mode === "initialize" ? (
+                    <Stack spacing={3} sx={{ mt: 2 }}>
+                        <Box sx={{
+                            p: 2,
+                            borderRadius: '16px',
+                            bgcolor: alpha('#FF9500', 0.1),
+                            border: '1px solid rgba(255, 149, 0, 0.2)',
+                        }}>
+                            <Typography variant="body2" sx={{ color: '#FF9500', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <KeyRound size={16} /> Setup Required
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', mt: 0.5, display: 'block' }}>
+                                You need to create a MasterPass to secure your Flow workspace.
+                            </Typography>
+                        </Box>
+
+                        <form onSubmit={handleInitialize}>
+                            <Stack spacing={2.5}>
+                                <Box>
+                                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block' }}>
+                                        NEW MASTER PASSWORD
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        type="password"
+                                        placeholder="Create a strong password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        autoFocus
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Lock size={18} color="rgba(255, 255, 255, 0.3)" />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '14px',
+                                                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                                                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                                                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                                                '&.Mui-focused fieldset': { borderColor: '#00F0FF' },
+                                            },
+                                            '& .MuiInputBase-input': { color: 'white' }
+                                        }}
+                                    />
+                                </Box>
+
+                                <Button
+                                    fullWidth
+                                    type="submit"
+                                    variant="contained"
+                                    disabled={loading || !password || password.length < 8}
+                                    sx={{
+                                        py: 1.5,
+                                        borderRadius: '14px',
+                                        bgcolor: '#00F0FF',
+                                        color: '#000',
+                                        fontWeight: 700,
+                                        '&:hover': {
+                                            bgcolor: alpha('#00F0FF', 0.8),
+                                        },
+                                        '&.Mui-disabled': {
+                                            bgcolor: alpha('#00F0FF', 0.1),
+                                            color: 'rgba(255, 255, 255, 0.3)'
+                                        }
+                                    }}
+                                >
+                                    {loading ? <CircularProgress size={24} color="inherit" /> : "Initialize MasterPass"}
+                                </Button>
+                            </Stack>
+                        </form>
                     </Stack>
                 ) : mode === "passkey" ? (
                     <Stack spacing={3} sx={{ mt: 2, alignItems: 'center' }}>
