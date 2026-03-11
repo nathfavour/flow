@@ -35,7 +35,7 @@ import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
 import { Logo } from '@/components/common/Logo';
-import { ECOSYSTEM_APPS, KYLRIX_AUTH_URI } from '@/lib/constants';
+import { ECOSYSTEM_APPS, getEcosystemUrl } from '@/lib/constants';
 import dynamic from 'next/dynamic';
 import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-preview';
 import { getUserProfilePicId } from '@/lib/user-utils';
@@ -339,7 +339,7 @@ export default function AppBar() {
             </Tooltip>
           ) : (
             <Button
-              href={`${KYLRIX_AUTH_URI}/login?source=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
+              href={`${getEcosystemUrl('accounts')}/login?source=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
               variant="contained"
               size="large"
               sx={{
