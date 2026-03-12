@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -20,7 +20,6 @@ import {
     Tooltip
 } from '@mui/material';
 import {
-    PersonOutline as UserIcon,
     Edit as EditIcon,
     Check as CheckIcon,
     Close as CloseIcon,
@@ -28,7 +27,6 @@ import {
 } from '@mui/icons-material';
 import { UsersService } from '@/lib/services/users';
 import { useAuth } from '@/context/auth/AuthContext';
-import { ecosystemSecurity } from '@/lib/ecosystem/security';
 import toast from 'react-hot-toast';
 
 export const DiscoverabilitySettings = () => {
@@ -128,7 +126,7 @@ export const DiscoverabilitySettings = () => {
 
         setSaving(true);
         try {
-            let publicKeyStr: string | undefined = undefined;
+            const publicKeyStr: string | undefined = undefined;
 
             if (profile) {
                 await UsersService.updateProfile(user.$id, { username: normalized, publicKey: publicKeyStr });

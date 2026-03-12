@@ -12,7 +12,7 @@ export const UsersService = {
                 tableId: TABLE_ID,
                 rowId: userId
             });
-        } catch (e: any) {
+        } catch (_e: any) {
             try {
                 const { Query } = await import("appwrite");
                 const res = await tablesDB.listRows<any>({
@@ -27,7 +27,7 @@ export const UsersService = {
                     ]
                 });
                 return res.rows[0] || null;
-            } catch (inner) {
+            } catch (_inner) {
                 return null;
             }
         }
@@ -47,7 +47,7 @@ export const UsersService = {
     },
 
     async createProfile(userId: string, username: string, data: any = {}) {
-        const { ID, Permission, Role } = await import("appwrite");
+        const { Permission, Role } = await import("appwrite");
         return await tablesDB.createRow(
             DATABASE_ID,
             TABLE_ID,
