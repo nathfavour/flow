@@ -109,7 +109,7 @@ export class EcosystemSecurity {
     const authKey = await this.deriveKey(password, salt);
     const mekBytes = await crypto.subtle.exportKey("raw", mek);
     const iv = crypto.getRandomValues(new Uint8Array(EcosystemSecurity.IV_SIZE));
-    
+
     const encryptedMek = await crypto.subtle.encrypt(
       { name: "AES-GCM", iv: iv },
       authKey,
@@ -129,7 +129,7 @@ export class EcosystemSecurity {
   public async unwrapMEK(wrappedKeyBase64: string, password: string, saltBase64: string): Promise<CryptoKey> {
     const salt = new Uint8Array(atob(saltBase64).split("").map(c => c.charCodeAt(0)));
     const authKey = await this.deriveKey(password, salt);
-    
+
     const wrappedKeyBytes = new Uint8Array(atob(wrappedKeyBase64).split("").map(c => c.charCodeAt(0)));
     const iv = wrappedKeyBytes.slice(0, EcosystemSecurity.IV_SIZE);
     const ciphertext = wrappedKeyBytes.slice(EcosystemSecurity.IV_SIZE);
@@ -183,7 +183,7 @@ export class EcosystemSecurity {
               .split("")
               .map((c) => c.charCodeAt(0))
           ),
-          { name: "X25519" },
+          { name: "ECDH", namedCurve: "P-256" },
           true,
           ["deriveKey", "deriveBits"]
         );
@@ -195,7 +195,7 @@ export class EcosystemSecurity {
               .split("")
               .map((c) => c.charCodeAt(0))
           ),
-          { name: "X25519" },
+          { name: "ECDH", namedCurve: "P-256" },
           true,
           []
         );
@@ -203,9 +203,9 @@ export class EcosystemSecurity {
         this.identityKeyPair = { publicKey, privateKey };
         publicKeyBase64 = identity.publicKey;
       } else {
-        // 3. Generate new X25519 pair
+        // 3. Generate new P-256 pair
         const keyPair = (await crypto.subtle.generateKey(
-          { name: "X25519" },
+          { name: "ECDH", namedCurve: "P-256" },
           true,
           ["deriveKey", "deriveBits"]
         )) as CryptoKeyPair;
@@ -234,7 +234,7 @@ export class EcosystemSecurity {
           name: "e2e_connect",
           publicKey: publicKeyBase64,
           wrappedKey: wrappedPrivateKey,
-          algorithm: "X25519",
+          algorithm: "P-256",
         });
 
         this.identityKeyPair = keyPair;
@@ -298,7 +298,7 @@ export class EcosystemSecurity {
       // 1. Create PIN Verifier (for future login verification)
       const salt = crypto.getRandomValues(new Uint8Array(EcosystemSecurity.PIN_SALT_SIZE));
       const hash = await this.derivePinHash(pin, salt);
-      
+
       const verifier = {
         salt: btoa(String.fromCharCode(...salt)),
         hash: btoa(String.fromCharCode(...new Uint8Array(hash)))
@@ -308,7 +308,7 @@ export class EcosystemSecurity {
       // 2. Create Ephemeral Session (wrap MEK with PIN)
       const sessionSalt = crypto.getRandomValues(new Uint8Array(EcosystemSecurity.SESSION_SALT_SIZE));
       const ephemeralKey = await this.deriveEphemeralKey(pin, sessionSalt);
-      
+
       const rawMek = await crypto.subtle.exportKey("raw", this.masterKey);
       const iv = crypto.getRandomValues(new Uint8Array(EcosystemSecurity.IV_SIZE));
       const wrappedMek = await crypto.subtle.encrypt(
@@ -580,7 +580,7 @@ export class EcosystemSecurity {
   private async deriveEphemeralKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
     const encoder = new TextEncoder();
     const sessionSecret = this.getOrCreateSessionSecret();
-    
+
     // Mix PIN with tab-specific Session Secret for entropy (XSS-safe)
     const pinBytes = encoder.encode(pin);
     const combined = new Uint8Array(pinBytes.length + sessionSecret.length);
@@ -613,10 +613,10 @@ export class EcosystemSecurity {
     this.masterKey = null;
     this.isUnlocked = false;
     if (typeof sessionStorage !== "undefined") {
-        sessionStorage.removeItem("kylrix_vault_unlocked");
-        // We DO NOT remove kylrix_ephemeral_session here, 
-        // as the PIN is meant to unlock the system when it's locked.
-        // It should only be purged on "Purge" (tab close/process exit).
+      sessionStorage.removeItem("kylrix_vault_unlocked");
+      // We DO NOT remove kylrix_ephemeral_session here, 
+      // as the PIN is meant to unlock the system when it's locked.
+      // It should only be purged on "Purge" (tab close/process exit).
     }
   }
 
