@@ -183,7 +183,7 @@ export class EcosystemSecurity {
               .split("")
               .map((c) => c.charCodeAt(0))
           ),
-          { name: "ECDH", namedCurve: "P-256" },
+          { name: "X25519" },
           true,
           ["deriveKey", "deriveBits"]
         );
@@ -195,7 +195,7 @@ export class EcosystemSecurity {
               .split("")
               .map((c) => c.charCodeAt(0))
           ),
-          { name: "ECDH", namedCurve: "P-256" },
+          { name: "X25519" },
           true,
           []
         );
@@ -203,9 +203,9 @@ export class EcosystemSecurity {
         this.identityKeyPair = { publicKey, privateKey };
         publicKeyBase64 = identity.publicKey;
       } else {
-        // 3. Generate new P-256 pair
+        // 3. Generate new X25519 pair
         const keyPair = (await crypto.subtle.generateKey(
-          { name: "ECDH", namedCurve: "P-256" },
+          { name: "X25519" },
           true,
           ["deriveKey", "deriveBits"]
         )) as CryptoKeyPair;
@@ -234,7 +234,7 @@ export class EcosystemSecurity {
           name: "e2e_connect",
           publicKey: publicKeyBase64,
           wrappedKey: wrappedPrivateKey,
-          algorithm: "P-256",
+          algorithm: "X25519",
         });
 
         this.identityKeyPair = keyPair;
