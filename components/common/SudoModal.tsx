@@ -53,6 +53,19 @@ export default function SudoModal({
     const [isDetecting, setIsDetecting] = useState(true);
     const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
 
+    const handleSuccessWithSync = useCallback(async () => {
+        if (user?.$id) {
+            try {
+                // Sudo Hook: Ensure E2E Identity is created and published upon successful MasterPass unlock
+                console.log("Synchronizing Identity...");
+                await ecosystemSecurity.ensureE2EIdentity(user.$id);
+            } catch (e) {
+                console.error("Failed to sync identity on unlock", e);
+            }
+        }
+        onSuccess();
+    }, [user?.$id, onSuccess]);
+
     const handlePasswordVerify = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!password || !user?.$id) return;
@@ -70,7 +83,7 @@ export default function SudoModal({
             const success = await ecosystemSecurity.unlock(password, entry);
             if (success) {
                 toast.success("Identity Verified");
-                onSuccess();
+                handleSuccessWithSync();
             } else {
                 toast.error("Incorrect Master Password");
             }
@@ -88,7 +101,7 @@ export default function SudoModal({
             const success = await ecosystemSecurity.unlockWithPin(pin);
             if (success) {
                 toast.success("Unlocked with PIN");
-                onSuccess();
+                handleSuccessWithSync();
             } else {
                 toast.error("Incorrect PIN");
                 setPin("");
@@ -130,7 +143,7 @@ export default function SudoModal({
             await ecosystemSecurity.importMasterKey(rawMek);
 
             toast.success("MasterPass Initialized");
-            onSuccess();
+            handleSuccessWithSync();
         } catch (_e: unknown) {
             console.error(_e);
             toast.error("Initialization failed");
@@ -146,14 +159,14 @@ export default function SudoModal({
             const success = await unlockWithPasskey(user.$id);
             if (success && isOpen) {
                 toast.success("Verified via Passkey");
-                onSuccess();
+                handleSuccessWithSync();
             }
         } catch (e) {
             console.error("Passkey verification failed or cancelled", e);
         } finally {
             setPasskeyLoading(false);
         }
-    }, [user?.$id, isOpen, onSuccess]);
+    }, [user?.$id, isOpen, handleSuccessWithSync]);
 
     // Check if user has passkey and PIN set up
     useEffect(() => {
@@ -214,12 +227,12 @@ export default function SudoModal({
                 isOpen={true}
                 onClose={() => {
                     setShowPasskeyIncentive(false);
-                    onSuccess();
+                    handleSuccessWithSync();
                 }}
                 userId={user.$id}
                 onSuccess={() => {
                     setShowPasskeyIncentive(false);
-                    onSuccess();
+                    handleSuccessWithSync();
                 }}
                 trustUnlocked={true}
             />
