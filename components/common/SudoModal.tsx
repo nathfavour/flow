@@ -392,10 +392,10 @@ export default function SudoModal({
                     fontFamily: 'var(--font-space-grotesk)',
                     color: 'white'
                 }}>
-                    Security Check
+                    {user?.name || "User"}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', mt: 1 }}>
-                    Please verify your identity to continue in Flow
+                    Security verification required
                 </Typography>
             </DialogTitle>
 
@@ -477,11 +477,6 @@ export default function SudoModal({
                             <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600, letterSpacing: '0.1em' }}>
                                 {passkeyLoading ? "AUTHENTICATING..." : "PREPARING SECURITY CHECK..."}
                             </Typography>
-                            {passkeyLoading && (
-                                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', mt: 1, display: 'block' }}>
-                                    Please confirm on your device
-                                </Typography>
-                            )}
                         </Box>
                     </Stack>
                 ) : mode === "pin" ? (
@@ -550,20 +545,6 @@ export default function SudoModal({
                     </Stack>
                 ) : mode === "initialize" ? (
                     <Stack spacing={3} sx={{ mt: 2 }}>
-                        <Box sx={{
-                            p: 2,
-                            borderRadius: '16px',
-                            bgcolor: alpha('#FF9500', 0.1),
-                            border: '1px solid rgba(255, 149, 0, 0.2)',
-                        }}>
-                            <Typography variant="body2" sx={{ color: '#FF9500', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <KeyRound size={16} /> Setup Required
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', mt: 0.5, display: 'block' }}>
-                                You need to create a MasterPass to secure your Flow workspace.
-                            </Typography>
-                        </Box>
-
                         <form onSubmit={handleInitialize}>
                             <Stack spacing={2.5}>
                                 <Box>
@@ -627,8 +608,8 @@ export default function SudoModal({
                         <Box
                             onClick={handlePasskeyVerify}
                             sx={{
-                                width: 100,
-                                height: 100,
+                                width: 72,
+                                height: 72,
                                 borderRadius: '50%',
                                 border: '2px dashed',
                                 borderColor: passkeyLoading ? '#00F0FF' : 'rgba(255, 255, 255, 0.2)',
@@ -646,9 +627,9 @@ export default function SudoModal({
                             }}
                         >
                             {passkeyLoading ? (
-                                <CircularProgress size={40} sx={{ color: '#00F0FF' }} />
+                                <CircularProgress size={32} sx={{ color: '#00F0FF' }} />
                             ) : (
-                                <Fingerprint size={48} color="rgba(255, 255, 255, 0.4)" />
+                                <Fingerprint size={32} color="rgba(255, 255, 255, 0.4)" />
                             )}
                         </Box>
 
@@ -739,6 +720,7 @@ export default function SudoModal({
                                 </Button>
                             </Stack>
                         </form>
+
 
                         {(hasPasskey || hasPin) && (
                             <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
