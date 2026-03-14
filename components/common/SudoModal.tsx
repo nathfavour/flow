@@ -69,16 +69,15 @@ export default function SudoModal({
                 console.log("Synchronizing Identity...");
                 await ecosystemSecurity.ensureE2EIdentity(user.$id);
                 
+                if (intent === "reset") {
+                    onSuccess();
+                    return;
+                }
+
                 // Passkey Incentive
                 const entries = await AppwriteService.listKeychainEntries(user.$id);
                 const hasPasskey = entries.some((e: any) => e.type === 'passkey');
                 
-                if (intent === "reset") {
-                    const callbackUrl = encodeURIComponent(window.location.href);
-                    window.location.href = `https://vault.kylrix.space/masterpass/reset?callbackUrl=${callbackUrl}`;
-                    return;
-                }
-
                 if (!hasPasskey) {
                     const lastSkip = localStorage.getItem(`passkey_skip_${user.$id}`);
                     const sevenDays = 7 * 24 * 60 * 60 * 1000;
@@ -252,12 +251,12 @@ export default function SudoModal({
                 isOpen={true}
                 onClose={() => {
                     setShowPasskeyIncentive(false);
-                    handleSuccessWithSync();
+                    onSuccess();
                 }}
                 userId={user.$id}
                 onSuccess={() => {
                     setShowPasskeyIncentive(false);
-                    handleSuccessWithSync();
+                    onSuccess();
                 }}
                 trustUnlocked={true}
             />
