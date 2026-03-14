@@ -209,13 +209,13 @@ export default function Sidebar() {
                   py: 1.25,
                   transition: 'all 0.2s ease',
                   '&.Mui-selected': {
-                    backgroundColor: 'rgba(0, 240, 255, 0.1)',
-                    color: '#00F0FF',
+                    backgroundColor: alpha('#6366F1', 0.1),
+                    color: 'var(--color-primary)',
                     '& .MuiListItemIcon-root': {
-                      color: '#00F0FF',
+                      color: 'var(--color-primary)',
                     },
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 240, 255, 0.15)',
+                      backgroundColor: alpha('#6366F1', 0.15),
                     },
                   },
                   '&:hover': {
@@ -226,7 +226,13 @@ export default function Sidebar() {
                 <ListItemIcon
                   sx={{
                     minWidth: 36,
-                    color: pathname === item.href ? '#00F0FF' : '#A1A1AA',
+                    color: pathname === item.href ? 'var(--color-primary)' : '#A1A1AA',
+                  }}
+                >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 36,
+                    color: pathname === item.href ? 'var(--color-primary)' : '#A1A1AA',
                   }}
                 >
                   {item.icon}
@@ -237,7 +243,7 @@ export default function Sidebar() {
                     fontWeight: pathname === item.href ? 900 : 700,
                     fontSize: '0.85rem',
                     letterSpacing: '0.01em',
-                    fontFamily: '"Space Grotesk", sans-serif'
+                    fontFamily: 'var(--font-satoshi)'
                   }}
                 />
               </ListItemButton>
@@ -401,9 +407,9 @@ export default function Sidebar() {
                 borderRadius: 3,
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 '& .MuiLinearProgress-bar': {
-                  backgroundColor: '#00F0FF',
+                  backgroundColor: 'var(--color-electric)',
                   borderRadius: 3,
-                  boxShadow: '0 0 10px rgba(0, 240, 255, 0.5)'
+                  boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)'
                 },
               }}
             />
@@ -411,7 +417,7 @@ export default function Sidebar() {
               <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 600 }}>
                 4.5GB of 10GB
               </Typography>
-              <Typography variant="caption" sx={{ color: '#00F0FF', fontWeight: 800 }}>
+              <Typography variant="caption" sx={{ color: 'var(--color-electric)', fontWeight: 800 }}>
                 45%
               </Typography>
             </Box>

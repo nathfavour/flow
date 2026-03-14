@@ -15,12 +15,41 @@
   --color-surface-2: rgba(255, 255, 255, 0.05);
   --color-titanium: #F2F2F2;
   --color-gunmetal: #A1A1AA;
-  --color-electric: #6366F1;
+  --color-electric: #A855F7;
+  /* Flow Purple */
+  --color-primary: #6366F1;
+  /* Ecosystem Primary */
+
+  /* ASH SHADES (Tapering) */
+  --ash-50: #F8F9FA;
+  --ash-100: #E9ECEF;
+  --ash-200: #DEE2E6;
+  --ash-300: #CED4DA;
+  --ash-400: #ADB5BD;
+  --ash-500: #6C757D;
+  --ash-600: #495057;
+  --ash-700: #343A40;
+  --ash-800: #212529;
+  --ash-900: #121417;
+
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-active: rgba(255, 255, 255, 0.15);
 
   --background: var(--color-void);
   --foreground: var(--color-titanium);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-clash), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Glassmorphism 2.0 */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 html,
