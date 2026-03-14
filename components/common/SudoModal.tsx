@@ -69,6 +69,11 @@ export default function SudoModal({
                 const entries = await AppwriteService.listKeychainEntries(user.$id);
                 const hasPasskey = entries.some((e: any) => e.type === 'passkey');
                 
+                if (intent === "reset") {
+                    setResetStep(2); // Move to second phase of reset
+                    return;
+                }
+
                 if (!hasPasskey) {
                     const lastSkip = localStorage.getItem(`passkey_skip_${user.$id}`);
                     const sevenDays = 7 * 24 * 60 * 60 * 1000;
@@ -82,7 +87,7 @@ export default function SudoModal({
             }
         }
         onSuccess();
-    }, [user?.$id, onSuccess]);
+    }, [user?.$id, onSuccess, intent]);
 
     const handlePasswordVerify = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -258,6 +263,42 @@ export default function SudoModal({
         }
     };
 
+    const handleFinalReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!password || !user?.$id) return;
+        setLoading(true);
+        try {
+            // Master Reset: Replace old key and update entry
+            const mek = await ecosystemSecurity.generateRandomMEK();
+            const salt = crypto.getRandomValues(new Uint8Array(32));
+            const wrappedKey = await ecosystemSecurity.wrapMEK(mek, password, salt);
+            
+            const entries = await AppwriteService.listKeychainEntries(user.$id);
+            const passEntry = entries.find((e: any) => e.type === 'password');
+            
+            if (passEntry) {
+                await AppwriteService.deleteKeychainEntry(passEntry.$id);
+            }
+
+            await AppwriteService.createKeychainEntry({
+                userId: user.$id,
+                type: 'password',
+                wrappedKey,
+                salt: btoa(String.fromCharCode(...salt)),
+                createdAt: new Date().toISOString()
+            });
+
+            const rawMek = await crypto.subtle.exportKey("raw", mek);
+            await ecosystemSecurity.importMasterKey(rawMek);
+            toast.success("MasterPass Reset Successful");
+            onSuccess();
+        } catch (_e) {
+            toast.error("Reset failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (showPasskeyIncentive && user) {
         return (
             <PasskeySetup
@@ -333,7 +374,77 @@ export default function SudoModal({
             </DialogTitle>
 
             <DialogContent sx={{ pb: 4 }}>
-                {isDetecting || passkeyLoading ? (
+                {isResetting && resetStep === 2 ? (
+                    <Stack spacing={3} sx={{ mt: 2 }}>
+                        <Box sx={{
+                            p: 2,
+                            borderRadius: '16px',
+                            bgcolor: alpha('#ef4444', 0.1),
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                        }}>
+                            <Typography variant="body2" sx={{ color: '#ef4444', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <KeyRound size={16} /> RESET MASTERPASS
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', mt: 0.5, display: 'block' }}>
+                                This will replace your current master password. Your encrypted data will remain accessible with the new password.
+                            </Typography>
+                        </Box>
+
+                        <form onSubmit={handleFinalReset}>
+                            <Stack spacing={2.5}>
+                                <Box>
+                                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block' }}>
+                                        ENTER NEW MASTERPASS
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        type="password"
+                                        placeholder="New master password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        autoFocus
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Lock size={18} color="rgba(255, 255, 255, 0.3)" />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '14px',
+                                                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                                                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                                                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                                                '&.Mui-focused fieldset': { borderColor: '#ef4444' },
+                                            },
+                                            '& .MuiInputBase-input': { color: 'white' }
+                                        }}
+                                    />
+                                </Box>
+
+                                <Button
+                                    fullWidth
+                                    type="submit"
+                                    variant="contained"
+                                    disabled={loading || !password || password.length < 8}
+                                    sx={{
+                                        py: 1.5,
+                                        borderRadius: '14px',
+                                        bgcolor: '#ef4444',
+                                        color: '#fff',
+                                        fontWeight: 700,
+                                        '&:hover': {
+                                            bgcolor: alpha('#ef4444', 0.8),
+                                        }
+                                    }}
+                                >
+                                    {loading ? <CircularProgress size={24} color="inherit" /> : "Reset and Update Vault"}
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Stack>
+                ) : isDetecting || passkeyLoading ? (
                     <Stack spacing={3} sx={{ mt: 4, mb: 2, alignItems: 'center' }}>
                         <CircularProgress size={48} sx={{ color: '#00F0FF' }} />
                         <Box sx={{ textAlign: 'center' }}>

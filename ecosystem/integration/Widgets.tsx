@@ -30,15 +30,83 @@ const MiniChat = () => {
     );
 };
 
+import { ecosystemSecurity } from '@/lib/ecosystem/security';
+import { AppwriteService } from '@/lib/appwrite';
+import { useAuth } from '@/context/auth/AuthContext';
+import SudoModal from '@/components/common/SudoModal';
+import { useEffect } from 'react';
+
 const VaultStatus = () => {
+    const { user } = useAuth();
+    const [isInitialized, setIsInitialized] = React.useState<boolean | null>(null);
+    const [isLocked, setIsLocked] = React.useState(true);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [sudoIntent, setSudoIntent] = React.useState<"unlock" | "initialize" | "reset">("unlock");
+
+    useEffect(() => {
+        if (user?.$id) {
+            AppwriteService.hasMasterpass(user.$id).then(setIsInitialized);
+        }
+        setIsLocked(!ecosystemSecurity.status.isUnlocked);
+    }, [user?.$id, ecosystemSecurity.status.isUnlocked]);
+
+    const handleAction = () => {
+        if (isInitialized === false) {
+            setSudoIntent("initialize");
+        } else {
+            setSudoIntent("unlock");
+        }
+        setIsModalOpen(true);
+    };
+
+    if (isInitialized === null) return null;
+
     return (
-        <Paper elevation={0} sx={{ p: 2, borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                <Box sx={{ p: 1, borderRadius: '10px', bgcolor: alpha('#F59E0B', 0.1), color: '#F59E0B' }}><ShieldIcon sx={{ fontSize: 20 }} /></Box>
-                <Typography sx={{ fontWeight: 800, fontSize: '0.875rem', color: 'white' }}>Vault Secure</Typography>
-            </Box>
-            <Typography sx={{ fontSize: '0.75rem', color: 'rgba(16, 185, 129, 0.8)', fontWeight: 800 }}>✓ LOCKED & MONITORED</Typography>
-        </Paper>
+        <>
+            <Paper 
+                elevation={0} 
+                onClick={handleAction}
+                sx={{ 
+                    p: 2, 
+                    borderRadius: '16px', 
+                    bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    cursor: 'pointer',
+                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box sx={{ p: 1, borderRadius: '10px', bgcolor: alpha('#F59E0B', 0.1), color: '#F59E0B' }}><ShieldIcon sx={{ fontSize: 20 }} /></Box>
+                        <Typography sx={{ fontWeight: 800, fontSize: '0.875rem', color: 'white' }}>
+                            {isInitialized === false ? 'Setup Vault' : (isLocked ? 'Vault Locked' : 'Vault Active')}
+                        </Typography>
+                    </Box>
+                    <Typography sx={{ 
+                        fontSize: '0.625rem', 
+                        color: isInitialized === false ? '#F59E0B' : (isLocked ? '#ef4444' : '#10b981'), 
+                        fontWeight: 900,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em'
+                    }}>
+                        {isInitialized === false ? 'Action Required' : (isLocked ? 'LOCKED' : 'SECURE')}
+                    </Typography>
+                </Box>
+                <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600 }}>
+                    {isInitialized === false ? 'Initialize MasterPass to secure your Flow' : (isLocked ? 'Tap to unlock your ecosystem security' : 'Identity verified & monitoring active')}
+                </Typography>
+            </Paper>
+
+            <SudoModal 
+                isOpen={isModalOpen}
+                intent={sudoIntent}
+                onSuccess={() => {
+                    setIsModalOpen(false);
+                    if (user?.$id) AppwriteService.hasMasterpass(user.$id).then(setIsInitialized);
+                }}
+                onCancel={() => setIsModalOpen(false)}
+            />
+        </>
     );
 };
 
