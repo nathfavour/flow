@@ -16,6 +16,7 @@ import { alpha } from "@mui/material/styles";
 import { startRegistration } from "@simplewebauthn/browser";
 import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";

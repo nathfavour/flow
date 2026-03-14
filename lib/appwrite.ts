@@ -27,6 +27,28 @@ export const APPWRITE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.VAULT;
 export const APPWRITE_COLLECTION_KEYCHAIN_ID = APPWRITE_CONFIG.TABLES.VAULT.KEYCHAIN;
 
 export class AppwriteService {
+    static async hasMasterpass(userId: string): Promise<boolean> {
+        try {
+            const FLOW_DB = APPWRITE_CONFIG.DATABASES.FLOW;
+            const USERS_TABLE = 'users';
+
+            const res = await tablesDB.listRows<any>({
+                databaseId: FLOW_DB,
+                tableId: USERS_TABLE,
+                queries: [Query.equal("userId", userId)]
+            });
+
+            if (res.total > 0 && res.rows[0].hasMasterpass) {
+                return true;
+            }
+            const entries = await this.listKeychainEntries(userId);
+            return entries.some(e => e.type === 'password');
+        } catch (_e: unknown) {
+            console.error('hasMasterpass error', _e);
+            return false;
+        }
+    }
+
     static async listKeychainEntries(userId: string): Promise<any[]> {
         try {
             const res = await tablesDB.listRows<any>({
