@@ -64,12 +64,13 @@ export default function SudoModal({
                 console.log("Synchronizing Identity...");
                 await ecosystemSecurity.ensureE2EIdentity(user.$id);
                 
-                // Incentive: If user doesn't have a passkey, show incentive (7-day snooze)
+                // Passkey Incentive
                 const entries = await AppwriteService.listKeychainEntries(user.$id);
                 const hasPasskey = entries.some((e: any) => e.type === 'passkey');
                 
                 if (intent === "reset") {
-                    setResetStep(2); // Move to second phase of reset
+                    window.open("https://vault.kylrix.space/masterpass/reset", "_blank");
+                    onCancel();
                     return;
                 }
 
@@ -86,7 +87,7 @@ export default function SudoModal({
             }
         }
         onSuccess();
-    }, [user?.$id, onSuccess, intent]);
+    }, [user, onSuccess, intent, onCancel]);
 
     const handlePasswordVerify = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -218,7 +219,8 @@ export default function SudoModal({
                 }
 
                 if (intent === "reset") {
-                    window.location.href = "https://vault.kylrix.space/masterpass/reset";
+                    window.open("https://vault.kylrix.space/masterpass/reset", "_blank");
+                    onCancel();
                     return;
                 }
 
