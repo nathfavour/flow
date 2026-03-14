@@ -524,7 +524,7 @@ export default function SudoModal({
                                 }
                             }}
                         >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : "Confirm Security Entry"}
+                            {loading ? <CircularProgress size={24} color="inherit" /> : "Verify Identity"}
                         </Button>
 
                         {hasPasskey && mode !== "passkey" && (
@@ -599,15 +599,7 @@ export default function SudoModal({
             </DialogContent>
 
             <DialogActions sx={{ flexDirection: 'column', p: 4, pt: 0, gap: 2 }}>
-                <Button
-                    variant="text"
-                    size="small"
-                    onClick={handleLogout}
-                    startIcon={<LogOut size={14} />}
-                    sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, '&:hover': { color: 'white' } }}
-                >
-                    Logout from Account
-                </Button>
+                {/* No logout here */}
             </DialogActions>
         </Dialog>
     );
