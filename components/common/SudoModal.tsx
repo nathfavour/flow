@@ -69,8 +69,8 @@ export default function SudoModal({
                 const hasPasskey = entries.some((e: any) => e.type === 'passkey');
                 
                 if (intent === "reset") {
-                    window.open("https://vault.kylrix.space/masterpass/reset", "_blank");
-                    onCancel();
+                    const callbackUrl = encodeURIComponent(window.location.href);
+                    window.location.href = `https://vault.kylrix.space/masterpass/reset?callbackUrl=${callbackUrl}`;
                     return;
                 }
 
@@ -87,7 +87,12 @@ export default function SudoModal({
             }
         }
         onSuccess();
-    }, [user, onSuccess, intent, onCancel]);
+    }, [user, onSuccess, intent]);
+
+    const handleRedirectToVaultSetup = useCallback(() => {
+        const callbackUrl = encodeURIComponent(window.location.href);
+        window.location.href = `https://vault.kylrix.space/masterpass?callbackUrl=${callbackUrl}`;
+    }, []);
 
     const handlePasswordVerify = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -99,7 +104,7 @@ export default function SudoModal({
             const entry = entries.find((e: any) => e.type === 'password');
 
             if (!entry) {
-                toast.error("Security profile corrupted");
+                handleRedirectToVaultSetup();
                 return;
             }
 
@@ -138,41 +143,7 @@ export default function SudoModal({
 
     const handleInitialize = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!password || !user?.$id) return;
-
-        setLoading(true);
-        try {
-            // 1. Generate new MEK
-            const mek = await ecosystemSecurity.generateRandomMEK();
-            
-            // 2. Derive salt and wrap MEK
-            const salt = crypto.getRandomValues(new Uint8Array(32));
-            const wrappedKey = await ecosystemSecurity.wrapMEK(mek, password, salt);
-            
-            // 3. Save to Appwrite
-            await AppwriteService.createKeychainEntry({
-                userId: user.$id,
-                type: 'password',
-                wrappedKey,
-                salt: btoa(String.fromCharCode(...salt)),
-                createdAt: new Date().toISOString()
-            });
-
-            // 4. Update user flag in database
-            await AppwriteService.setMasterpassFlag(user.$id, user.email || '');
-
-            // 5. Unlock locally
-            const rawMek = await crypto.subtle.exportKey("raw", mek);
-            await ecosystemSecurity.importMasterKey(rawMek);
-
-            toast.success("MasterPass Initialized");
-            handleSuccessWithSync();
-        } catch (_e: unknown) {
-            console.error(_e);
-            toast.error("Initialization failed");
-        } finally {
-            setLoading(false);
-        }
+        handleRedirectToVaultSetup();
     };
 
     const handlePasskeyVerify = useCallback(async () => {
@@ -212,21 +183,21 @@ export default function SudoModal({
                         toast.error("MasterPass is already setup. Use reset if needed.");
                         setMode("password");
                     } else {
-                        setMode("initialize");
+                        handleRedirectToVaultSetup();
                     }
                     setIsDetecting(false);
                     return;
                 }
 
                 if (intent === "reset") {
-                    window.open("https://vault.kylrix.space/masterpass/reset", "_blank");
-                    onCancel();
+                    const callbackUrl = encodeURIComponent(window.location.href);
+                    window.location.href = `https://vault.kylrix.space/masterpass/reset?callbackUrl=${callbackUrl}`;
                     return;
                 }
 
                 // Enforce Master Password setup if missing
                 if (!passwordPresent && isOpen) {
-                    setMode("initialize");
+                    handleRedirectToVaultSetup();
                     setIsDetecting(false);
                     return;
                 }
@@ -251,7 +222,7 @@ export default function SudoModal({
             setPasskeyLoading(false);
             setIsDetecting(true);
         }
-    }, [isOpen, user?.$id, intent]);
+    }, [isOpen, user?.$id, intent, handleRedirectToVaultSetup]);
 
     useEffect(() => {
         if (isOpen && mode === "passkey" && hasPasskey && !passkeyLoading) {
@@ -819,7 +790,10 @@ export default function SudoModal({
                                 fullWidth
                                 variant="text"
                                 size="small"
-                                onClick={() => window.open("https://vault.kylrix.space/masterpass/reset", "_blank")}
+                                onClick={() => {
+                                    const callbackUrl = encodeURIComponent(window.location.href);
+                                    window.location.href = `https://vault.kylrix.space/masterpass/reset?callbackUrl=${callbackUrl}`;
+                                }}
                                 sx={{ color: 'error.main', '&:hover': { bgcolor: alpha('#ef4444', 0.1) }, mt: 2 }}
                             >
                                 Reset Master Password
