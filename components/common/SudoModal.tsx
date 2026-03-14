@@ -328,7 +328,7 @@ export default function SudoModal({
                             border: '3px solid #0a0a0a',
                             zIndex: 1
                         }}>
-                            <Shield size={14} strokeWidth={3} />
+                            <Lock size={14} strokeWidth={3} />
                         </Box>
                     </Box>
                 </Box>
@@ -342,8 +342,8 @@ export default function SudoModal({
                 }}>
                     {user?.name || "User"}
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.4)', mt: 1, fontFamily: 'var(--font-satoshi)' }}>
-                    Security verification required
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.4)', mt: 1, fontFamily: 'var(--font-satoshi)', fontWeight: 600 }}>
+                    Enter MasterPass to continue
                 </Typography>
             </DialogTitle>
 
