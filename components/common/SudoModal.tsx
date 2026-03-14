@@ -219,9 +219,7 @@ export default function SudoModal({
                 }
 
                 if (intent === "reset") {
-                    setIsResetting(true);
-                    setMode(passkeyPresent ? "passkey" : "password"); // Use passkey if available for reset
-                    setIsDetecting(false);
+                    window.location.href = "https://vault.kylrix.space/masterpass/reset";
                     return;
                 }
 
@@ -253,7 +251,7 @@ export default function SudoModal({
             setPasskeyLoading(false);
             setIsDetecting(true);
         }
-    }, [isOpen, user, handlePasskeyVerify, onCancel, router]);
+    }, [isOpen, user?.$id, intent, onCancel, router]);
 
     const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.replace(/\D/g, '').slice(0, 4);
@@ -760,7 +758,7 @@ export default function SudoModal({
                             </Box>
                         )}
 
-                        {hasPasskey && (
+                        {hasPasskey && mode !== "passkey" && (
                             <Button
                                 fullWidth
                                 variant="text"
@@ -772,7 +770,7 @@ export default function SudoModal({
                             </Button>
                         )}
 
-                        {hasPin && (
+                        {hasPin && mode !== "pin" && (
                             <Button
                                 fullWidth
                                 variant="text"
