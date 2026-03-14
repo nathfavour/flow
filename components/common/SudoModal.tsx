@@ -34,12 +34,14 @@ interface SudoModalProps {
     isOpen: boolean;
     onSuccess: () => void;
     onCancel: () => void;
+    intent?: "unlock" | "initialize" | "reset";
 }
 
 export default function SudoModal({
     isOpen,
     onSuccess,
     onCancel,
+    intent,
 }: SudoModalProps) {
     const { user } = useAuth();
     const router = useRouter();
@@ -52,6 +54,9 @@ export default function SudoModal({
     const [mode, setMode] = useState<"passkey" | "password" | "pin" | "initialize" | null>(null);
     const [isDetecting, setIsDetecting] = useState(true);
     const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
+    const [resetStep, setResetStep] = useState(1);
+    const [otp, setOtp] = useState("");
 
     const handleSuccessWithSync = useCallback(async () => {
         if (user?.$id) {
@@ -59,6 +64,19 @@ export default function SudoModal({
                 // Sudo Hook: Ensure E2E Identity is created and published upon successful MasterPass unlock
                 console.log("Synchronizing Identity...");
                 await ecosystemSecurity.ensureE2EIdentity(user.$id);
+                
+                // Incentive: If user doesn't have a passkey, show incentive (7-day snooze)
+                const entries = await AppwriteService.listKeychainEntries(user.$id);
+                const hasPasskey = entries.some((e: any) => e.type === 'passkey');
+                
+                if (!hasPasskey) {
+                    const lastSkip = localStorage.getItem(`passkey_skip_${user.$id}`);
+                    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+                    if (!lastSkip || (Date.now() - parseInt(lastSkip)) > sevenDays) {
+                        setShowPasskeyIncentive(true);
+                        return; // Don't call onSuccess yet, PasskeySetup will handle it
+                    }
+                }
             } catch (e) {
                 console.error("Failed to sync identity on unlock", e);
             }
@@ -182,6 +200,25 @@ export default function SudoModal({
                 
                 setHasPasskey(passkeyPresent);
                 setHasPin(pinPresent);
+
+                // Intent Logic: Setup vs Unlock
+                if (intent === "initialize") {
+                    if (passwordPresent) {
+                        toast.error("MasterPass is already setup. Use reset if needed.");
+                        setMode("password");
+                    } else {
+                        setMode("initialize");
+                    }
+                    setIsDetecting(false);
+                    return;
+                }
+
+                if (intent === "reset") {
+                    setIsResetting(true);
+                    setMode(passkeyPresent ? "passkey" : "password"); // Use passkey if available for reset
+                    setIsDetecting(false);
+                    return;
+                }
 
                 // Enforce Master Password setup if missing
                 if (!passwordPresent && isOpen) {

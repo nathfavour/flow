@@ -624,7 +624,8 @@ export class EcosystemSecurity {
     return {
       isUnlocked: this.isUnlocked,
       hasKey: !!this.masterKey,
-      hasIdentity: !!this.identityKeyPair
+      hasIdentity: !!this.identityKeyPair,
+      isInitialized: false // Default, will be updated by components or a check
     };
   }
 }

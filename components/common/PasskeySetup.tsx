@@ -55,6 +55,15 @@ export function PasskeySetup({
   const [verifyingPassword, setVerifyingPassword] = useState(false);
 
   const verifyMasterPassword = async () => {
+    // Enforcement: Check if master password exists before allowing verification/passkey setup
+    const masterpassSet = await AppwriteService.hasMasterpass(userId);
+    if (!masterpassSet) {
+      toast.error("You must set a master password before adding a passkey.");
+      router.push("/settings"); // Flow uses /settings for security
+      onClose();
+      return false;
+    }
+
     if (!masterPassword.trim()) {
       toast.error("Please enter your master password.");
       return false;
@@ -202,6 +211,9 @@ export function PasskeySetup({
   };
 
   const handleClose = () => {
+    if (userId) {
+      localStorage.setItem(`passkey_skip_${userId}`, Date.now().toString());
+    }
     resetDialog();
     onClose();
   };
