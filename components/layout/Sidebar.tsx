@@ -229,12 +229,6 @@ export default function Sidebar() {
                     color: pathname === item.href ? 'var(--color-primary)' : '#A1A1AA',
                   }}
                 >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 36,
-                    color: pathname === item.href ? 'var(--color-primary)' : '#A1A1AA',
-                  }}
-                >
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
