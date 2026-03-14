@@ -232,7 +232,6 @@ export default function SudoModal({
 
                 if (passkeyPresent) {
                     setMode("passkey");
-                    handlePasskeyVerify();
                 } else if (pinPresent) {
                     setMode("pin");
                 } else {
@@ -251,7 +250,13 @@ export default function SudoModal({
             setPasskeyLoading(false);
             setIsDetecting(true);
         }
-    }, [isOpen, user?.$id, intent, onCancel, router]);
+    }, [isOpen, user?.$id, intent]);
+
+    useEffect(() => {
+        if (isOpen && mode === "passkey" && hasPasskey && !passkeyLoading) {
+            handlePasskeyVerify();
+        }
+    }, [isOpen, mode, hasPasskey, handlePasskeyVerify]);
 
     const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.replace(/\D/g, '').slice(0, 4);
@@ -348,15 +353,38 @@ export default function SudoModal({
                     <X size={20} />
                 </IconButton>
 
-                <Box sx={{
-                    display: 'inline-flex',
-                    p: 1.5,
-                    borderRadius: '16px',
-                    bgcolor: alpha('#00F0FF', 0.1),
-                    color: '#00F0FF',
-                    mb: 2
-                }}>
-                    <Shield size={32} />
+                <Box sx={{ position: 'relative', mb: 2, display: 'inline-flex' }}>
+                    <Box 
+                        component="img" 
+                        src="/logo.jpg" 
+                        alt="App Logo" 
+                        sx={{ 
+                            width: 64, 
+                            height: 64, 
+                            borderRadius: '16px',
+                            objectFit: 'cover',
+                            border: '2px solid rgba(255, 255, 255, 0.1)',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+                        }} 
+                    />
+                    <Box sx={{
+                        position: 'absolute',
+                        bottom: -8,
+                        right: -8,
+                        width: 32,
+                        height: 32,
+                        borderRadius: '10px',
+                        bgcolor: '#00F0FF',
+                        color: '#000',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 240, 255, 0.4)',
+                        border: '3px solid rgba(10, 10, 10, 1)',
+                        zIndex: 1
+                    }}>
+                        <Lock size={16} strokeWidth={3} />
+                    </Box>
                 </Box>
                 <Typography variant="h5" sx={{
                     fontWeight: 900,
@@ -599,8 +627,8 @@ export default function SudoModal({
                         <Box
                             onClick={handlePasskeyVerify}
                             sx={{
-                                width: 80,
-                                height: 80,
+                                width: 100,
+                                height: 100,
                                 borderRadius: '50%',
                                 border: '2px dashed',
                                 borderColor: passkeyLoading ? '#00F0FF' : 'rgba(255, 255, 255, 0.2)',
@@ -612,49 +640,21 @@ export default function SudoModal({
                                 animation: passkeyLoading ? 'pulse 2s infinite' : 'none',
                                 '&:hover': {
                                     borderColor: '#00F0FF',
-                                    bgcolor: alpha('#00F0FF', 0.05)
-                                }
-                            }}
-                        >
-                            <Fingerprint size={40} color={passkeyLoading ? '#00F0FF' : 'rgba(255, 255, 255, 0.4)'} />
-                        </Box>
-
-                        <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
-                                Use Face ID / Touch ID
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-                                Authenticate with your device security
-                            </Typography>
-                        </Box>
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            onClick={handlePasskeyVerify}
-                            disabled={passkeyLoading}
-                            sx={{
-                                py: 1.5,
-                                borderRadius: '14px',
-                                bgcolor: '#00F0FF',
-                                color: '#000',
-                                fontWeight: 700,
-                                '&:hover': {
-                                    bgcolor: alpha('#00F0FF', 0.8),
-                                },
-                                '&.Mui-disabled': {
-                                    bgcolor: alpha('#00F0FF', 0.1),
-                                    color: 'rgba(255, 255, 255, 0.3)'
+                                    bgcolor: alpha('#00F0FF', 0.05),
+                                    transform: 'scale(1.05)'
                                 }
                             }}
                         >
                             {passkeyLoading ? (
-                                <Stack direction="row" spacing={1} alignItems="center">
-                                    <CircularProgress size={20} color="inherit" />
-                                    <span>Waiting for Passkey...</span>
-                                </Stack>
-                            ) : "Verify with Passkey"}
-                        </Button>
+                                <CircularProgress size={40} sx={{ color: '#00F0FF' }} />
+                            ) : (
+                                <Fingerprint size={48} color="rgba(255, 255, 255, 0.4)" />
+                            )}
+                        </Box>
+
+                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                            {passkeyLoading ? "CONFIRM ON DEVICE" : "TAP TO VERIFY"}
+                        </Typography>
 
                         <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
                             <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
@@ -664,7 +664,7 @@ export default function SudoModal({
                                 px: 2,
                                 mx: 'auto',
                                 display: 'table',
-                                color: 'rgba(255, 255, 255, 0.3)',
+                                color: 'rgba(255, 255, 255, 0.2)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.1em'
                             }}>
