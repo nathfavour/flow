@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import ThemeRegistry from "@/theme/ThemeProvider";
-import { AuthProvider } from "@/context/auth/AuthContext";
+import { AppProviders } from "@/providers";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -49,11 +48,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeRegistry>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </ThemeRegistry>
+        <AppProviders>
+          {children}
+        </AppProviders>
       </body>
     </html>
   );
