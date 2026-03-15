@@ -58,7 +58,7 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
                     {!isRead && <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'var(--color-primary)', boxShadow: `0 0 10px ${alpha('#6366F1', 0.5)}` }} />}
                 </TableCell>
                 <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                  {new Date(sub.submittedAt).toLocaleString()}
+                  {new Date(sub.$createdAt).toLocaleString()}
                 </TableCell>
                 {headers.map((h: string) => (
                   <TableCell key={h} sx={{ color: '#F2F2F2', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
@@ -165,7 +165,7 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
     const exportableRows = submissions.map(sub => {
         const payloadData = parsePayload(sub.payload);
         return {
-            timestamp: sub.submittedAt,
+            timestamp: sub.$createdAt,
             ...payloadData
         };
     });
