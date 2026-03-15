@@ -10,6 +10,17 @@ import { NotificationProvider } from '@/context/NotificationContext';
 import { SudoProvider } from '@/context/SudoContext';
 import { SubscriptionProvider } from '@/context/subscription/SubscriptionContext';
 import { useEcosystemIntents } from '@/hooks/useEcosystemIntents';
+import { useEcosystemNode } from '@/hooks/useEcosystemNode';
+
+interface AppProvidersProps {
+  children: React.ReactNode;
+}
+
+function EcosystemHandler() {
+  useEcosystemIntents();
+  useEcosystemNode('flow');
+  return null;
+}
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (
@@ -31,32 +42,5 @@ export function AppProviders({ children }: AppProvidersProps) {
         </AuthProvider>
       </ThemeProvider>
     </SubscriptionProvider>
-  );
-}
-
-function EcosystemHandler() {
-  useEcosystemIntents();
-  useEcosystemNode('flow');
-  return null;
-}
-
-export function AppProviders({ children }: AppProvidersProps) {
-  return (
-    <ThemeProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <LayoutProvider>
-            <OriginProvider>
-              <SudoProvider>
-                <TaskProvider>
-                  <EcosystemHandler />
-                  {children}
-                </TaskProvider>
-              </SudoProvider>
-            </OriginProvider>
-          </LayoutProvider>
-        </NotificationProvider>
-      </AuthProvider>
-    </ThemeProvider>
   );
 }

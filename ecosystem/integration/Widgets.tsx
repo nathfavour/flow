@@ -47,8 +47,12 @@ const VaultStatus = () => {
         if (user?.$id) {
             AppwriteService.hasMasterpass(user.$id).then(setIsInitialized);
         }
+    }, [user?.$id]);
+
+    useEffect(() => {
         setIsLocked(!ecosystemSecurity.status.isUnlocked);
-    }, [user?.$id, ecosystemSecurity.status.isUnlocked]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ecosystemSecurity.status.isUnlocked]);
 
     const handleAction = () => {
         if (isInitialized === false) {
