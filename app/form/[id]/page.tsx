@@ -37,22 +37,18 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
     useEffect(() => {
         const fetchForm = async () => {
             try {
-                // First ensure we have the ID from params
                 if (!resolvedParams?.id) {
                     setError('Invalid form reference.');
                     return;
                 }
 
-                // Attempt to fetch
                 const data = await FormsService.getForm(resolvedParams.id);
                 
-                // If found, check status and settings
                 let settings: any = {};
                 try {
                     settings = JSON.parse(data.settings || '{}');
                 } catch (e) {}
 
-                // Owner/Admin check - if the user is the owner, bypass published status for preview
                 const currentUser = await FormsService.getCurrentUser();
                 const isOwner = currentUser?.$id === data.userId;
 
@@ -68,7 +64,6 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
 
                 setForm(data);
             } catch (err: any) {
-                console.error("Public fetch error detailed:", err);
                 setError(err.message || 'Form not found or inaccessible.');
             } finally {
                 setLoading(false);
@@ -94,52 +89,8 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
         setSubmitting(true);
         setError(null);
 
-        // Client-side validation
-        let schema: any[] = [];
-        try { schema = JSON.parse(form?.schema || '[]'); } catch (e) {}
-
-        for (const field of schema) {
-            const value = formData[field.id];
-            const v = field.validation;
-            if (!v) continue;
-
-            if (field.type === 'text' || field.type === 'textarea') {
-                if (v.minLength && String(value || '').length < Number(v.minLength)) {
-                    setError(`"${field.label}" must be at least ${v.minLength} characters.`);
-                    setSubmitting(false);
-                    return;
-                }
-                if (v.maxLength && String(value || '').length > Number(v.maxLength)) {
-                    setError(`"${field.label}" must be at most ${v.maxLength} characters.`);
-                    setSubmitting(false);
-                    return;
-                }
-                if (v.pattern) {
-                    try {
-                        const regex = new RegExp(v.pattern);
-                        if (!regex.test(String(value || ''))) {
-                            setError(`"${field.label}" does not match the required pattern.`);
-                            setSubmitting(false);
-                            return;
-                        }
-                    } catch (e) {}
-                }
-            } else if (field.type === 'number' && value !== undefined && value !== '') {
-                if (v.min && Number(value) < Number(v.min)) {
-                    setError(`"${field.label}" must be at least ${v.min}.`);
-                    setSubmitting(false);
-                    return;
-                }
-                if (v.max && Number(value) > Number(v.max)) {
-                    setError(`"${field.label}" must be at most ${v.max}.`);
-                    setSubmitting(false);
-                    return;
-                }
-            }
-        }
-
         try {
-            await FormsService.submitForm(params.id, JSON.stringify(formData));
+            await FormsService.submitForm(resolvedParams.id, JSON.stringify(formData));
             setSubmitted(true);
         } catch (err: any) {
             setError(err.message || 'Failed to submit form. Please try again.');
@@ -269,7 +220,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
 
                         {submitted ? (
                             <Paper sx={{ p: 8, textAlign: 'center', borderRadius: '32px', bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)' }}>
-                                <SuccessIcon sx={{ fontSize: 80, color: 'var(--color-primary)', mb: 4, filter: 'drop-shadow(0 0 20px rgba(99, 102, 241, 0.3))' }} />
+                                <SuccessIcon sx={{ fontSize: 80, color: '#6366F1', mb: 4, filter: 'drop-shadow(0 0 20px rgba(99, 102, 241, 0.3))' }} />
                                 <Typography variant="h4" sx={{ mb: 2, fontWeight: 900 }}>Transmission Complete</Typography>
                                 <Typography variant="body1" sx={{ color: 'text.secondary', mb: 5, fontWeight: 500 }}>
                                     Your data has been securely injected into the Kylrix Flow nexus.
@@ -319,11 +270,11 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                                         py: 2,
                                         borderRadius: '16px',
                                         fontWeight: 900,
-                                        bgcolor: 'var(--color-primary)',
-                                        color: 'black',
-                                        boxShadow: `0 12px 40px ${alpha('#6366F1', 0.25)}`,
+                                        bgcolor: '#6366F1',
+                                        color: 'white',
+                                        boxShadow: '0 12px 40px rgba(99, 102, 241, 0.25)',
                                         fontSize: '1.1rem',
-                                        '&:hover': { bgcolor: alpha('#6366F1', 0.9) }
+                                        '&:hover': { bgcolor: '#5254e0' }
                                     }}
                                 >
                                     {submitting ? 'Transmitting...' : 'Commit Response'}

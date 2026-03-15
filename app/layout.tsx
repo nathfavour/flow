@@ -1,8 +1,8 @@
-import React, { Suspense } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { AppProviders } from "@/providers";
+import ThemeRegistry from "@/theme/ThemeProvider";
+import { AuthProvider } from "@/context/auth/AuthContext";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -11,20 +11,28 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kylrix Flow - Smart Task Navigation",
-  description: "The future of task orchestration inside the Kylrix ecosystem.",
-  keywords: ["task management", "productivity", "kylrix", "todo", "project management"],
-  authors: [{ name: "Kylrix Team" }],
-  openGraph: {
-    title: "Kylrix Flow - Smart Task Navigation",
-    description: "The future of task orchestration inside the Kylrix ecosystem.",
-    type: "website",
-    images: ['/og-image.png'],
-  },
+  title: "Kylrix Flow — Intelligence Layer Orchestration",
+  description: "Secure, premium AI-driven orchestration and workflow management.",
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: "Kylrix Flow",
+    description: "Intelligence Layer Orchestration",
+    images: ['/og-image.png'],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og-image.png'],
   }
+};
+
+export const viewport: Viewport = {
+  themeColor: '#000000',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -34,21 +42,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={mono.variable}>
-
       <head>
-        {/* THE KYLRIX SIGNATURE TRIO: Satoshi (Body) & Clash Display (Headings) */}
         <link 
           href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700,900&display=swap" 
           rel="stylesheet" 
         />
-        <link rel="preconnect" href="https://fra.cloud.appwrite.io" />
       </head>
       <body>
-        <AppProviders>
-          <Suspense fallback={null}>
-              {children}
-          </Suspense>
-        </AppProviders>
+        <ThemeRegistry>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeRegistry>
       </body>
     </html>
   );

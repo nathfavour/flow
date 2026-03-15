@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import { 
     Box, 
     Typography, 
@@ -39,7 +39,8 @@ import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
 import SubmissionViewer from '@/components/forms/SubmissionViewer';
 
-export default function FormDetailsPage({ params }: { params: { formId: string } }) {
+export default function FormDetailsPage({ params }: { params: Promise<{ formId: string }> }) {
+    const resolvedParams = use(params);
     const [form, setForm] = useState<Forms | null>(null);
     const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState(0);
@@ -49,7 +50,7 @@ export default function FormDetailsPage({ params }: { params: { formId: string }
     const fetchForm = async () => {
         setLoading(true);
         try {
-            const data = await FormsService.getForm(params.formId);
+            const data = await FormsService.getForm(resolvedParams.formId);
             setForm(data);
         } catch (err) {
             console.error("Failed to fetch form", err);
@@ -60,10 +61,10 @@ export default function FormDetailsPage({ params }: { params: { formId: string }
 
     useEffect(() => {
         fetchForm();
-    }, [params.formId]);
+    }, [resolvedParams.formId]);
 
     const handleCopyLink = () => {
-        const url = `${window.location.origin}/form/${params.formId}`;
+        const url = `${window.location.origin}/form/${resolvedParams.formId}`;
         navigator.clipboard.writeText(url);
         setSnackbar("Public link copied to clipboard.");
     };
