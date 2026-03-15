@@ -171,9 +171,9 @@ export default function FormsDashboard() {
 
     return (
         <Box sx={{ animation: 'fadeIn 0.4s ease-out', p: { xs: 2, md: 4 } }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3, mb: 4 }}>
                 <Box>
-                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: '-0.04em', fontFamily: 'var(--font-clash)' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: '-0.04em', fontFamily: 'var(--font-clash)', fontSize: { xs: '2rem', md: '3rem' } }}>
                         Forms
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
@@ -182,25 +182,37 @@ export default function FormsDashboard() {
                 </Box>
                 <Button 
                     variant="contained" 
+                    fullWidth={false}
                     startIcon={<AddIcon />}
                     onClick={handleCreate}
-                    sx={{ borderRadius: 2, px: 3, fontWeight: 800, bgcolor: 'var(--color-primary)', color: 'black', '&:hover': { bgcolor: alpha('#6366F1', 0.9) } }}
+                    sx={{ 
+                        borderRadius: 2, 
+                        px: 3, 
+                        py: 1.5,
+                        fontWeight: 800, 
+                        bgcolor: 'var(--color-primary)', 
+                        color: 'black', 
+                        width: { xs: '100%', sm: 'auto' },
+                        '&:hover': { bgcolor: alpha('#6366F1', 0.9) } 
+                    }}
                 >
                     Create Form
                 </Button>
             </Box>
 
-            <Box sx={{ borderBottom: 1, borderColor: 'rgba(255,255,255,0.05)', mb: 4 }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'rgba(255,255,255,0.05)', mb: 4, mx: { xs: -2, md: 0 }, px: { xs: 2, md: 0 }, overflowX: 'auto' }}>
                 <Tabs 
                     value={tabValue} 
                     onChange={(_, v) => setTabValue(v)}
+                    variant="scrollable"
+                    scrollButtons="auto"
                     sx={{
-                        '& .MuiTab-root': { fontWeight: 800, fontSize: '0.85rem', color: 'text.secondary', px: 3 },
+                        '& .MuiTab-root': { fontWeight: 800, fontSize: '0.85rem', color: 'text.secondary', px: { xs: 2, md: 3 }, minHeight: 48 },
                         '& .Mui-selected': { color: 'var(--color-primary) !important' },
                         '& .MuiTabs-indicator': { bgcolor: 'var(--color-primary)', height: 3, borderRadius: '3px 3px 0 0' }
                     }}
                 >
-                    <Tab label="Active Forms" icon={<FormIcon sx={{ fontSize: 18 }} />} iconPosition="start" />
+                    <Tab label="Active" icon={<FormIcon sx={{ fontSize: 18 }} />} iconPosition="start" />
                     <Tab label="Templates" icon={<TemplateIcon sx={{ fontSize: 18 }} />} iconPosition="start" />
                     <Tab 
                         label={
@@ -219,10 +231,10 @@ export default function FormsDashboard() {
                 </Tabs>
             </Box>
 
-            {loading ? (
+            {loading && forms.length === 0 ? (
                 <Grid container spacing={3}>
                     {[1, 2, 3].map((i) => (
-                        <Grid item xs={12} md={6} lg={4} key={i}>
+                        <Grid item xs={12} sm={6} lg={4} key={i}>
                             <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -245,12 +257,12 @@ export default function FormsDashboard() {
                     ))}
                 </Grid>
             ) : (
-                <Box>
+                <Box sx={{ pb: { xs: 10, md: 0 } }}>
                     {/* ACTIVE FORMS TAB */}
                     {tabValue === 0 && (
                         <>
                             {filteredForms.length === 0 ? (
-                                <Paper sx={{ py: 12, textAlign: 'center', bgcolor: 'rgba(255, 255, 255, 0.01)', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
+                                <Paper sx={{ py: 12, px: 2, textAlign: 'center', bgcolor: 'rgba(255, 255, 255, 0.01)', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
                                     <FormIcon sx={{ fontSize: 64, opacity: 0.1, mb: 2 }} />
                                     <Typography variant="h6" sx={{ opacity: 0.6, mb: 4 }}>No active forms.</Typography>
                                     <Button variant="outlined" startIcon={<AddIcon />} onClick={handleCreate}>Start Building</Button>
@@ -258,15 +270,15 @@ export default function FormsDashboard() {
                             ) : (
                                 <Grid container spacing={3}>
                                     {filteredForms.map((form) => (
-                                        <Grid item xs={12} md={6} lg={4} key={form.$id}>
+                                        <Grid item xs={12} sm={6} lg={4} key={form.$id}>
                                             <Fade in={true}>
-                                                <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
-                                                    <CardContent sx={{ p: 3 }}>
+                                                <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3, height: '100%' }}>
+                                                    <CardContent sx={{ p: { xs: 2.5, sm: 3 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                            <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap', gap: 1 }}>
                                                                 <Chip label={form.status.toUpperCase()} size="small" sx={{ fontSize: '10px', fontWeight: 900, color: getStatusColor(form.status), border: `1px solid ${getStatusColor(form.status)}20`, bgcolor: 'transparent' }} />
                                                                 {DraftsService.hasDraft(form.$id) && (
-                                                                    <Chip label="UNSYNCED DRAFT" size="small" sx={{ fontSize: '10px', fontWeight: 900, bgcolor: alpha('#FFB020', 0.1), color: '#FFB020', border: '1px solid rgba(255, 176, 32, 0.2)' }} />
+                                                                    <Chip label="UNSYNCED" size="small" sx={{ fontSize: '10px', fontWeight: 900, bgcolor: alpha('#FFB020', 0.1), color: '#FFB020', border: '1px solid rgba(255, 176, 32, 0.2)' }} />
                                                                 )}
                                                             </Stack>
                                                             <IconButton 
@@ -277,10 +289,11 @@ export default function FormsDashboard() {
                                                                 <MoreIcon />
                                                             </IconButton>
                                                         </Box>
-                                                        <Typography variant="h6" sx={{ fontWeight: 800, mb: 1, color: '#F2F2F2' }}>{form.title}</Typography>
+                                                        <Typography variant="h6" sx={{ fontWeight: 800, mb: 1, color: '#F2F2F2', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>{form.title}</Typography>
                                                         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4, minHeight: '3em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                                                             {form.description || 'No description provided.'}
                                                         </Typography>
+                                                        <Box sx={{ flexGrow: 1 }} />
                                                         <Divider sx={{ opacity: 0.05, mb: 3 }} />
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
                                                             <Tooltip title="View Submissions"><IconButton component={Link} href={`/forms/${form.$id}`} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}><ViewIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>

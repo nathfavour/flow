@@ -97,11 +97,10 @@ export default function Sidebar() {
   const mainNav: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboardIcon size={20} />, href: '/dashboard' },
     { id: 'tasks', label: 'Tasks', icon: <CheckSquareIcon size={20} />, href: '/tasks' },
-    { id: 'calendar', label: 'Calendar', icon: <CalendarIcon size={20} />, href: '/calendar' },
+    { id: 'forms', label: 'Forms', icon: <FormIcon size={20} />, href: '/forms' },
   ];
 
   const toolsNav: NavItem[] = [
-    { id: 'forms', label: 'Forms', icon: <FormIcon size={20} />, href: '/forms' },
     { id: 'events', label: 'Events', icon: <ZapIcon size={20} />, href: '/events' },
     { id: 'focus', label: 'Focus Mode', icon: <FlameIcon size={20} />, href: '/focus' },
     { id: 'settings', label: 'Settings', icon: <SettingsIcon size={20} />, href: '/settings' },
