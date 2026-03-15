@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
     Box, 
     Typography, 
@@ -11,7 +11,6 @@ import {
     Chip, 
     IconButton, 
     Tooltip,
-    CircularProgress,
     Fade,
     Paper,
     Divider,
@@ -48,10 +47,11 @@ import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
 
 export default function FormsDashboard() {
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [forms, setForms] = useState<Forms[]>([]);
     const [offlineDrafts, setOfflineDrafts] = useState<FormDraft[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [tabValue, setTabValue] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
@@ -62,15 +62,23 @@ export default function FormsDashboard() {
     const [menuAnchor, setMenuAnchor] = useState<{ element: HTMLElement, form: Forms } | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-    const fetchForms = async (showLoading = true) => {
-        if (!user) return;
+    const fetchForms = useCallback(async (showLoading = true) => {
+        console.log('[Forms] fetchForms called', { showLoading, userId: user?.$id });
+        if (!user) {
+            console.log('[Forms] No user, skipping fetch');
+            return;
+        }
         
-        // Only show loading if we don't have forms yet, to prevent blinking
-        const shouldShowLoading = showLoading && forms.length === 0;
-        if (shouldShowLoading) setLoading(true);
+        // Show loading if requested and we have no data
+        if (showLoading && forms.length === 0) {
+            console.log('[Forms] Setting loading true');
+            setLoading(true);
+        }
         
         try {
+            console.log('[Forms] Requesting forms from service...');
             const response = await FormsService.listUserForms(user.$id); 
+            console.log('[Forms] Received response', { count: response.rows.length });
             
             // Deduplicate by ID to prevent blinking
             const uniqueForms = response.rows.filter((form, index, self) =>
@@ -89,11 +97,13 @@ export default function FormsDashboard() {
             setOfflineDrafts(draftList.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
 
         } catch (err) {
-            console.error("Failed to fetch forms", err);
+            console.error("[Forms] Failed to fetch forms", err);
         } finally {
-            if (shouldShowLoading) setLoading(false);
+            setLoading(false);
+            setIsInitialLoad(false);
+            console.log('[Forms] Setting loading false');
         }
-    };
+    }, [user, forms.length]);
 
     const handleCreate = () => {
         setSelectedForm(null);
@@ -108,7 +118,6 @@ export default function FormsDashboard() {
     };
 
     const handleEditDraft = (draft: FormDraft) => {
-        // If the draft corresponds to an existing form, load that form too
         const existingForm = forms.find(f => f.$id === draft.id);
         setSelectedForm(existingForm || null);
         setSelectedDraft(draft);
@@ -153,10 +162,18 @@ export default function FormsDashboard() {
     };
 
     useEffect(() => {
-        if (user) {
+        console.log('[Forms] user?.$id changed', user?.$id);
+        if (user?.$id) {
             fetchForms();
+        } else if (!isAuthLoading) {
+             setIsInitialLoad(false);
         }
-    }, [user]);
+    }, [user?.$id, isAuthLoading, fetchForms]);
+
+    useEffect(() => {
+        console.log('[Forms] Component mounted');
+        return () => console.log('[Forms] Component unmounted');
+    }, []);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -167,7 +184,7 @@ export default function FormsDashboard() {
         }
     };
 
-    const filteredForms = forms; // Active forms (published/draft on server)
+    const filteredForms = forms;
 
     return (
         <Box sx={{ animation: 'fadeIn 0.4s ease-out', p: { xs: 2, md: 4 } }}>
@@ -231,7 +248,7 @@ export default function FormsDashboard() {
                 </Tabs>
             </Box>
 
-            {loading && forms.length === 0 ? (
+            {(loading || (isInitialLoad && isAuthLoading)) && forms.length === 0 ? (
                 <Grid container spacing={3}>
                     {[1, 2, 3].map((i) => (
                         <Grid item xs={12} sm={6} lg={4} key={i}>
@@ -411,14 +428,14 @@ export default function FormsDashboard() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MuiMenuItem onClick={() => { handleMenuClose(); handleEdit(menuAnchor!.form); }}>
+                <MuiMenuItem onClick={() => { handleMenuClose(); if (menuAnchor) handleEdit(menuAnchor.form); }}>
                     <EditIcon fontSize="small" /> Edit Schema
                 </MuiMenuItem>
-                <MuiMenuItem onClick={() => handleOpenSettings(menuAnchor!.form)}>
+                <MuiMenuItem onClick={() => { if (menuAnchor) handleOpenSettings(menuAnchor.form); }}>
                     <SettingsIcon fontSize="small" /> Settings
                 </MuiMenuItem>
                 <Divider sx={{ opacity: 0.05, my: 0.5 }} />
-                <MuiMenuItem onClick={() => { handleMenuClose(); handleDelete(menuAnchor!.form.$id); }} sx={{ color: '#D14343 !important' }}>
+                <MuiMenuItem onClick={() => { handleMenuClose(); if (menuAnchor) handleDelete(menuAnchor.form.$id); }} sx={{ color: '#D14343 !important' }}>
                     <DeleteIcon fontSize="small" /> Delete Form
                 </MuiMenuItem>
             </Menu>

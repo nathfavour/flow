@@ -121,8 +121,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const checkSession = useCallback(async (retryCount = 0) => {
+    console.log('[Auth] checkSession called', { retryCount });
     try {
       const currentUser = await account.get();
+      console.log('[Auth] account.get() success', currentUser.$id);
       setUser(currentUser);
       setShowAuthOverlay(false);
       if (authWindow) {
@@ -169,11 +171,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
     } finally {
-      if (retryCount === 0 || !user) {
+      if (retryCount === 0) {
         setIsLoading(false);
       }
     }
-  }, [authWindow, pathname, user, attemptSilentAuth]);
+  }, [authWindow, pathname, attemptSilentAuth]);
 
   // Update ref
   useEffect(() => {

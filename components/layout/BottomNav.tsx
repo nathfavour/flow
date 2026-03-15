@@ -124,6 +124,11 @@ export default function BottomNav() {
             value="forms"
             label="Forms"
             icon={<FormIcon />}
+            sx={{
+              '&.Mui-selected': {
+                color: '#6366F1 !important',
+              },
+            }}
           />
           <BottomNavigationAction
             value="focus"

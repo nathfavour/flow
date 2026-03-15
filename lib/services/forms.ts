@@ -1,7 +1,7 @@
 import { tablesDB, getCurrentUser } from "../appwrite";
 import { APPWRITE_CONFIG } from "../config";
 import { ID, Query, Permission, Role } from "appwrite";
-import { Forms, FormSubmissions, ActivityLogCreate } from "../../generated/appwrite/types";
+import { Forms, FormSubmissions, ActivityLogCreate, FormSubmissionsStatus } from "../../generated/appwrite/types";
 
 const DATABASE_ID = APPWRITE_CONFIG.DATABASES.FLOW;
 const FORMS_TABLE = APPWRITE_CONFIG.TABLES.FLOW.FORMS;
@@ -193,64 +193,12 @@ export const FormsService = {
                 formId,
                 submitterId: submitterId || null,
                 payload,
-                submittedAt: new Date().toISOString(),
-                read: false,
-                flagged: false
+                status: FormSubmissionsStatus.UNREAD,
+                metadata: JSON.stringify({
+                    submittedAt: new Date().toISOString(),
+                })
             },
             submissionPermissions
-        );
-    },
-
-    /**
-     * Delete a form
-     */
-    async deleteForm(formId: string) {
-        return await tablesDB.deleteRow(
-            DATABASE_ID,
-            FORMS_TABLE,
-            formId
-        );
-    },
-
-    /**
-     * Submit form data
-     */
-    async submitForm(formId: string, payload: string, userId?: string) {
-        const form = await this.getForm(formId);
-        
-        if (form.status !== 'published') {
-            throw new Error('This form is not accepting submissions.');
-        }
-
-        const permissions = [
-            Permission.read(Role.user(form.userId)), // Form owner can read
-            Permission.update(Role.user(form.userId)),
-            Permission.delete(Role.user(form.userId)),
-        ];
-
-        let submitterId = userId;
-        if (!submitterId) {
-            const currentUser = await getCurrentUser();
-            if (currentUser?.$id) {
-                submitterId = currentUser.$id;
-            }
-        }
-
-        if (submitterId) {
-            permissions.push(Permission.read(Role.user(submitterId)));
-        }
-
-        const submission = await tablesDB.createRow<FormSubmissions>(
-            DATABASE_ID,
-            SUBMISSIONS_TABLE,
-            ID.unique(),
-            {
-                formId,
-                submitterId: submitterId || null,
-                payload,
-                submittedAt: new Date().toISOString(),
-            },
-            permissions
         );
 
         // Notify form owner via ActivityLog
@@ -285,6 +233,17 @@ export const FormsService = {
     },
 
     /**
+     * Delete a form
+     */
+    async deleteForm(formId: string) {
+        return await tablesDB.deleteRow(
+            DATABASE_ID,
+            FORMS_TABLE,
+            formId
+        );
+    },
+
+    /**
      * List submissions for a specific form
      */
     async listSubmissions(formId: string) {
@@ -293,7 +252,7 @@ export const FormsService = {
             tableId: SUBMISSIONS_TABLE,
             queries: [
                 Query.equal('formId', formId),
-                Query.orderDesc('submittedAt')
+                Query.orderDesc('$createdAt')
             ]
         });
     },

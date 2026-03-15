@@ -431,6 +431,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
   // Initial Data Fetch
   useEffect(() => {
     const fetchData = async () => {
+      console.log('[TaskContext] fetchData triggered');
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
         
@@ -438,10 +439,11 @@ export function TaskProvider({ children }: TaskProviderProps) {
         let userId = 'guest';
         try {
           const user = await account.get();
+          console.log('[TaskContext] User found', user.$id);
           userId = user.$id;
           dispatch({ type: 'SET_USER', payload: userId });
         } catch (error: unknown) {
-          console.warn('Not logged in', error);
+          console.warn('[TaskContext] Not logged in', error);
         }
 
         // Fetch tasks and calendars
