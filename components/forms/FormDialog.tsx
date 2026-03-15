@@ -28,7 +28,6 @@ import {
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
-  DragHandle as DragIcon,
   Close as CloseIcon,
   List as ListIcon,
   RadioButtonChecked as RadioIcon,
@@ -44,7 +43,7 @@ import {
   ArrowDownward as DownIcon,
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
-import { DraftsService } from '@/lib/services/drafts';
+import { DraftsService, FormDraft } from '@/lib/services/drafts';
 import { Forms } from '@/generated/appwrite/types';
 import { useAuth } from '@/context/auth/AuthContext';
 
@@ -52,6 +51,7 @@ interface FormDialogProps {
   open: boolean;
   onClose: () => void;
   form?: Forms | null;
+  initialDraft?: FormDraft;
   onSaved: () => void;
 }
 
@@ -65,7 +65,7 @@ const FIELD_TYPES = [
   { value: 'checkbox', label: 'Multiple Choice (Checkbox)', icon: <CheckIcon fontSize="small" /> },
 ];
 
-export default function FormDialog({ open, onClose, form, onSaved }: FormDialogProps) {
+export default function FormDialog({ open, onClose, form, initialDraft, onSaved }: FormDialogProps) {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const [title, setTitle] = useState('');
@@ -84,46 +84,55 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
         return;
     }
 
-    const formId = form?.$id || 'new';
-    const savedDraft = DraftsService.getDraft(formId);
-    
-    if (savedDraft) {
-        setTitle(savedDraft.title || '');
-        setDescription(savedDraft.description || '');
-        setStatus(savedDraft.status as any || 'draft');
-        setFields(savedDraft.fields || []);
+    if (initialDraft) {
+        setTitle(initialDraft.title || '');
+        setDescription(initialDraft.description || '');
+        setStatus(initialDraft.status as any || 'draft');
+        setFields(initialDraft.fields || []);
         setIsRestored(true);
         setHasUnsavedChanges(true);
-    } else if (form) {
-      setTitle(form.title);
-      setDescription(form.description || '');
-      setStatus(form.status as any);
-      try {
-        setFields(JSON.parse(form.schema || '[]'));
-      } catch (e) {
-        setFields([]);
-      }
-      setIsRestored(false);
-      setHasUnsavedChanges(false);
     } else {
-      setTitle('');
-      setDescription('');
-      setStatus('draft');
-      setFields([{ id: 'field_1', label: 'Full Name', type: 'text', required: true }]);
-      setIsRestored(false);
-      setHasUnsavedChanges(false);
+        const formId = form?.$id || 'new';
+        const savedDraft = DraftsService.getDraft(formId);
+        
+        if (savedDraft) {
+            setTitle(savedDraft.title || '');
+            setDescription(savedDraft.description || '');
+            setStatus(savedDraft.status as any || 'draft');
+            setFields(savedDraft.fields || []);
+            setIsRestored(true);
+            setHasUnsavedChanges(true);
+        } else if (form) {
+            setTitle(form.title);
+            setDescription(form.description || '');
+            setStatus(form.status as any);
+            try {
+                setFields(JSON.parse(form.schema || '[]'));
+            } catch (e) {
+                setFields([]);
+            }
+            setIsRestored(false);
+            setHasUnsavedChanges(false);
+        } else {
+            setTitle('');
+            setDescription('');
+            setStatus('draft');
+            setFields([{ id: 'field_1', label: 'Full Name', type: 'text', required: true }]);
+            setIsRestored(false);
+            setHasUnsavedChanges(false);
+        }
     }
     
     setTimeout(() => {
         initialLoadRef.current = false;
     }, 100);
-  }, [form, open]);
+  }, [form, open, initialDraft]);
 
   // Autosave logic
   useEffect(() => {
     if (initialLoadRef.current || !open) return;
 
-    const formId = form?.$id || 'new';
+    const formId = form?.$id || (initialDraft ? initialDraft.id : 'new');
     const currentFieldsStr = JSON.stringify(fields);
     
     // Check if actually different from the original database version (if not a restored draft)
@@ -144,7 +153,7 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
         DraftsService.clearDraft(formId);
         setHasUnsavedChanges(false);
     }
-  }, [title, description, status, fields, open, form]);
+  }, [title, description, status, fields, open, form, initialDraft, isRestored]);
 
   const fieldsEndRef = useRef<HTMLDivElement>(null);
 
@@ -196,7 +205,7 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
   };
 
   const discardDraft = () => {
-    const formId = form?.$id || 'new';
+    const formId = form?.$id || (initialDraft ? initialDraft.id : 'new');
     DraftsService.clearDraft(formId);
     if (form) {
       setTitle(form.title);
@@ -243,13 +252,12 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
 
       if (form) {
         await FormsService.updateForm(form.$id, formData);
-        // Explicitly clear the draft for this ID
         DraftsService.clearDraft(form.$id);
       } else {
         const newForm = await FormsService.createForm(user.$id, formData);
-        // If we were editing a 'new' draft, clear it
+        // Clear both possible draft source IDs
         DraftsService.clearDraft('new');
-        // Ensure the newly created ID doesn't have a stray draft
+        if (initialDraft) DraftsService.clearDraft(initialDraft.id);
         DraftsService.clearDraft(newForm.$id);
       }
       setHasUnsavedChanges(false);

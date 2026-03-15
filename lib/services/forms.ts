@@ -1,11 +1,13 @@
-import { tablesDB } from "../appwrite";
+import { tablesDB, getCurrentUser } from "../appwrite";
 import { APPWRITE_CONFIG } from "../config";
 import { ID, Query, Permission, Role } from "appwrite";
-import { Forms, FormSubmissions } from "../../generated/appwrite/types";
+import { Forms, FormSubmissions, ActivityLogCreate } from "../../generated/appwrite/types";
 
 const DATABASE_ID = APPWRITE_CONFIG.DATABASES.FLOW;
 const FORMS_TABLE = APPWRITE_CONFIG.TABLES.FLOW.FORMS;
 const SUBMISSIONS_TABLE = APPWRITE_CONFIG.TABLES.FLOW.FORM_SUBMISSIONS;
+const ACTIVITY_LOG_TABLE = "activityLog";
+const NOTE_DATABASE_ID = APPWRITE_CONFIG.NOTE_DATABASE_ID;
 
 export const FormsService = {
     /**
@@ -107,22 +109,60 @@ export const FormsService = {
             Permission.delete(Role.user(form.userId)),
         ];
 
-        if (userId) {
-            permissions.push(Permission.read(Role.user(userId)));
+        let submitterId = userId;
+        if (!submitterId) {
+            const currentUser = await getCurrentUser();
+            if (currentUser?.$id) {
+                submitterId = currentUser.$id;
+            }
         }
 
-        return await tablesDB.createRow<FormSubmissions>(
+        if (submitterId) {
+            permissions.push(Permission.read(Role.user(submitterId)));
+        }
+
+        const submission = await tablesDB.createRow<FormSubmissions>(
             DATABASE_ID,
             SUBMISSIONS_TABLE,
             ID.unique(),
             {
                 formId,
-                userId: userId || null,
+                submitterId: submitterId || null,
                 payload,
                 submittedAt: new Date().toISOString(),
             },
             permissions
         );
+
+        // Notify form owner via ActivityLog
+        try {
+            await tablesDB.createRow<ActivityLogCreate>(
+                NOTE_DATABASE_ID,
+                ACTIVITY_LOG_TABLE,
+                ID.unique(),
+                {
+                    userId: form.userId,
+                    action: `New submission received for form: ${form.title}`,
+                    targetType: 'form',
+                    targetId: formId,
+                    timestamp: new Date().toISOString(),
+                    details: JSON.stringify({
+                        read: false,
+                        submissionId: submission.$id,
+                        formTitle: form.title
+                    })
+                },
+                [
+                    Permission.read(Role.user(form.userId)),
+                    Permission.update(Role.user(form.userId)),
+                    Permission.delete(Role.user(form.userId)),
+                ]
+            );
+        } catch (e) {
+            console.error('Failed to create notification activity log', e);
+        }
+
+        return submission;
     },
 
     /**
