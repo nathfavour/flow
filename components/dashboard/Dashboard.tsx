@@ -112,13 +112,13 @@ function StatCard({ title, value, subtitle, icon, color, onClick }: StatCardProp
             width: 48,
             height: 48,
             borderRadius: '16px',
-            backgroundColor: alpha(color, 0.1),
+            backgroundColor: alpha(resolvedColor, 0.1),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: color,
-            border: `1px solid ${alpha(color, 0.2)}`,
-            boxShadow: `0 0 15px ${alpha(color, 0.1)}`
+            color: resolvedColor,
+            border: `1px solid ${alpha(resolvedColor, 0.2)}`,
+            boxShadow: `0 0 15px ${alpha(resolvedColor, 0.1)}`
           }}
         >
           {React.cloneElement(icon as React.ReactElement<any>, { size: 24, strokeWidth: 1.5 })}
