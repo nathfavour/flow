@@ -238,10 +238,10 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <Box sx={{ animation: 'fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+    <Box sx={{ animation: 'fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)', px: { xs: 1, sm: 0 } }}>
       {/* Header / Dashboard Section */}
-      <Box sx={{ mb: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 3 }}>
-        <Box>
+      <Box sx={{ mb: { xs: 4, md: 6 }, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-end' }, gap: 3 }}>
+        <Box sx={{ width: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
             <Box sx={{ p: 0.8, borderRadius: '10px', bgcolor: alpha('#6366F1', 0.1), color: 'var(--color-brand)', border: '1px solid ' + alpha('#6366F1', 0.2) }}>
               <LayoutDashboard size={18} strokeWidth={2.5} />
@@ -255,21 +255,22 @@ export default function Dashboard() {
             letterSpacing: '-0.04em', 
             fontWeight: 800, 
             fontFamily: 'var(--font-clash)',
-            fontSize: { xs: '2.5rem', md: '3.5rem' },
+            fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' },
+            lineHeight: 1.1,
             background: 'linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}>
             Dashboard.
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.85rem' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+            <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
                 {format(now, 'EEEE, MMMM d, yyyy').toUpperCase()}
             </Typography>
-            <Divider orientation="vertical" flexItem sx={{ height: 16, mx: 1, opacity: 0.1, bgcolor: 'white' }} />
+            <Divider orientation="vertical" flexItem sx={{ height: 16, mx: 1, opacity: 0.1, bgcolor: 'white', display: { xs: 'none', sm: 'block' } }} />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Activity size={14} color="var(--color-app)" />
-              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
                   <span style={{ color: 'var(--color-app)', fontWeight: 800 }}>{todayTasks.length} tasks</span> due today
               </Typography>
             </Box>
@@ -284,8 +285,9 @@ export default function Dashboard() {
             bgcolor: 'var(--color-brand)',
             color: 'white',
             fontWeight: 800,
-            px: 4,
-            py: 1.8,
+            px: { xs: 3, sm: 4 },
+            py: { xs: 1.5, sm: 1.8 },
+            width: { xs: '100%', sm: 'auto' },
             fontFamily: 'var(--font-clash)',
             letterSpacing: '0.05em',
             boxShadow: '0 8px 32px ' + alpha('#6366F1', 0.25),
@@ -302,7 +304,7 @@ export default function Dashboard() {
       </Box>
 
       {/* Primary Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 6 }}>
+      <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 4, md: 6 } }}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title="DUE TODAY"
@@ -353,7 +355,7 @@ export default function Dashboard() {
             <Paper
               className="glass-panel"
               sx={{
-                p: 4,
+                p: { xs: 2.5, sm: 4 },
                 mb: 4,
                 borderRadius: '32px',
                 backgroundColor: 'rgba(255, 77, 77, 0.02)',
@@ -373,11 +375,11 @@ export default function Dashboard() {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, position: 'relative', zIndex: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
                   <Box sx={{ p: 1, borderRadius: '12px', bgcolor: 'rgba(255, 77, 77, 0.1)', color: '#FF4D4D' }}>
                     <Flag size={20} strokeWidth={2.5} />
                   </Box>
-                  <Typography variant="h4" sx={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
+                  <Typography variant="h4" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' }, fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
                     Urgent
                   </Typography>
                   <Chip 
@@ -390,7 +392,8 @@ export default function Dashboard() {
                       borderRadius: '8px',
                       fontSize: '0.65rem',
                       height: '20px',
-                      fontFamily: 'var(--font-clash)'
+                      fontFamily: 'var(--font-clash)',
+                      display: { xs: 'none', xsm: 'flex' } // Handle very small screens if chip is too wide
                     }} 
                   />
                 </Box>
@@ -410,17 +413,17 @@ export default function Dashboard() {
           <Paper
             className="glass-panel"
             sx={{
-              p: 4,
+              p: { xs: 2.5, sm: 4 },
               borderRadius: '32px',
               backgroundColor: 'rgba(10, 10, 10, 0.3)',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
                 <Box sx={{ p: 1, borderRadius: '12px', bgcolor: alpha('#6366F1', 0.05), color: 'var(--color-brand)' }}>
                   <Calendar size={20} strokeWidth={2.5} />
                 </Box>
-                <Typography variant="h4" sx={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
+                <Typography variant="h4" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' }, fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
                     Active Tasks
                 </Typography>
                 <Chip 
@@ -434,7 +437,8 @@ export default function Dashboard() {
                     fontSize: '0.65rem',
                     height: '20px',
                     border: '1px solid ' + alpha('#6366F1', 0.1),
-                    fontFamily: 'var(--font-clash)'
+                    fontFamily: 'var(--font-clash)',
+                    display: { xs: 'none', sm: 'flex' }
                   }} 
                 />
               </Box>
@@ -451,7 +455,8 @@ export default function Dashboard() {
                   '&:hover': { color: 'var(--color-brand)', bgcolor: 'transparent' } 
                 }}
               >
-                VIEW ALL
+                {/* Hide text on very small screens */}
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>VIEW ALL</Box>
               </Button>
             </Box>
             {todayTasks.length > 0 ? (
