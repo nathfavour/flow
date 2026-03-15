@@ -42,14 +42,15 @@ export default function SudoGuard({ children }: SudoGuardProps) {
                     sx={{
                         p: 2,
                         borderRadius: "16px",
-                        bgcolor: alpha("#00F0FF", 0.1),
-                        color: "#00F0FF",
+                        bgcolor: alpha("#6366F1", 0.1),
+                        color: "var(--color-brand)",
                         mb: 3,
+                        border: '1px solid ' + alpha("#6366F1", 0.2)
                     }}
                 >
                     <Shield size={48} />
                 </Box>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, mb: 1, fontFamily: 'var(--font-clash)' }}>
                     Security Verification
                 </Typography>
                 <Typography
@@ -62,13 +63,14 @@ export default function SudoGuard({ children }: SudoGuardProps) {
                     variant="contained"
                     onClick={() => requestSudo({ onSuccess: () => {} })}
                     sx={{
-                        bgcolor: "#00F0FF",
-                        color: "#000",
-                        fontWeight: 700,
+                        bgcolor: "var(--color-brand)",
+                        color: "#fff",
+                        fontWeight: 800,
                         px: 4,
                         py: 1.5,
-                        borderRadius: "12px",
-                        '&:hover': { bgcolor: alpha("#00F0FF", 0.8) }
+                        borderRadius: "16px",
+                        fontFamily: 'var(--font-clash)',
+                        '&:hover': { bgcolor: alpha("#6366F1", 0.8) }
                     }}
                 >
                     Unlock Flow

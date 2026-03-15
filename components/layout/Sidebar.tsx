@@ -20,19 +20,20 @@ import {
   alpha,
 } from '@mui/material';
 import {
-  DashboardOutlined as LayoutDashboardIcon,
-  CheckCircleOutline as CheckSquareIcon,
-  CalendarMonthOutlined as CalendarIcon,
-  BoltOutlined as ZapIcon,
-  LocalFireDepartmentOutlined as FlameIcon,
-  InboxOutlined as InboxIcon,
-  AccessTimeOutlined as ClockIcon,
-  CheckCircleOutlined as CheckCircle2Icon,
-  KeyboardArrowUp as ChevronUpIcon,
-  KeyboardArrowDown as ChevronDownIcon,
-  SettingsOutlined as SettingsIcon,
-  AssignmentOutlined as FormIcon,
-} from '@mui/icons-material';
+  LayoutDashboard as LayoutDashboardIcon,
+  CheckSquare as CheckSquareIcon,
+  Calendar as CalendarIcon,
+  Zap as ZapIcon,
+  Flame as FlameIcon,
+  Inbox as InboxIcon,
+  Clock as ClockIcon,
+  CheckCircle2 as CheckCircle2Icon,
+  ChevronUp as ChevronUpIcon,
+  ChevronDown as ChevronDownIcon,
+  Settings as SettingsIcon,
+  FileText as FormIcon,
+  Layers as ProjectIcon,
+} from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 
 const DRAWER_WIDTH = 256;
@@ -94,13 +95,16 @@ export default function Sidebar() {
   ).length;
 
   const mainNav: NavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboardIcon sx={{ fontSize: 20 }} />, href: '/dashboard' },
-    { id: 'tasks', label: 'Tasks', icon: <CheckSquareIcon sx={{ fontSize: 20 }} />, href: '/tasks' },
-    { id: 'calendar', label: 'Calendar', icon: <CalendarIcon sx={{ fontSize: 20 }} />, href: '/calendar' },
-    { id: 'forms', label: 'Forms', icon: <FormIcon sx={{ fontSize: 20 }} />, href: '/forms' },
-    { id: 'events', label: 'Events', icon: <ZapIcon sx={{ fontSize: 20 }} />, href: '/events' },
-    { id: 'focus', label: 'Focus Mode', icon: <FlameIcon sx={{ fontSize: 20 }} />, href: '/focus' },
-    { id: 'settings', label: 'Settings', icon: <SettingsIcon sx={{ fontSize: 20 }} />, href: '/settings' },
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboardIcon size={20} />, href: '/dashboard' },
+    { id: 'tasks', label: 'Tasks', icon: <CheckSquareIcon size={20} />, href: '/tasks' },
+    { id: 'calendar', label: 'Calendar', icon: <CalendarIcon size={20} />, href: '/calendar' },
+  ];
+
+  const toolsNav: NavItem[] = [
+    { id: 'forms', label: 'Forms', icon: <FormIcon size={20} />, href: '/forms' },
+    { id: 'events', label: 'Events', icon: <ZapIcon size={20} />, href: '/events' },
+    { id: 'focus', label: 'Focus Mode', icon: <FlameIcon size={20} />, href: '/focus' },
+    { id: 'settings', label: 'Settings', icon: <SettingsIcon size={20} />, href: '/settings' },
   ];
 
   const smartLists: NavItem[] = [
@@ -212,9 +216,9 @@ export default function Sidebar() {
                   transition: 'all 0.2s ease',
                   '&.Mui-selected': {
                     backgroundColor: alpha('#6366F1', 0.1),
-                    color: 'var(--color-primary)',
+                    color: 'var(--color-brand)',
                     '& .MuiListItemIcon-root': {
-                      color: 'var(--color-primary)',
+                      color: 'var(--color-brand)',
                     },
                     '&:hover': {
                       backgroundColor: alpha('#6366F1', 0.15),
@@ -228,7 +232,64 @@ export default function Sidebar() {
                 <ListItemIcon
                   sx={{
                     minWidth: 36,
-                    color: pathname === item.href ? 'var(--color-primary)' : '#A1A1AA',
+                    color: pathname === item.href ? 'var(--color-brand)' : '#A1A1AA',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontWeight: pathname === item.href ? 900 : 700,
+                    fontSize: '0.85rem',
+                    letterSpacing: '0.01em',
+                    fontFamily: 'var(--font-satoshi)'
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+        <Divider sx={{ my: 2, mx: 3, borderColor: 'rgba(255, 255, 255, 0.08)' }} />
+
+        {/* Tools Section */}
+        <Typography
+          variant="overline"
+          sx={{ px: 4, color: 'text.disabled', display: 'block', mt: 1, mb: 1, fontWeight: 800, fontSize: '0.65rem', letterSpacing: '0.15em' }}
+        >
+          TOOLS
+        </Typography>
+        <List dense sx={{ px: 2 }}>
+          {toolsNav.map((item) => (
+            <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
+              <ListItemButton
+                component={Link}
+                href={item.href || '#'}
+                selected={pathname === item.href}
+                sx={{
+                  borderRadius: '12px',
+                  py: 1.25,
+                  transition: 'all 0.2s ease',
+                  '&.Mui-selected': {
+                    backgroundColor: alpha('#A855F7', 0.1),
+                    color: 'var(--color-app)',
+                    '& .MuiListItemIcon-root': {
+                      color: 'var(--color-app)',
+                    },
+                    '&:hover': {
+                      backgroundColor: alpha('#A855F7', 0.15),
+                    },
+                  },
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  }
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 36,
+                    color: pathname === item.href ? 'var(--color-app)' : '#A1A1AA',
                   }}
                 >
                   {item.icon}
@@ -403,7 +464,7 @@ export default function Sidebar() {
                 borderRadius: 3,
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 '& .MuiLinearProgress-bar': {
-                  backgroundColor: 'var(--color-electric)',
+                  backgroundColor: 'var(--color-app)',
                   borderRadius: 3,
                   boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)'
                 },
@@ -413,7 +474,7 @@ export default function Sidebar() {
               <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 600 }}>
                 4.5GB of 10GB
               </Typography>
-              <Typography variant="caption" sx={{ color: 'var(--color-electric)', fontWeight: 800 }}>
+              <Typography variant="caption" sx={{ color: 'var(--color-app)', fontWeight: 800 }}>
                 45%
               </Typography>
             </Box>

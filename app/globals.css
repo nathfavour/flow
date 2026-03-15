@@ -16,9 +16,11 @@
   --color-titanium: #F2F2F2;
   --color-gunmetal: #A1A1AA;
   --color-electric: #A855F7;
-  /* Flow Purple */
+  /* Flow Purple (Secondary) */
   --color-primary: #6366F1;
   /* Ecosystem Primary */
+  --color-brand: var(--color-primary);
+  --color-app: var(--color-electric);
 
   /* ASH SHADES (Tapering) */
   --ash-50: #F8F9FA;
@@ -94,8 +96,8 @@ body {
 
 /* Selection styles */
 ::selection {
-  background-color: rgba(0, 240, 255, 0.2);
-  color: var(--color-electric);
+  background-color: rgba(99, 102, 241, 0.2);
+  color: var(--color-brand);
 }
 
 /* Animation keyframes */
