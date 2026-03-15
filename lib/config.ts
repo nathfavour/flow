@@ -28,7 +28,9 @@ export const APPWRITE_CONFIG = {
     FLOW: {
       TASKS: 'tasks',
       EVENTS: 'events',
-      GUESTS: 'eventGuests'
+      GUESTS: 'eventGuests',
+      FORMS: 'forms',
+      FORM_SUBMISSIONS: 'formSubmissions'
     }
   },
   NOTE_DATABASE_ID: '67ff05a9000296822396',

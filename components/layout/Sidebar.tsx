@@ -31,6 +31,7 @@ import {
   KeyboardArrowUp as ChevronUpIcon,
   KeyboardArrowDown as ChevronDownIcon,
   SettingsOutlined as SettingsIcon,
+  AssignmentOutlined as FormIcon,
 } from '@mui/icons-material';
 import { useTask } from '@/context/TaskContext';
 
@@ -96,6 +97,7 @@ export default function Sidebar() {
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboardIcon sx={{ fontSize: 20 }} />, href: '/dashboard' },
     { id: 'tasks', label: 'Tasks', icon: <CheckSquareIcon sx={{ fontSize: 20 }} />, href: '/tasks' },
     { id: 'calendar', label: 'Calendar', icon: <CalendarIcon sx={{ fontSize: 20 }} />, href: '/calendar' },
+    { id: 'forms', label: 'Forms', icon: <FormIcon sx={{ fontSize: 20 }} />, href: '/forms' },
     { id: 'events', label: 'Events', icon: <ZapIcon sx={{ fontSize: 20 }} />, href: '/events' },
     { id: 'focus', label: 'Focus Mode', icon: <FlameIcon sx={{ fontSize: 20 }} />, href: '/focus' },
     { id: 'settings', label: 'Settings', icon: <SettingsIcon sx={{ fontSize: 20 }} />, href: '/settings' },

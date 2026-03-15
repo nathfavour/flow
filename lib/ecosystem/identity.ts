@@ -37,7 +37,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
             if (error.code === 404) {
                 // Create new global profile
                 const username = user.prefs?.username || `user${user.$id.slice(0, 6)}`;
-                const profilePicId = user.prefs?.profilePicId || null;
+                const avatar = user.prefs?.profilePicId || user.avatar || null;
 
                 const baseData = {
                     username,
@@ -46,6 +46,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     bio: '',
+                    avatar,
                     privacySettings: JSON.stringify({ public: true })
                 };
 
@@ -55,26 +56,17 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                     `delete("user:${user.$id}")`
                 ];
 
-                const avatarFieldCandidates = ['profilePicId', 'avatarFileId', 'avatarUrl'];
-
-                for (const field of avatarFieldCandidates) {
-                    try {
-                        const payload: any = { ...baseData };
-                        if (profilePicId) payload[field] = profilePicId;
-
-                        profile = await tablesDB.createRow({
-                            databaseId: CONNECT_DATABASE_ID,
-                            tableId: CONNECT_COLLECTION_ID_USERS,
-                            rowId: user.$id,
-                            data: payload,
-                            permissions
-                        });
-                        break;
-                    } catch (inner: any) {
-                        const msg = (inner.message || JSON.stringify(inner)).toLowerCase();
-                        if (msg.includes('unknown attribute')) continue;
-                        throw inner;
-                    }
+                try {
+                    profile = await tablesDB.createRow({
+                        databaseId: CONNECT_DATABASE_ID,
+                        tableId: CONNECT_COLLECTION_ID_USERS,
+                        rowId: user.$id,
+                        data: baseData,
+                        permissions
+                    });
+                } catch (inner: any) {
+                    console.error('[Identity] Global profile creation failed:', inner);
+                    throw inner;
                 }
             } else {
                 throw error;
@@ -128,8 +120,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             id: doc.$id,
             title: doc.displayName || doc.username,
             subtitle: `@${doc.username}`,
-            avatar: doc.avatarUrl,
-            profilePicId: doc.avatarFileId || doc.profilePicId,
+            avatar: doc.avatar,
             apps: doc.appsActive || []
         }));
     } catch (error: unknown) {
