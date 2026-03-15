@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import { 
     Box, 
     Typography, 
@@ -25,7 +25,8 @@ import { Send as SendIcon, CheckCircleOutline as SuccessIcon } from '@mui/icons-
 import { FormsService } from '@/lib/services/forms';
 import { Forms } from '@/generated/appwrite/types';
 
-export default function PublicFormPage({ params }: { params: { id: string } }) {
+export default function PublicFormPage({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = use(params);
     const [form, setForm] = useState<Forms | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -37,13 +38,13 @@ export default function PublicFormPage({ params }: { params: { id: string } }) {
         const fetchForm = async () => {
             try {
                 // First ensure we have the ID from params
-                if (!params?.id) {
+                if (!resolvedParams?.id) {
                     setError('Invalid form reference.');
                     return;
                 }
 
                 // Attempt to fetch
-                const data = await FormsService.getForm(params.id);
+                const data = await FormsService.getForm(resolvedParams.id);
                 
                 // If found, check status and settings
                 let settings: any = {};
@@ -74,7 +75,7 @@ export default function PublicFormPage({ params }: { params: { id: string } }) {
             }
         };
         fetchForm();
-    }, [params.id]);
+    }, [resolvedParams.id]);
 
     const handleFieldChange = (fieldId: string, value: any) => {
         setFormData(prev => ({ ...prev, [fieldId]: value }));
