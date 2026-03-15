@@ -23,27 +23,39 @@ import {
   Delete as DeleteIcon,
   Download as DownloadIcon,
   TableRows as CSVIcon,
-  DataObject as JSONIcon
+  DataObject as JSONIcon,
+  MarkEmailRead as ReadIcon,
+  MarkEmailUnread as UnreadIcon,
+  Flag as FlagIcon,
+  FlagOutlined as UnflaggedIcon
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { FormSubmissions } from '@/generated/appwrite/types';
 
-const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue }: any) => (
+const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue, onToggleRead, onToggleFlag }: any) => (
     <TableContainer component={Paper} sx={{ bgcolor: 'transparent', backgroundImage: 'none', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '24px', overflow: 'hidden' }}>
       <Table size="medium">
         <TableHead>
           <TableRow sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)' }}>
+            <TableCell sx={{ width: 50, borderBottom: '1px solid rgba(255,255,255,0.05)' }}></TableCell>
             <TableCell sx={{ fontWeight: 900, color: 'text.secondary', py: 3, borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>TIMESTAMP</TableCell>
             {headers.map((h: string) => (
               <TableCell key={h} sx={{ fontWeight: 900, color: 'text.secondary', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>{h}</TableCell>
             ))}
+            <TableCell sx={{ width: 100, borderBottom: '1px solid rgba(255,255,255,0.05)' }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {submissions.map((sub: any) => {
             const data = parsePayload(sub.payload);
+            const isRead = sub.read || false;
+            const isFlagged = sub.flagged || false;
+
             return (
-              <TableRow key={sub.$id} sx={{ '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.01)' }, transition: 'background-color 0.2s' }}>
+              <TableRow key={sub.$id} sx={{ '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.01)' }, transition: 'background-color 0.2s', opacity: isRead ? 0.7 : 1 }}>
+                <TableCell sx={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    {!isRead && <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'var(--color-primary)', boxShadow: `0 0 10px ${alpha('#6366F1', 0.5)}` }} />}
+                </TableCell>
                 <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                   {new Date(sub.submittedAt).toLocaleString()}
                 </TableCell>
@@ -52,6 +64,20 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
                     {renderValue(data[h])}
                   </TableCell>
                 ))}
+                <TableCell sx={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <Stack direction="row" spacing={1}>
+                        <Tooltip title={isRead ? "Mark as unread" : "Mark as read"}>
+                            <IconButton size="small" onClick={() => onToggleRead(sub.$id, !isRead)} sx={{ color: isRead ? 'rgba(255,255,255,0.2)' : 'var(--color-primary)' }}>
+                                {isRead ? <UnreadIcon fontSize="inherit" /> : <ReadIcon fontSize="inherit" />}
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={isFlagged ? "Remove flag" : "Flag submission"}>
+                            <IconButton size="small" onClick={() => onToggleFlag(sub.$id, !isFlagged)} sx={{ color: isFlagged ? '#FFB020' : 'rgba(255,255,255,0.1)' }}>
+                                {isFlagged ? <FlagIcon fontSize="inherit" /> : <UnflaggedIcon fontSize="inherit" />}
+                            </IconButton>
+                        </Tooltip>
+                    </Stack>
+                </TableCell>
               </TableRow>
             );
           })}
@@ -64,19 +90,39 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
   const [submissions, setSubmissions] = useState<FormSubmissions[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchSubmissions = async () => {
+    try {
+      const res = await FormsService.listSubmissions(formId);
+      setSubmissions(res.rows);
+    } catch (e) {
+      console.error('Failed to fetch submissions', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchSubmissions = async () => {
-      try {
-        const res = await FormsService.listSubmissions(formId);
-        setSubmissions(res.rows);
-      } catch (e) {
-        console.error('Failed to fetch submissions', e);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchSubmissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formId]);
+
+  const handleToggleRead = async (id: string, read: boolean) => {
+    try {
+      await FormsService.updateSubmission(id, { read } as any);
+      setSubmissions(prev => prev.map(s => s.$id === id ? { ...s, read } : s));
+    } catch (e) {
+        console.error("Failed to update read status", e);
+    }
+  };
+
+  const handleToggleFlag = async (id: string, flagged: boolean) => {
+    try {
+      await FormsService.updateSubmission(id, { flagged } as any);
+      setSubmissions(prev => prev.map(s => s.$id === id ? { ...s, flagged } : s));
+    } catch (e) {
+        console.error("Failed to update flagged status", e);
+    }
+  };
 
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress size={24} /></Box>;
 
@@ -178,6 +224,8 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
             headers={headers} 
             parsePayload={parsePayload} 
             renderValue={renderValue} 
+            onToggleRead={handleToggleRead}
+            onToggleFlag={handleToggleFlag}
         />
     </Box>
   );

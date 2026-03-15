@@ -36,14 +36,39 @@ export default function PublicFormPage({ params }: { params: { id: string } }) {
     useEffect(() => {
         const fetchForm = async () => {
             try {
-                const data = await FormsService.getForm(params.id);
-                if (data.status !== 'published') {
-                    setError('This form is not currently accepting submissions.');
-                } else {
-                    setForm(data);
+                // First ensure we have the ID from params
+                if (!params?.id) {
+                    setError('Invalid form reference.');
+                    return;
                 }
+
+                // Attempt to fetch
+                const data = await FormsService.getForm(params.id);
+                
+                // If found, check status and settings
+                let settings: any = {};
+                try {
+                    settings = JSON.parse(data.settings || '{}');
+                } catch (e) {}
+
+                // Owner/Admin check - if the user is the owner, bypass published status for preview
+                const currentUser = await FormsService.getCurrentUser();
+                const isOwner = currentUser?.$id === data.userId;
+
+                if (!isOwner && data.status !== 'published') {
+                    setError('This form is not currently accepting submissions.');
+                    return;
+                }
+
+                if (!isOwner && settings.expiresAt && new Date(settings.expiresAt) < new Date()) {
+                    setError('This form has expired and is no longer accepting responses.');
+                    return;
+                }
+
+                setForm(data);
             } catch (err: any) {
-                setError('Form not found or inaccessible.');
+                console.error("Public fetch error detailed:", err);
+                setError(err.message || 'Form not found or inaccessible.');
             } finally {
                 setLoading(false);
             }

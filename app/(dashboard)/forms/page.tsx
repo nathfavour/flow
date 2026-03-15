@@ -18,7 +18,14 @@ import {
     Stack,
     Tabs,
     Tab,
-    alpha
+    Skeleton,
+    alpha,
+    Menu,
+    MenuItem as MuiMenuItem,
+    Dialog as ConfirmDialog,
+    DialogTitle as ConfirmTitle,
+    DialogContent as ConfirmContent,
+    DialogActions as ConfirmActions
 } from '@mui/material';
 import { 
     Add as AddIcon, 
@@ -29,13 +36,15 @@ import {
     Visibility as ViewIcon,
     MoreVert as MoreIcon,
     AutoAwesome as TemplateIcon,
-    History as HistoryIcon
+    History as HistoryIcon,
+    Settings as SettingsIcon
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';
 import { Forms } from '@/generated/appwrite/types';
 import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
+import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
 
 export default function FormsDashboard() {
@@ -45,12 +54,21 @@ export default function FormsDashboard() {
     const [loading, setLoading] = useState(true);
     const [tabValue, setTabValue] = useState(0);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
     const [selectedForm, setSelectedForm] = useState<Forms | null>(null);
     const [selectedDraft, setSelectedDraft] = useState<FormDraft | null>(null);
+    
+    // UI States
+    const [menuAnchor, setMenuAnchor] = useState<{ element: HTMLElement, form: Forms } | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     const fetchForms = async (showLoading = true) => {
         if (!user) return;
-        if (showLoading) setLoading(true);
+        
+        // Only show loading if we don't have forms yet, to prevent blinking
+        const shouldShowLoading = showLoading && forms.length === 0;
+        if (shouldShowLoading) setLoading(true);
+        
         try {
             const response = await FormsService.listUserForms(user.$id); 
             
@@ -73,7 +91,7 @@ export default function FormsDashboard() {
         } catch (err) {
             console.error("Failed to fetch forms", err);
         } finally {
-            if (showLoading) setLoading(false);
+            if (shouldShowLoading) setLoading(false);
         }
     };
 
@@ -98,13 +116,17 @@ export default function FormsDashboard() {
     };
 
     const handleDelete = async (formId: string) => {
-        if (confirm('Are you sure you want to delete this form? All submissions will be lost.')) {
-            try {
-                await FormsService.deleteForm(formId);
-                fetchForms(false);
-            } catch (err) {
-                console.error("Failed to delete form", err);
-            }
+        setDeleteConfirm(formId);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteConfirm) return;
+        try {
+            await FormsService.deleteForm(deleteConfirm);
+            fetchForms(false);
+            setDeleteConfirm(null);
+        } catch (err) {
+            console.error("Failed to delete form", err);
         }
     };
 
@@ -113,6 +135,21 @@ export default function FormsDashboard() {
             DraftsService.clearDraft(id);
             fetchForms(false);
         }
+    };
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, form: Forms) => {
+        setMenuAnchor({ element: event.currentTarget, form });
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchor(null);
+    };
+
+    const handleOpenSettings = (form: Forms) => {
+        handleMenuClose();
+        setSelectedForm(form);
+        setSelectedDraft(null);
+        setSettingsOpen(true);
     };
 
     useEffect(() => {
@@ -183,9 +220,30 @@ export default function FormsDashboard() {
             </Box>
 
             {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-                    <CircularProgress size={32} />
-                </Box>
+                <Grid container spacing={3}>
+                    {[1, 2, 3].map((i) => (
+                        <Grid item xs={12} md={6} lg={4} key={i}>
+                            <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
+                                <CardContent sx={{ p: 3 }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                                        <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 1, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                        <Skeleton variant="circular" width={24} height={24} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    </Box>
+                                    <Skeleton variant="text" width="80%" height={32} sx={{ mb: 1, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    <Skeleton variant="text" width="100%" height={20} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    <Skeleton variant="text" width="60%" height={20} sx={{ mb: 4, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    <Divider sx={{ opacity: 0.05, mb: 3 }} />
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                        <Box sx={{ flexGrow: 1 }} />
+                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
             ) : (
                 <Box>
                     {/* ACTIVE FORMS TAB */}
@@ -211,7 +269,13 @@ export default function FormsDashboard() {
                                                                     <Chip label="UNSYNCED DRAFT" size="small" sx={{ fontSize: '10px', fontWeight: 900, bgcolor: alpha('#FFB020', 0.1), color: '#FFB020', border: '1px solid rgba(255, 176, 32, 0.2)' }} />
                                                                 )}
                                                             </Stack>
-                                                            <IconButton size="small" sx={{ opacity: 0.4 }}><MoreIcon /></IconButton>
+                                                            <IconButton 
+                                                                size="small" 
+                                                                sx={{ opacity: 0.4 }}
+                                                                onClick={(e) => handleMenuOpen(e, form)}
+                                                            >
+                                                                <MoreIcon />
+                                                            </IconButton>
                                                         </Box>
                                                         <Typography variant="h6" sx={{ fontWeight: 800, mb: 1, color: '#F2F2F2' }}>{form.title}</Typography>
                                                         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4, minHeight: '3em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
@@ -220,11 +284,9 @@ export default function FormsDashboard() {
                                                         <Divider sx={{ opacity: 0.05, mb: 3 }} />
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
                                                             <Tooltip title="View Submissions"><IconButton component={Link} href={`/forms/${form.$id}`} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}><ViewIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>
-                                                            <Tooltip title="Edit Design"><IconButton onClick={() => handleEdit(form)} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}><EditIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>
-                                                            {form.status === 'published' && (
-                                                                <Tooltip title="Open Public Link"><IconButton size="small" component={Link} href={`/form/${form.$id}`} target="_blank" sx={{ bgcolor: 'rgba(16, 185, 129, 0.05)', color: '#10B981' }}><LaunchIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>
-                                                            )}
+                                                            <Tooltip title="Preview Public Form"><IconButton size="small" component={Link} href={`/form/${form.$id}`} target="_blank" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}><LaunchIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>
                                                             <Box sx={{ flexGrow: 1 }} />
+                                                            <IconButton size="small" onClick={() => handleEdit(form)} sx={{ opacity: 0.6 }}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
                                                             <IconButton size="small" onClick={() => handleDelete(form.$id)} sx={{ color: '#D14343', opacity: 0.6 }}><DeleteIcon sx={{ fontSize: 18 }} /></IconButton>
                                                         </Box>
                                                     </CardContent>
@@ -303,6 +365,88 @@ export default function FormsDashboard() {
                 initialDraft={selectedDraft || undefined}
                 onSaved={() => fetchForms(false)} 
             />
+
+            <FormSettingsDialog
+                open={settingsOpen}
+                onClose={() => setSettingsOpen(false)}
+                form={selectedForm}
+                onSaved={() => fetchForms(false)}
+            />
+
+            {/* ACTION MENU */}
+            <Menu
+                anchorEl={menuAnchor?.element}
+                open={Boolean(menuAnchor)}
+                onClose={handleMenuClose}
+                PaperProps={{
+                    sx: {
+                        bgcolor: 'rgba(10, 10, 10, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 2,
+                        minWidth: 160,
+                        '& .MuiMenuItem-root': {
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            gap: 1.5,
+                            py: 1.2,
+                            color: 'text.secondary',
+                            '&:hover': { bgcolor: 'rgba(255,255,255,0.05)', color: 'white' }
+                        }
+                    }
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <MuiMenuItem onClick={() => { handleMenuClose(); handleEdit(menuAnchor!.form); }}>
+                    <EditIcon fontSize="small" /> Edit Schema
+                </MuiMenuItem>
+                <MuiMenuItem onClick={() => handleOpenSettings(menuAnchor!.form)}>
+                    <SettingsIcon fontSize="small" /> Settings
+                </MuiMenuItem>
+                <Divider sx={{ opacity: 0.05, my: 0.5 }} />
+                <MuiMenuItem onClick={() => { handleMenuClose(); handleDelete(menuAnchor!.form.$id); }} sx={{ color: '#D14343 !important' }}>
+                    <DeleteIcon fontSize="small" /> Delete Form
+                </MuiMenuItem>
+            </Menu>
+
+            {/* DELETE CONFIRMATION */}
+            <ConfirmDialog 
+                open={Boolean(deleteConfirm)} 
+                onClose={() => setDeleteConfirm(null)}
+                PaperProps={{
+                    sx: {
+                        bgcolor: 'rgba(15, 15, 15, 0.95)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: 4,
+                        p: 1
+                    }
+                }}
+            >
+                <ConfirmTitle sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)' }}>Irreversible Action</ConfirmTitle>
+                <ConfirmContent>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                        Are you sure you want to purge this form? This will permanently erase all metadata and associated telemetry.
+                    </Typography>
+                </ConfirmContent>
+                <ConfirmActions sx={{ p: 3, gap: 1 }}>
+                    <Button onClick={() => setDeleteConfirm(null)} sx={{ fontWeight: 800, color: 'text.secondary' }}>Abort</Button>
+                    <Button 
+                        variant="contained" 
+                        onClick={confirmDelete}
+                        sx={{ 
+                            bgcolor: '#D14343', 
+                            color: 'white', 
+                            fontWeight: 900, 
+                            borderRadius: 2,
+                            '&:hover': { bgcolor: '#b13333' }
+                        }}
+                    >
+                        Confirm Purge
+                    </Button>
+                </ConfirmActions>
+            </ConfirmDialog>
         </Box>
     );
 }

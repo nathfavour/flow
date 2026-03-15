@@ -16,30 +16,49 @@ export const FormsService = {
     async createForm(userId: string, data: Omit<Forms, '$id' | '$createdAt' | '$updatedAt' | '$permissions' | '$databaseId' | '$collectionId'>) {
         return await tablesDB.createRow<Forms>(
             DATABASE_ID,
-            FORMS_TABLE,
-            ID.unique(),
-            {
-                ...data,
-                userId,
-                status: data.status || 'draft',
-            },
-            [
-                Permission.read(Role.user(userId)),
-                Permission.update(Role.user(userId)),
-                Permission.delete(Role.user(userId)),
-            ]
-        );
+    FORMS_TABLE,
+    ID.unique(),
+    {
+        ...data,
+        userId,
+        status: data.status || 'draft',
+    },
+    [
+        Permission.read(Role.user(userId)),
+        Permission.read(Role.any()), // Allow public discovery via listRows filter
+        Permission.update(Role.user(userId)),
+        Permission.delete(Role.user(userId)),
+    ]
+);
     },
 
     /**
-     * Get a form by ID
+     * Get a form by ID (Public Access Support)
      */
     async getForm(formId: string) {
-        return await tablesDB.getRow<Forms>({
+        // We use listRows with a query instead of getRow to bypass strict ownership 
+        // if the form is published and the user is anonymous.
+        // Also ensure we target the correct table ID from config
+        const res = await tablesDB.listRows<Forms>({
             databaseId: DATABASE_ID,
             tableId: FORMS_TABLE,
-            rowId: formId
+            queries: [
+                Query.equal('$id', formId)
+            ]
         });
+
+        if (res.total === 0) {
+            throw new Error(`Form [${formId}] not found or inaccessible in ${FORMS_TABLE}.`);
+        }
+
+        return res.rows[0];
+    },
+
+    /**
+     * Internal: Resolve current user
+     */
+    async getCurrentUser() {
+        return await getCurrentUser();
     },
 
     /**
@@ -59,19 +78,38 @@ export const FormsService = {
     /**
      * Update a form definition
      */
+    /**
+     * Update a form definition with strict permission synchronization
+     */
     async updateForm(formId: string, data: Partial<Forms>) {
         const form = await this.getForm(formId);
+        const userId = form.userId;
         
-        // Handle public access permissions if published
-        let permissions = form.$permissions;
-        if (data.status === 'published') {
-            permissions = [
-                ...permissions.filter(p => !p.includes('role:all')), // Avoid duplicates
-                Permission.read(Role.any())
-            ];
-        } else if (data.status === 'draft') {
-            permissions = permissions.filter(p => !p.includes('role:all'));
+        // 1. Determine current state (merged from existing + incoming updates)
+        const currentStatus = data.status || form.status;
+        let currentSettings: any = {};
+        try {
+            currentSettings = JSON.parse(data.settings || form.settings || '{}');
+        } catch (e) {}
+
+        // 2. Build the exact permission set for this form row
+        // We always ensure the owner has full control
+        const permissions = [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+            Permission.delete(Role.user(userId)),
+        ];
+
+        // 3. Apply Visibility Logic:
+        // If status is 'published', allow Guest (any) read access to the form metadata/schema
+        if (currentStatus === 'published') {
+            permissions.push(Permission.read(Role.any()));
         }
+
+        // Note: 'allowAnonymousFill' doesn't change the Form row's permissions,
+        // it's a logic gate in submitForm() and affects the Submissions table permissions.
+
+        console.log(`Syncing permissions for form ${formId}:`, permissions);
 
         return await tablesDB.updateRow<Forms>(
             DATABASE_ID,
@@ -79,6 +117,87 @@ export const FormsService = {
             formId,
             data,
             permissions
+        );
+    },
+
+    /**
+     * Submit form data
+     */
+    async submitForm(formId: string, payload: string, userId?: string) {
+        // Use listRows to bypass potential SDK-level getRow restrictions for anonymous users
+        const formRes = await tablesDB.listRows<Forms>({
+            databaseId: DATABASE_ID,
+            tableId: FORMS_TABLE,
+            queries: [Query.equal('$id', formId)]
+        });
+
+        if (formRes.total === 0) {
+            throw new Error('Form configuration not found.');
+        }
+
+        const form = formRes.rows[0];
+        
+        if (form.status !== 'published') {
+            throw new Error('This form is not accepting submissions.');
+        }
+
+        // Check expiry
+        let settings: any = {};
+        try {
+            settings = JSON.parse(form.settings || '{}');
+        } catch (e) {}
+
+        if (settings.expiresAt) {
+            const expiry = new Date(settings.expiresAt);
+            if (expiry < new Date()) {
+                throw new Error('This form has expired and is no longer accepting responses.');
+            }
+        }
+
+        // Check anonymous fill
+        const allowAnonymousFill = settings.allowAnonymousFill ?? false;
+        
+        if (!userId && !allowAnonymousFill) {
+             const currentUser = await getCurrentUser();
+             if (!currentUser) {
+                throw new Error('Authentication required to submit this form.');
+             }
+        }
+
+        // Submissions Table permissions:
+        // 1. Owner can READ/UPDATE/DELETE
+        const submissionPermissions = [
+            Permission.read(Role.user(form.userId)),
+            Permission.update(Role.user(form.userId)),
+            Permission.delete(Role.user(form.userId)),
+        ];
+
+        // 2. If user is logged in, allow THEM to read their own submission later
+        let submitterId = userId;
+        if (!submitterId) {
+            const currentUser = await getCurrentUser();
+            if (currentUser?.$id) {
+                submitterId = currentUser.$id;
+            }
+        }
+
+        if (submitterId) {
+            submissionPermissions.push(Permission.read(Role.user(submitterId)));
+        }
+
+        const submission = await tablesDB.createRow<FormSubmissions>(
+            DATABASE_ID,
+            SUBMISSIONS_TABLE,
+            ID.unique(),
+            {
+                formId,
+                submitterId: submitterId || null,
+                payload,
+                submittedAt: new Date().toISOString(),
+                read: false,
+                flagged: false
+            },
+            submissionPermissions
         );
     },
 
@@ -177,5 +296,17 @@ export const FormsService = {
                 Query.orderDesc('submittedAt')
             ]
         });
+    },
+
+    /**
+     * Update submission metadata (e.g., read status)
+     */
+    async updateSubmission(submissionId: string, data: Partial<FormSubmissions>) {
+        return await tablesDB.updateRow<FormSubmissions>(
+            DATABASE_ID,
+            SUBMISSIONS_TABLE,
+            submissionId,
+            data
+        );
     }
 };

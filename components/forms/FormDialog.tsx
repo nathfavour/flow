@@ -47,6 +47,25 @@ import { DraftsService, FormDraft } from '@/lib/services/drafts';
 import { Forms } from '@/generated/appwrite/types';
 import { useAuth } from '@/context/auth/AuthContext';
 
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+
 interface FormDialogProps {
   open: boolean;
   onClose: () => void;
@@ -65,6 +84,262 @@ const FIELD_TYPES = [
   { value: 'checkbox', label: 'Multiple Choice (Checkbox)', icon: <CheckIcon fontSize="small" /> },
 ];
 
+function SortableField({ 
+  field, 
+  fIdx, 
+  fieldsLength, 
+  updateField, 
+  removeField, 
+  addOption, 
+  updateOption, 
+  removeOption,
+  isChoiceType 
+}: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: field.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1000 : 1,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <Paper 
+      ref={setNodeRef}
+      style={style}
+      sx={{ 
+        p: 3, 
+        bgcolor: isDragging ? alpha('#6366F1', 0.05) : 'rgba(255, 255, 255, 0.01)', 
+        border: isDragging ? '1px solid var(--color-primary)' : '1px solid rgba(255, 255, 255, 0.04)',
+        borderRadius: '20px',
+        transition: 'border-color 0.2s ease, background-color 0.2s ease',
+        '&:hover': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+        position: 'relative'
+      }}
+    >
+      <Stack spacing={3}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="flex-start">
+            <Box 
+              {...attributes} 
+              {...listeners}
+              sx={{ 
+                pt: 1, 
+                display: { xs: 'none', md: 'block' }, 
+                cursor: 'grab',
+                '&:active': { cursor: 'grabbing' },
+                color: 'rgba(255,255,255,0.2)',
+                '&:hover': { color: 'rgba(255,255,255,0.5)' }
+              }}
+            >
+                <Tooltip title="Drag to reorder">
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 4px)', gap: '2px' }}>
+                        {[...Array(6)].map((_, i) => (
+                            <Box key={i} sx={{ width: 3, height: 3, borderRadius: '50%', bgcolor: 'currentColor' }} />
+                        ))}
+                    </Box>
+                </Tooltip>
+            </Box>
+            
+            <Stack spacing={2} sx={{ flexGrow: 1, width: '100%' }}>
+                <TextField
+                    fullWidth
+                    variant="standard"
+                    placeholder="Question Label"
+                    value={field.label}
+                    onChange={(e) => updateField(fIdx, { label: e.target.value })}
+                    InputProps={{ disableUnderline: true, sx: { fontSize: '1rem', fontWeight: 800 } }}
+                />
+                
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <FormControl variant="filled" size="small" sx={{ minWidth: 200 }}>
+                        <Select
+                            value={field.type}
+                            onChange={(e) => updateField(fIdx, { type: e.target.value })}
+                            disableUnderline
+                            sx={{ borderRadius: '10px', fontSize: '0.8rem', fontWeight: 700 }}
+                            renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                    {FIELD_TYPES.find(t => t.value === selected)?.icon}
+                                    {FIELD_TYPES.find(t => t.value === selected)?.label}
+                                </Box>
+                            )}
+                        >
+                            {FIELD_TYPES.map(t => (
+                            <MenuItem key={t.value} value={t.value} sx={{ fontSize: '0.85rem', gap: 1.5, py: 1.5 }}>
+                                {t.icon}
+                                {t.label}
+                            </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    
+                    <FormControlLabel
+                        control={
+                            <Switch 
+                                size="small" 
+                                checked={field.required} 
+                                onChange={(e) => updateField(fIdx, { required: e.target.checked })} 
+                            />
+                        }
+                        label={<Typography variant="caption" sx={{ fontWeight: 800, opacity: 0.6 }}>REQUIRED</Typography>}
+                    />
+
+                    <Tooltip title="Field Settings">
+                        <IconButton 
+                            size="small" 
+                            onClick={() => updateField(fIdx, { showSettings: !field.showSettings })}
+                            sx={{ 
+                                color: field.showSettings ? 'var(--color-primary)' : 'rgba(255,255,255,0.3)',
+                                bgcolor: field.showSettings ? alpha('#6366F1', 0.1) : 'transparent',
+                                '&:hover': { bgcolor: alpha('#6366F1', 0.1) } 
+                            }}
+                        >
+                            <SettingsIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Box sx={{ flexGrow: 1 }} />
+                    
+                    <Tooltip title="Remove Field">
+                        <IconButton size="small" sx={{ color: alpha('#ef4444', 0.5), '&:hover': { color: '#ef4444', bgcolor: alpha('#ef4444', 0.1) } }} onClick={() => removeField(fIdx)}>
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
+            </Stack>
+        </Stack>
+
+        {field.showSettings && (
+            <Box sx={{ pl: { md: 5 }, pr: 2 }}>
+                <Paper sx={{ p: 2, bgcolor: alpha('#fff', 0.02), borderRadius: '14px', border: '1px solid rgba(255,255,255,0.03)' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 2, display: 'block', letterSpacing: '0.05em' }}>
+                        VALIDATION CONSTRAINTS
+                    </Typography>
+                    <Stack direction="row" spacing={2}>
+                        {(field.type === 'text' || field.type === 'textarea') && (
+                            <>
+                                <TextField
+                                    label="MIN LEN"
+                                    type="number"
+                                    size="small"
+                                    variant="filled"
+                                    value={field.validation?.minLength || ''}
+                                    onChange={(e) => updateField(fIdx, { 
+                                        validation: { ...field.validation, minLength: e.target.value } 
+                                    })}
+                                    InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                    sx={{ width: 100 }}
+                                />
+                                <TextField
+                                    label="MAX LEN"
+                                    type="number"
+                                    size="small"
+                                    variant="filled"
+                                    value={field.validation?.maxLength || ''}
+                                    onChange={(e) => updateField(fIdx, { 
+                                        validation: { ...field.validation, maxLength: e.target.value } 
+                                    })}
+                                    InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                    sx={{ width: 100 }}
+                                />
+                                <TextField
+                                    label="REGEX PATTERN"
+                                    size="small"
+                                    variant="filled"
+                                    placeholder="^[a-zA-Z]+$"
+                                    value={field.validation?.pattern || ''}
+                                    onChange={(e) => updateField(fIdx, { 
+                                        validation: { ...field.validation, pattern: e.target.value } 
+                                    })}
+                                    InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                    sx={{ flexGrow: 1 }}
+                                />
+                            </>
+                        )}
+                        {field.type === 'number' && (
+                            <>
+                                <TextField
+                                    label="MIN VALUE"
+                                    type="number"
+                                    size="small"
+                                    variant="filled"
+                                    value={field.validation?.min || ''}
+                                    onChange={(e) => updateField(fIdx, { 
+                                        validation: { ...field.validation, min: e.target.value } 
+                                    })}
+                                    InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                    sx={{ width: 120 }}
+                                />
+                                <TextField
+                                    label="MAX VALUE"
+                                    type="number"
+                                    size="small"
+                                    variant="filled"
+                                    value={field.validation?.max || ''}
+                                    onChange={(e) => updateField(fIdx, { 
+                                        validation: { ...field.validation, max: e.target.value } 
+                                    })}
+                                    InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                    sx={{ width: 120 }}
+                                />
+                            </>
+                        )}
+                    </Stack>
+                </Paper>
+            </Box>
+        )}
+
+        {isChoiceType(field.type) && (
+            <Box sx={{ pl: { md: 5 } }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 1.5, display: 'block', letterSpacing: '0.05em' }}>
+                    CONFIGURE OPTIONS
+                </Typography>
+                <Stack spacing={1}>
+                    {(field.options || []).map((opt: string, oIdx: number) => (
+                        <Stack key={oIdx} direction="row" spacing={1} alignItems="center">
+                            <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)' }} />
+                            <TextField
+                                fullWidth
+                                size="small"
+                                variant="standard"
+                                value={opt}
+                                onChange={(e) => updateOption(fIdx, oIdx, e.target.value)}
+                                InputProps={{ disableUnderline: true, sx: { fontSize: '0.85rem' } }}
+                            />
+                            <IconButton size="small" onClick={() => removeOption(fIdx, oIdx)} sx={{ opacity: 0.3 }}>
+                                <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        </Stack>
+                    ))}
+                    <Button 
+                        size="small" 
+                        onClick={() => addOption(fIdx)} 
+                        sx={{ 
+                            justifyContent: 'flex-start', 
+                            color: 'var(--color-primary)', 
+                            fontWeight: 800, 
+                            fontSize: '0.7rem',
+                            mt: 1
+                        }}
+                    >
+                        + ADD OPTION
+                    </Button>
+                </Stack>
+            </Box>
+        )}
+      </Stack>
+    </Paper>
+  );
+}
+
 export default function FormDialog({ open, onClose, form, initialDraft, onSaved }: FormDialogProps) {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -76,6 +351,26 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
   const [isRestored, setIsRestored] = useState(false);
   
   const initialLoadRef = useRef(true);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setFields((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over?.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
 
   // Initial load logic
   useEffect(() => {
@@ -153,8 +448,10 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
         DraftsService.clearDraft(formId);
         setHasUnsavedChanges(false);
     }
-  }, [title, description, status, fields, open, form, initialDraft, isRestored]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, description, status, fields, open, isRestored]);
 
+  // Handle focus behavior when fields change
   const fieldsEndRef = useRef<HTMLDivElement>(null);
 
   const addField = () => {
@@ -224,14 +521,6 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
     }
     setHasUnsavedChanges(false);
     setIsRestored(false);
-  };
-
-  const moveField = (index: number, direction: 'up' | 'down') => {
-    const newFields = [...fields];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= fields.length) return;
-    [newFields[index], newFields[targetIndex]] = [newFields[targetIndex], newFields[index]];
-    setFields(newFields);
   };
 
   const handleSave = async () => {
@@ -424,231 +713,32 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
             </Box>
 
             <Stack spacing={3}>
-              {fields.map((field, fIdx) => (
-                <Paper 
-                  key={field.id} 
-                  sx={{ 
-                    p: 3, 
-                    bgcolor: 'rgba(255, 255, 255, 0.01)', 
-                    border: '1px solid rgba(255, 255, 255, 0.04)',
-                    borderRadius: '20px',
-                    transition: 'border-color 0.2s ease',
-                    '&:hover': { borderColor: 'rgba(255, 255, 255, 0.1)' }
-                  }}
+              <DndContext 
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+                modifiers={[restrictToVerticalAxis]}
+              >
+                <SortableContext 
+                  items={fields.map(f => f.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <Stack spacing={3}>
-                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="flex-start">
-                        <Box sx={{ pt: 1, display: { xs: 'none', md: 'block' } }}>
-                            <Stack spacing={0.5}>
-                                <IconButton 
-                                    size="small" 
-                                    disabled={fIdx === 0} 
-                                    onClick={() => moveField(fIdx, 'up')}
-                                    sx={{ p: 0.5, opacity: fIdx === 0 ? 0.2 : 0.5, '&:hover': { opacity: 1 } }}
-                                >
-                                    <UpIcon sx={{ fontSize: 16 }} />
-                                </IconButton>
-                                <IconButton 
-                                    size="small" 
-                                    disabled={fIdx === fields.length - 1} 
-                                    onClick={() => moveField(fIdx, 'down')}
-                                    sx={{ p: 0.5, opacity: fIdx === fields.length - 1 ? 0.2 : 0.5, '&:hover': { opacity: 1 } }}
-                                >
-                                    <DownIcon sx={{ fontSize: 16 }} />
-                                </IconButton>
-                            </Stack>
-                        </Box>
-                        
-                        <Stack spacing={2} sx={{ flexGrow: 1, width: '100%' }}>
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                placeholder="Question Label"
-                                value={field.label}
-                                onChange={(e) => updateField(fIdx, { label: e.target.value })}
-                                InputProps={{ disableUnderline: true, sx: { fontSize: '1rem', fontWeight: 800 } }}
-                            />
-                            
-                            <Stack direction="row" spacing={2} alignItems="center">
-                                <FormControl variant="filled" size="small" sx={{ minWidth: 200 }}>
-                                    <Select
-                                        value={field.type}
-                                        onChange={(e) => updateField(fIdx, { type: e.target.value })}
-                                        disableUnderline
-                                        sx={{ borderRadius: '10px', fontSize: '0.8rem', fontWeight: 700 }}
-                                        renderValue={(selected) => (
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                {FIELD_TYPES.find(t => t.value === selected)?.icon}
-                                                {FIELD_TYPES.find(t => t.value === selected)?.label}
-                                            </Box>
-                                        )}
-                                    >
-                                        {FIELD_TYPES.map(t => (
-                                        <MenuItem key={t.value} value={t.value} sx={{ fontSize: '0.85rem', gap: 1.5, py: 1.5 }}>
-                                            {t.icon}
-                                            {t.label}
-                                        </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                
-                                <FormControlLabel
-                                    control={
-                                        <Switch 
-                                            size="small" 
-                                            checked={field.required} 
-                                            onChange={(e) => updateField(fIdx, { required: e.target.checked })} 
-                                        />
-                                    }
-                                    label={<Typography variant="caption" sx={{ fontWeight: 800, opacity: 0.6 }}>REQUIRED</Typography>}
-                                />
-
-                                <Tooltip title="Field Settings">
-                                    <IconButton 
-                                        size="small" 
-                                        onClick={() => updateField(fIdx, { showSettings: !field.showSettings })}
-                                        sx={{ 
-                                            color: field.showSettings ? 'var(--color-primary)' : 'rgba(255,255,255,0.3)',
-                                            bgcolor: field.showSettings ? alpha('#6366F1', 0.1) : 'transparent',
-                                            '&:hover': { bgcolor: alpha('#6366F1', 0.1) } 
-                                        }}
-                                    >
-                                        <SettingsIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-
-                                <Box sx={{ flexGrow: 1 }} />
-                                
-                                <Tooltip title="Remove Field">
-                                    <IconButton size="small" sx={{ color: alpha('#ef4444', 0.5), '&:hover': { color: '#ef4444', bgcolor: alpha('#ef4444', 0.1) } }} onClick={() => removeField(fIdx)}>
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
-                            </Stack>
-                        </Stack>
-                    </Stack>
-
-                    {field.showSettings && (
-                        <Box sx={{ pl: { md: 5 }, pr: 2 }}>
-                            <Paper sx={{ p: 2, bgcolor: alpha('#fff', 0.02), borderRadius: '14px', border: '1px solid rgba(255,255,255,0.03)' }}>
-                                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 2, display: 'block', letterSpacing: '0.05em' }}>
-                                    VALIDATION CONSTRAINTS
-                                </Typography>
-                                <Stack direction="row" spacing={2}>
-                                    {(field.type === 'text' || field.type === 'textarea') && (
-                                        <>
-                                            <TextField
-                                                label="MIN LEN"
-                                                type="number"
-                                                size="small"
-                                                variant="filled"
-                                                value={field.validation?.minLength || ''}
-                                                onChange={(e) => updateField(fIdx, { 
-                                                    validation: { ...field.validation, minLength: e.target.value } 
-                                                })}
-                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
-                                                sx={{ width: 100 }}
-                                            />
-                                            <TextField
-                                                label="MAX LEN"
-                                                type="number"
-                                                size="small"
-                                                variant="filled"
-                                                value={field.validation?.maxLength || ''}
-                                                onChange={(e) => updateField(fIdx, { 
-                                                    validation: { ...field.validation, maxLength: e.target.value } 
-                                                })}
-                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
-                                                sx={{ width: 100 }}
-                                            />
-                                            <TextField
-                                                label="REGEX PATTERN"
-                                                size="small"
-                                                variant="filled"
-                                                placeholder="^[a-zA-Z]+$"
-                                                value={field.validation?.pattern || ''}
-                                                onChange={(e) => updateField(fIdx, { 
-                                                    validation: { ...field.validation, pattern: e.target.value } 
-                                                })}
-                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
-                                                sx={{ flexGrow: 1 }}
-                                            />
-                                        </>
-                                    )}
-                                    {field.type === 'number' && (
-                                        <>
-                                            <TextField
-                                                label="MIN VALUE"
-                                                type="number"
-                                                size="small"
-                                                variant="filled"
-                                                value={field.validation?.min || ''}
-                                                onChange={(e) => updateField(fIdx, { 
-                                                    validation: { ...field.validation, min: e.target.value } 
-                                                })}
-                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
-                                                sx={{ width: 120 }}
-                                            />
-                                            <TextField
-                                                label="MAX VALUE"
-                                                type="number"
-                                                size="small"
-                                                variant="filled"
-                                                value={field.validation?.max || ''}
-                                                onChange={(e) => updateField(fIdx, { 
-                                                    validation: { ...field.validation, max: e.target.value } 
-                                                })}
-                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
-                                                sx={{ width: 120 }}
-                                            />
-                                        </>
-                                    )}
-                                </Stack>
-                            </Paper>
-                        </Box>
-                    )}
-
-                    {isChoiceType(field.type) && (
-                        <Box sx={{ pl: { md: 5 } }}>
-                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 1.5, display: 'block', letterSpacing: '0.05em' }}>
-                                CONFIGURE OPTIONS
-                            </Typography>
-                            <Stack spacing={1}>
-                                {(field.options || []).map((opt: string, oIdx: number) => (
-                                    <Stack key={oIdx} direction="row" spacing={1} alignItems="center">
-                                        <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)' }} />
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            variant="standard"
-                                            value={opt}
-                                            onChange={(e) => updateOption(fIdx, oIdx, e.target.value)}
-                                            InputProps={{ disableUnderline: true, sx: { fontSize: '0.85rem' } }}
-                                        />
-                                        <IconButton size="small" onClick={() => removeOption(fIdx, oIdx)} sx={{ opacity: 0.3 }}>
-                                            <CloseIcon fontSize="inherit" />
-                                        </IconButton>
-                                    </Stack>
-                                ))}
-                                <Button 
-                                    size="small" 
-                                    onClick={() => addOption(fIdx)} 
-                                    sx={{ 
-                                        justifyContent: 'flex-start', 
-                                        color: 'var(--color-primary)', 
-                                        fontWeight: 800, 
-                                        fontSize: '0.7rem',
-                                        mt: 1
-                                    }}
-                                >
-                                    + ADD OPTION
-                                </Button>
-                            </Stack>
-                        </Box>
-                    )}
-                  </Stack>
-                </Paper>
-              ))}
+                  {fields.map((field, fIdx) => (
+                    <SortableField
+                      key={field.id}
+                      field={field}
+                      fIdx={fIdx}
+                      fieldsLength={fields.length}
+                      updateField={updateField}
+                      removeField={removeField}
+                      addOption={addOption}
+                      updateOption={updateOption}
+                      removeOption={removeOption}
+                      isChoiceType={isChoiceType}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
               <div ref={fieldsEndRef} />
             </Stack>
           </Box>
