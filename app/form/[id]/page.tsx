@@ -33,6 +33,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     useEffect(() => {
         const fetchForm = async () => {
@@ -49,8 +50,9 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                     settings = JSON.parse(data.settings || '{}');
                 } catch (e) {}
 
-                const currentUser = await FormsService.getCurrentUser();
-                const isOwner = currentUser?.$id === data.userId;
+                const user = await FormsService.getCurrentUser();
+                setCurrentUser(user);
+                const isOwner = user?.$id === data.userId;
 
                 if (!isOwner && data.status !== 'published') {
                     setError('This form is not currently accepting submissions.');
@@ -90,7 +92,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
         setError(null);
 
         try {
-            await FormsService.submitForm(resolvedParams.id, JSON.stringify(formData));
+            await FormsService.submitForm(resolvedParams.id, JSON.stringify(formData), currentUser?.$id);
             setSubmitted(true);
         } catch (err: any) {
             setError(err.message || 'Failed to submit form. Please try again.');

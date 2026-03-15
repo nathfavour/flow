@@ -244,10 +244,10 @@ export const FormsService = {
     },
 
     /**
-     * List submissions for a specific form
+     * List submissions for a specific form with submitter enrichment
      */
     async listSubmissions(formId: string) {
-        return await tablesDB.listRows<FormSubmissions>({
+        const res = await tablesDB.listRows<FormSubmissions>({
             databaseId: DATABASE_ID,
             tableId: SUBMISSIONS_TABLE,
             queries: [
@@ -255,6 +255,40 @@ export const FormsService = {
                 Query.orderDesc('$createdAt')
             ]
         });
+
+        // Enrich with usernames from Chat database if submitterId exists
+        const submitterIds = Array.from(new Set(res.rows.map(r => r.submitterId).filter(Boolean))) as string[];
+        
+        if (submitterIds.length > 0) {
+            try {
+                const userRes = await tablesDB.listRows<any>({
+                    databaseId: APPWRITE_CONFIG.DATABASES.CHAT,
+                    tableId: 'users', 
+                    queries: [Query.equal('$id', submitterIds)] 
+                });
+                
+                // Map of userId -> username
+                const userMap = new Map(userRes.rows.map((u: any) => [u.$id, u.username || u.displayName || u.$id]));
+                
+                return {
+                    ...res,
+                    rows: res.rows.map(row => ({
+                        ...row,
+                        submitterName: row.submitterId ? (userMap.get(row.submitterId) || row.submitterId) : 'Anonymous'
+                    }))
+                };
+            } catch (e) {
+                console.error('[Forms] Failed to enrich submitter names', e);
+            }
+        }
+
+        return {
+            ...res,
+            rows: res.rows.map(row => ({
+                ...row,
+                submitterName: row.submitterId ? row.submitterId : 'Anonymous'
+            }))
+        };
     },
 
     /**

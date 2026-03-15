@@ -40,6 +40,7 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
           <TableRow sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)' }}>
             <TableCell sx={{ width: 50, borderBottom: '1px solid rgba(255,255,255,0.05)' }}></TableCell>
             <TableCell sx={{ fontWeight: 900, color: 'text.secondary', py: 3, borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>TIMESTAMP</TableCell>
+            <TableCell sx={{ fontWeight: 900, color: 'text.secondary', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>SUBMITTER</TableCell>
             {headers.map((h: string) => (
               <TableCell key={h} sx={{ fontWeight: 900, color: 'text.secondary', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>{h}</TableCell>
             ))}
@@ -59,6 +60,19 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
                 </TableCell>
                 <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                   {new Date(sub.$createdAt).toLocaleString()}
+                </TableCell>
+                <TableCell sx={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <Chip 
+                        label={sub.submitterName || 'Anonymous'} 
+                        size="small" 
+                        sx={{ 
+                            fontSize: '10px', 
+                            fontWeight: 800, 
+                            bgcolor: sub.submitterName && sub.submitterName !== 'Anonymous' ? alpha('#6366F1', 0.1) : 'transparent',
+                            color: sub.submitterName && sub.submitterName !== 'Anonymous' ? 'var(--color-primary)' : 'text.disabled',
+                            border: sub.submitterName && sub.submitterName !== 'Anonymous' ? 'none' : '1px solid rgba(255,255,255,0.05)'
+                        }} 
+                    />
                 </TableCell>
                 {headers.map((h: string) => (
                   <TableCell key={h} sx={{ color: '#F2F2F2', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
@@ -166,6 +180,7 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
         const payloadData = parsePayload(sub.payload);
         return {
             timestamp: sub.$createdAt,
+            submitter: (sub as any).submitterName || 'Anonymous',
             ...payloadData
         };
     });
@@ -177,7 +192,7 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
         blob = new Blob([JSON.stringify(exportableRows, null, 2)], { type: 'application/json' });
         filename = `form_${formId}_submissions_${new Date().toISOString()}.json`;
     } else {
-        const headersArr = ['timestamp', ...headers];
+        const headersArr = ['timestamp', 'submitter', ...headers];
         const csvContent = [
             headersArr.join(','),
             ...exportableRows.map(row => 
