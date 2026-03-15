@@ -68,6 +68,50 @@ export default function PublicFormPage({ params }: { params: { id: string } }) {
         setSubmitting(true);
         setError(null);
 
+        // Client-side validation
+        let schema: any[] = [];
+        try { schema = JSON.parse(form?.schema || '[]'); } catch (e) {}
+
+        for (const field of schema) {
+            const value = formData[field.id];
+            const v = field.validation;
+            if (!v) continue;
+
+            if (field.type === 'text' || field.type === 'textarea') {
+                if (v.minLength && String(value || '').length < Number(v.minLength)) {
+                    setError(`"${field.label}" must be at least ${v.minLength} characters.`);
+                    setSubmitting(false);
+                    return;
+                }
+                if (v.maxLength && String(value || '').length > Number(v.maxLength)) {
+                    setError(`"${field.label}" must be at most ${v.maxLength} characters.`);
+                    setSubmitting(false);
+                    return;
+                }
+                if (v.pattern) {
+                    try {
+                        const regex = new RegExp(v.pattern);
+                        if (!regex.test(String(value || ''))) {
+                            setError(`"${field.label}" does not match the required pattern.`);
+                            setSubmitting(false);
+                            return;
+                        }
+                    } catch (e) {}
+                }
+            } else if (field.type === 'number' && value !== undefined && value !== '') {
+                if (v.min && Number(value) < Number(v.min)) {
+                    setError(`"${field.label}" must be at least ${v.min}.`);
+                    setSubmitting(false);
+                    return;
+                }
+                if (v.max && Number(value) > Number(v.max)) {
+                    setError(`"${field.label}" must be at most ${v.max}.`);
+                    setSubmitting(false);
+                    return;
+                }
+            }
+        }
+
         try {
             await FormsService.submitForm(params.id, JSON.stringify(formData));
             setSubmitted(true);

@@ -14,7 +14,9 @@ import {
     CircularProgress,
     Fade,
     Paper,
-    Divider
+    Divider,
+    Stack,
+    alpha
 } from '@mui/material';
 import { 
     Add as AddIcon, 
@@ -29,25 +31,32 @@ import {
     Drafts as DraftIcon
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
+import { DraftsService } from '@/lib/services/drafts';
 import { Forms } from '@/generated/appwrite/types';
 import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
+import { useAuth } from '@/context/auth/AuthContext';
 
 export default function FormsDashboard() {
+    const { user } = useAuth();
     const [forms, setForms] = useState<Forms[]>([]);
     const [loading, setLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedForm, setSelectedForm] = useState<Forms | null>(null);
 
-    const fetchForms = async () => {
-        setLoading(true);
+    const fetchForms = async (showLoading = true) => {
+        if (!user) return;
+        if (showLoading) setLoading(true);
         try {
-            const response = await FormsService.listUserForms('current'); 
-            setForms(response.rows);
+            const response = await FormsService.listUserForms(user.$id); 
+            
+            // Critical: Ensure no local drafts conflict with newly fetched data
+            // If a draft exists, we keep it as 'UNSYNCED' but ensure the UI sees the base form
+            setForms([...response.rows]);
         } catch (err) {
             console.error("Failed to fetch forms", err);
         } finally {
-            setLoading(false);
+            if (showLoading) setLoading(false);
         }
     };
 
@@ -65,7 +74,7 @@ export default function FormsDashboard() {
         if (confirm('Are you sure you want to delete this form? All submissions will be lost.')) {
             try {
                 await FormsService.deleteForm(formId);
-                fetchForms();
+                fetchForms(false);
             } catch (err) {
                 console.error("Failed to delete form", err);
             }
@@ -73,8 +82,10 @@ export default function FormsDashboard() {
     };
 
     useEffect(() => {
-        fetchForms();
-    }, []);
+        if (user) {
+            fetchForms();
+        }
+    }, [user]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -144,17 +155,32 @@ export default function FormsDashboard() {
                                 >
                                     <CardContent sx={{ p: 3 }}>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                            <Chip 
-                                                label={form.status.toUpperCase()} 
-                                                size="small" 
-                                                sx={{ 
-                                                    fontSize: '10px', 
-                                                    fontWeight: 900, 
-                                                    bgcolor: 'transparent',
-                                                    color: getStatusColor(form.status),
-                                                    border: `1px solid ${getStatusColor(form.status)}20`
-                                                }} 
-                                            />
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <Chip 
+                                                    label={form.status.toUpperCase()} 
+                                                    size="small" 
+                                                    sx={{ 
+                                                        fontSize: '10px', 
+                                                        fontWeight: 900, 
+                                                        bgcolor: 'transparent',
+                                                        color: getStatusColor(form.status),
+                                                        border: `1px solid ${getStatusColor(form.status)}20`
+                                                    }} 
+                                                />
+                                                {DraftsService.hasDraft(form.$id) && (
+                                                    <Chip 
+                                                        label="UNSYNCED" 
+                                                        size="small" 
+                                                        sx={{ 
+                                                            fontSize: '10px', 
+                                                            fontWeight: 900, 
+                                                            bgcolor: alpha('#FFB020', 0.1), 
+                                                            color: '#FFB020',
+                                                            border: '1px solid rgba(255, 176, 32, 0.2)'
+                                                        }} 
+                                                    />
+                                                )}
+                                            </Stack>
                                             <IconButton size="small" sx={{ opacity: 0.4 }}><MoreIcon /></IconButton>
                                         </Box>
                                         
@@ -210,7 +236,7 @@ export default function FormsDashboard() {
                 open={dialogOpen} 
                 onClose={() => setDialogOpen(false)} 
                 form={selectedForm} 
-                onSaved={fetchForms} 
+                onSaved={() => fetchForms(false)} 
             />
         </Box>
     );

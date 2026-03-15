@@ -15,11 +15,50 @@ import {
   IconButton,
   Tooltip,
   Chip,
-  alpha
+  alpha,
+  Button
 } from '@mui/material';
-import { Visibility as ViewIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { 
+  Visibility as ViewIcon, 
+  Delete as DeleteIcon,
+  Download as DownloadIcon,
+  TableRows as CSVIcon,
+  DataObject as JSONIcon
+} from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { FormSubmissions } from '@/generated/appwrite/types';
+
+const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue }: any) => (
+    <TableContainer component={Paper} sx={{ bgcolor: 'transparent', backgroundImage: 'none', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '24px', overflow: 'hidden' }}>
+      <Table size="medium">
+        <TableHead>
+          <TableRow sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)' }}>
+            <TableCell sx={{ fontWeight: 900, color: 'text.secondary', py: 3, borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>TIMESTAMP</TableCell>
+            {headers.map((h: string) => (
+              <TableCell key={h} sx={{ fontWeight: 900, color: 'text.secondary', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>{h}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {submissions.map((sub: any) => {
+            const data = parsePayload(sub.payload);
+            return (
+              <TableRow key={sub.$id} sx={{ '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.01)' }, transition: 'background-color 0.2s' }}>
+                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                  {new Date(sub.submittedAt).toLocaleString()}
+                </TableCell>
+                {headers.map((h: string) => (
+                  <TableCell key={h} sx={{ color: '#F2F2F2', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    {renderValue(data[h])}
+                  </TableCell>
+                ))}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+);
 
 export default function SubmissionViewer({ formId }: { formId: string }) {
   const [submissions, setSubmissions] = useState<FormSubmissions[]>([]);
@@ -73,35 +112,73 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
     return String(val || '-');
   };
 
+  const exportData = (format: 'csv' | 'json') => {
+    if (submissions.length === 0) return;
+
+    const exportableRows = submissions.map(sub => {
+        const payloadData = parsePayload(sub.payload);
+        return {
+            timestamp: sub.submittedAt,
+            ...payloadData
+        };
+    });
+
+    let blob: Blob;
+    let filename: string;
+
+    if (format === 'json') {
+        blob = new Blob([JSON.stringify(exportableRows, null, 2)], { type: 'application/json' });
+        filename = `form_${formId}_submissions_${new Date().toISOString()}.json`;
+    } else {
+        const headersArr = ['timestamp', ...headers];
+        const csvContent = [
+            headersArr.join(','),
+            ...exportableRows.map(row => 
+                headersArr.map(h => {
+                    const val = (row as any)[h];
+                    const stringVal = Array.isArray(val) ? val.join('; ') : String(val || '');
+                    return `"${stringVal.replace(/"/g, '""')}"`;
+                }).join(',')
+            )
+        ].join('\n');
+        blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        filename = `form_${formId}_submissions_${new Date().toISOString()}.csv`;
+    }
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
-    <TableContainer component={Paper} sx={{ bgcolor: 'transparent', backgroundImage: 'none', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '24px', overflow: 'hidden' }}>
-      <Table size="medium">
-        <TableHead>
-          <TableRow sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)' }}>
-            <TableCell sx={{ fontWeight: 900, color: 'text.secondary', py: 3, borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>TIMESTAMP</TableCell>
-            {headers.map(h => (
-              <TableCell key={h} sx={{ fontWeight: 900, color: 'text.secondary', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>{h}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {submissions.map((sub) => {
-            const data = parsePayload(sub.payload);
-            return (
-              <TableRow key={sub.$id} sx={{ '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.01)' }, transition: 'background-color 0.2s' }}>
-                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                  {new Date(sub.submittedAt).toLocaleString()}
-                </TableCell>
-                {headers.map(h => (
-                  <TableCell key={h} sx={{ color: '#F2F2F2', fontWeight: 700, borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                    {renderValue(data[h])}
-                  </TableCell>
-                ))}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <Button 
+                size="small" 
+                startIcon={<CSVIcon />} 
+                onClick={() => exportData('csv')}
+                sx={{ borderRadius: '12px', fontWeight: 800, bgcolor: 'rgba(255,255,255,0.03)', color: 'text.secondary', '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' } }}
+            >
+                Export CSV
+            </Button>
+            <Button 
+                size="small" 
+                startIcon={<JSONIcon />} 
+                onClick={() => exportData('json')}
+                sx={{ borderRadius: '12px', fontWeight: 800, bgcolor: 'rgba(255,255,255,0.03)', color: 'text.secondary', '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' } }}
+            >
+                Export JSON
+            </Button>
+        </Box>
+        <SubmissionViewerTable 
+            submissions={submissions} 
+            headers={headers} 
+            parsePayload={parsePayload} 
+            renderValue={renderValue} 
+        />
+    </Box>
   );
 }

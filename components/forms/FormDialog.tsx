@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -22,6 +22,8 @@ import {
   Paper,
   alpha,
   Tooltip,
+  Alert,
+  Chip,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -35,9 +37,16 @@ import {
   Notes as TextAreaIcon,
   AlternateEmail as EmailIcon,
   Numbers as NumberIcon,
+  CloudUpload as SyncIcon,
+  Warning as WarningIcon,
+  Settings as SettingsIcon,
+  ArrowUpward as UpIcon,
+  ArrowDownward as DownIcon,
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
+import { DraftsService } from '@/lib/services/drafts';
 import { Forms } from '@/generated/appwrite/types';
+import { useAuth } from '@/context/auth/AuthContext';
 
 interface FormDialogProps {
   open: boolean;
@@ -58,13 +67,34 @@ const FIELD_TYPES = [
 
 export default function FormDialog({ open, onClose, form, onSaved }: FormDialogProps) {
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft');
   const [fields, setFields] = useState<any[]>([]);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isRestored, setIsRestored] = useState(false);
+  
+  const initialLoadRef = useRef(true);
 
+  // Initial load logic
   useEffect(() => {
-    if (form) {
+    if (!open) {
+        initialLoadRef.current = true;
+        return;
+    }
+
+    const formId = form?.$id || 'new';
+    const savedDraft = DraftsService.getDraft(formId);
+    
+    if (savedDraft) {
+        setTitle(savedDraft.title || '');
+        setDescription(savedDraft.description || '');
+        setStatus(savedDraft.status as any || 'draft');
+        setFields(savedDraft.fields || []);
+        setIsRestored(true);
+        setHasUnsavedChanges(true);
+    } else if (form) {
       setTitle(form.title);
       setDescription(form.description || '');
       setStatus(form.status as any);
@@ -73,13 +103,50 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
       } catch (e) {
         setFields([]);
       }
+      setIsRestored(false);
+      setHasUnsavedChanges(false);
     } else {
       setTitle('');
       setDescription('');
       setStatus('draft');
       setFields([{ id: 'field_1', label: 'Full Name', type: 'text', required: true }]);
+      setIsRestored(false);
+      setHasUnsavedChanges(false);
     }
+    
+    setTimeout(() => {
+        initialLoadRef.current = false;
+    }, 100);
   }, [form, open]);
+
+  // Autosave logic
+  useEffect(() => {
+    if (initialLoadRef.current || !open) return;
+
+    const formId = form?.$id || 'new';
+    const currentFieldsStr = JSON.stringify(fields);
+    
+    // Check if actually different from the original database version (if not a restored draft)
+    let isDifferent = true;
+    if (form && !isRestored) {
+        try {
+            const originalFields = JSON.parse(form.schema || '[]');
+            if (title === form.title && description === (form.description || '') && status === form.status && currentFieldsStr === JSON.stringify(originalFields)) {
+                isDifferent = false;
+            }
+        } catch(e) {}
+    }
+
+    if (isDifferent) {
+        DraftsService.saveDraft(formId, { title, description, status, fields });
+        setHasUnsavedChanges(true);
+    } else {
+        DraftsService.clearDraft(formId);
+        setHasUnsavedChanges(false);
+    }
+  }, [title, description, status, fields, open, form]);
+
+  const fieldsEndRef = useRef<HTMLDivElement>(null);
 
   const addField = () => {
     const id = `field_${Date.now()}`;
@@ -88,8 +155,15 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
       label: 'New Question', 
       type: 'text', 
       required: false,
-      options: ['Option 1'] // Default option for choice types
+      options: ['Option 1'],
+      showSettings: false,
+      validation: {}
     }]);
+    
+    // Scroll to new field after render
+    setTimeout(() => {
+        fieldsEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const removeField = (index: number) => {
@@ -121,7 +195,42 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
     setFields(newFields);
   };
 
+  const discardDraft = () => {
+    const formId = form?.$id || 'new';
+    DraftsService.clearDraft(formId);
+    if (form) {
+      setTitle(form.title);
+      setDescription(form.description || '');
+      setStatus(form.status as any);
+      try {
+        setFields(JSON.parse(form.schema || '[]'));
+      } catch (e) {
+        setFields([]);
+      }
+    } else {
+      setTitle('');
+      setDescription('');
+      setStatus('draft');
+      setFields([{ id: 'field_1', label: 'Full Name', type: 'text', required: true }]);
+    }
+    setHasUnsavedChanges(false);
+    setIsRestored(false);
+  };
+
+  const moveField = (index: number, direction: 'up' | 'down') => {
+    const newFields = [...fields];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= fields.length) return;
+    [newFields[index], newFields[targetIndex]] = [newFields[targetIndex], newFields[index]];
+    setFields(newFields);
+  };
+
   const handleSave = async () => {
+    if (!user) {
+        console.error('Unauthorized: No user found');
+        return;
+    }
+
     setLoading(true);
     try {
       const formData = {
@@ -134,9 +243,17 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
 
       if (form) {
         await FormsService.updateForm(form.$id, formData);
+        // Explicitly clear the draft for this ID
+        DraftsService.clearDraft(form.$id);
       } else {
-        await FormsService.createForm('current', formData);
+        const newForm = await FormsService.createForm(user.$id, formData);
+        // If we were editing a 'new' draft, clear it
+        DraftsService.clearDraft('new');
+        // Ensure the newly created ID doesn't have a stray draft
+        DraftsService.clearDraft(newForm.$id);
       }
+      setHasUnsavedChanges(false);
+      
       onSaved();
       onClose();
     } catch (error) {
@@ -174,20 +291,79 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
         pb: 2
       }}>
         <Box>
-            <Typography variant="h5" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
-            {form ? 'Refine Design' : 'Create Intelligence Portal'}
-            </Typography>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+                <Typography variant="h5" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
+                {form ? 'Refine Design' : 'Create Intelligence Portal'}
+                </Typography>
+                {hasUnsavedChanges && (
+                    <Chip 
+                        label="UNSYNCED" 
+                        size="small" 
+                        icon={<WarningIcon style={{ fontSize: 12, color: '#FFB020' }} />}
+                        sx={{ 
+                            height: 20, 
+                            fontSize: '9px', 
+                            fontWeight: 900, 
+                            bgcolor: alpha('#FFB020', 0.1), 
+                            color: '#FFB020',
+                            border: '1px solid rgba(255, 176, 32, 0.2)'
+                        }} 
+                    />
+                )}
+            </Stack>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: '0.1em' }}>
                 KYLRIX FLOW / FORMS ENGINE
             </Typography>
         </Box>
-        <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' } }}>
-            <CloseIcon fontSize="small" />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button 
+                variant="outlined" 
+                size="small" 
+                startIcon={<AddIcon />} 
+                onClick={addField} 
+                sx={{ 
+                    borderRadius: '12px', 
+                    fontWeight: 900, 
+                    fontSize: '0.75rem',
+                    borderColor: alpha('#6366F1', 0.3),
+                    bgcolor: alpha('#6366F1', 0.05),
+                    color: 'var(--color-primary)',
+                    '&:hover': { 
+                        borderColor: 'var(--color-primary)', 
+                        bgcolor: alpha('#6366F1', 0.15) 
+                    }
+                }}
+            >
+                Insert Field
+            </Button>
+            <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' } }}>
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </Box>
       </DialogTitle>
 
       <DialogContent sx={{ p: 4, pt: 1 }}>
         <Stack spacing={5}>
+          {isRestored && (
+            <Alert 
+                severity="warning" 
+                action={
+                    <Button color="inherit" size="small" onClick={discardDraft} sx={{ fontWeight: 800 }}>
+                        DISCARD
+                    </Button>
+                }
+                sx={{ 
+                    borderRadius: '16px', 
+                    bgcolor: alpha('#FFB020', 0.05), 
+                    color: '#FFB020', 
+                    border: '1px solid rgba(255, 176, 32, 0.1)',
+                    '& .MuiAlert-icon': { color: '#FFB020' }
+                }}
+            >
+                Restored from local cache. Your changes are unsynced.
+            </Alert>
+          )}
+
           <Box>
             <Stack spacing={2.5}>
               <TextField
@@ -237,21 +413,6 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
                         LOGIC SCHEMA
                     </Typography>
                 </Box>
-              <Button 
-                variant="outlined" 
-                size="small" 
-                startIcon={<AddIcon />} 
-                onClick={addField} 
-                sx={{ 
-                    borderRadius: '12px', 
-                    fontWeight: 800, 
-                    borderColor: alpha('#6366F1', 0.2),
-                    bgcolor: alpha('#6366F1', 0.03),
-                    '&:hover': { borderColor: 'var(--color-primary)', bgcolor: alpha('#6366F1', 0.1) }
-                }}
-              >
-                Insert Field
-              </Button>
             </Box>
 
             <Stack spacing={3}>
@@ -270,7 +431,24 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
                   <Stack spacing={3}>
                     <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="flex-start">
                         <Box sx={{ pt: 1, display: { xs: 'none', md: 'block' } }}>
-                            <DragIcon sx={{ color: 'rgba(255,255,255,0.1)', cursor: 'grab' }} />
+                            <Stack spacing={0.5}>
+                                <IconButton 
+                                    size="small" 
+                                    disabled={fIdx === 0} 
+                                    onClick={() => moveField(fIdx, 'up')}
+                                    sx={{ p: 0.5, opacity: fIdx === 0 ? 0.2 : 0.5, '&:hover': { opacity: 1 } }}
+                                >
+                                    <UpIcon sx={{ fontSize: 16 }} />
+                                </IconButton>
+                                <IconButton 
+                                    size="small" 
+                                    disabled={fIdx === fields.length - 1} 
+                                    onClick={() => moveField(fIdx, 'down')}
+                                    sx={{ p: 0.5, opacity: fIdx === fields.length - 1 ? 0.2 : 0.5, '&:hover': { opacity: 1 } }}
+                                >
+                                    <DownIcon sx={{ fontSize: 16 }} />
+                                </IconButton>
+                            </Stack>
                         </Box>
                         
                         <Stack spacing={2} sx={{ flexGrow: 1, width: '100%' }}>
@@ -316,7 +494,21 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
                                     }
                                     label={<Typography variant="caption" sx={{ fontWeight: 800, opacity: 0.6 }}>REQUIRED</Typography>}
                                 />
-                                
+
+                                <Tooltip title="Field Settings">
+                                    <IconButton 
+                                        size="small" 
+                                        onClick={() => updateField(fIdx, { showSettings: !field.showSettings })}
+                                        sx={{ 
+                                            color: field.showSettings ? 'var(--color-primary)' : 'rgba(255,255,255,0.3)',
+                                            bgcolor: field.showSettings ? alpha('#6366F1', 0.1) : 'transparent',
+                                            '&:hover': { bgcolor: alpha('#6366F1', 0.1) } 
+                                        }}
+                                    >
+                                        <SettingsIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+
                                 <Box sx={{ flexGrow: 1 }} />
                                 
                                 <Tooltip title="Remove Field">
@@ -327,6 +519,86 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
                             </Stack>
                         </Stack>
                     </Stack>
+
+                    {field.showSettings && (
+                        <Box sx={{ pl: { md: 5 }, pr: 2 }}>
+                            <Paper sx={{ p: 2, bgcolor: alpha('#fff', 0.02), borderRadius: '14px', border: '1px solid rgba(255,255,255,0.03)' }}>
+                                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 2, display: 'block', letterSpacing: '0.05em' }}>
+                                    VALIDATION CONSTRAINTS
+                                </Typography>
+                                <Stack direction="row" spacing={2}>
+                                    {(field.type === 'text' || field.type === 'textarea') && (
+                                        <>
+                                            <TextField
+                                                label="MIN LEN"
+                                                type="number"
+                                                size="small"
+                                                variant="filled"
+                                                value={field.validation?.minLength || ''}
+                                                onChange={(e) => updateField(fIdx, { 
+                                                    validation: { ...field.validation, minLength: e.target.value } 
+                                                })}
+                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                                sx={{ width: 100 }}
+                                            />
+                                            <TextField
+                                                label="MAX LEN"
+                                                type="number"
+                                                size="small"
+                                                variant="filled"
+                                                value={field.validation?.maxLength || ''}
+                                                onChange={(e) => updateField(fIdx, { 
+                                                    validation: { ...field.validation, maxLength: e.target.value } 
+                                                })}
+                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                                sx={{ width: 100 }}
+                                            />
+                                            <TextField
+                                                label="REGEX PATTERN"
+                                                size="small"
+                                                variant="filled"
+                                                placeholder="^[a-zA-Z]+$"
+                                                value={field.validation?.pattern || ''}
+                                                onChange={(e) => updateField(fIdx, { 
+                                                    validation: { ...field.validation, pattern: e.target.value } 
+                                                })}
+                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                                sx={{ flexGrow: 1 }}
+                                            />
+                                        </>
+                                    )}
+                                    {field.type === 'number' && (
+                                        <>
+                                            <TextField
+                                                label="MIN VALUE"
+                                                type="number"
+                                                size="small"
+                                                variant="filled"
+                                                value={field.validation?.min || ''}
+                                                onChange={(e) => updateField(fIdx, { 
+                                                    validation: { ...field.validation, min: e.target.value } 
+                                                })}
+                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                                sx={{ width: 120 }}
+                                            />
+                                            <TextField
+                                                label="MAX VALUE"
+                                                type="number"
+                                                size="small"
+                                                variant="filled"
+                                                value={field.validation?.max || ''}
+                                                onChange={(e) => updateField(fIdx, { 
+                                                    validation: { ...field.validation, max: e.target.value } 
+                                                })}
+                                                InputProps={{ disableUnderline: true, sx: { borderRadius: '8px', fontSize: '0.75rem' } }}
+                                                sx={{ width: 120 }}
+                                            />
+                                        </>
+                                    )}
+                                </Stack>
+                            </Paper>
+                        </Box>
+                    )}
 
                     {isChoiceType(field.type) && (
                         <Box sx={{ pl: { md: 5 } }}>
@@ -369,12 +641,20 @@ export default function FormDialog({ open, onClose, form, onSaved }: FormDialogP
                   </Stack>
                 </Paper>
               ))}
+              <div ref={fieldsEndRef} />
             </Stack>
           </Box>
         </Stack>
       </DialogContent>
 
       <DialogActions sx={{ p: 4, pt: 2, gap: 2 }}>
+        <Box sx={{ flexGrow: 1 }}>
+            {hasUnsavedChanges && (
+                <Typography variant="caption" sx={{ color: '#FFB020', fontWeight: 700, ml: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <SyncIcon sx={{ fontSize: 14 }} /> LOCAL AUTOSAVE ACTIVE
+                </Typography>
+            )}
+        </Box>
         <Button onClick={onClose} disabled={loading} sx={{ fontWeight: 800, color: 'text.secondary' }}>Cancel</Button>
         <Button 
           variant="contained" 
