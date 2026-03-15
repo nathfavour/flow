@@ -8,11 +8,30 @@ import { LayoutProvider } from '@/context/LayoutContext';
 import { OriginProvider } from '@/context/origin/OriginProvider';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { SudoProvider } from '@/context/SudoContext';
+import { SubscriptionProvider } from '@/context/subscription/SubscriptionContext';
 import { useEcosystemIntents } from '@/hooks/useEcosystemIntents';
-import { useEcosystemNode } from '@/hooks/useEcosystemNode';
 
-interface AppProvidersProps {
-  children: React.ReactNode;
+export function AppProviders({ children }: AppProvidersProps) {
+  return (
+    <SubscriptionProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <LayoutProvider>
+              <OriginProvider>
+                <SudoProvider>
+                  <TaskProvider>
+                    <EcosystemHandler />
+                    {children}
+                  </TaskProvider>
+                </SudoProvider>
+              </OriginProvider>
+            </LayoutProvider>
+          </NotificationProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </SubscriptionProvider>
+  );
 }
 
 function EcosystemHandler() {
