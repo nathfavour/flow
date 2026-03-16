@@ -13,12 +13,12 @@ const getDesignTokens = (): ThemeOptions => ({
       main: '#10B981', // Atomic Emerald
     },
     background: {
-      default: '#000000', // The Void
-      paper: '#0A0A0A',   // The Surface
+      default: '#0A0908', // Deep Void Ash
+      paper: '#161412',   // Elevated Surface
     },
     text: {
       primary: '#F2F2F2',   // Titanium
-      secondary: '#A1A1AA', // Gunmetal
+      secondary: '#94A3B8', // Muted Slate
       disabled: '#404040',  // Carbon
     },
     divider: 'rgba(255, 255, 255, 0.08)', // Subtle Border
@@ -85,12 +85,27 @@ const getDesignTokens = (): ThemeOptions => ({
   shape: {
     borderRadius: 16,
   },
-  shadows: Array(25).fill('none') as any,
+  shadows: [
+    'none',
+    '0px 2px 4px rgba(0,0,0,0.4)',
+    '0px 4px 8px rgba(0,0,0,0.4)',
+    '0px 8px 16px rgba(0,0,0,0.5)',
+    '0px 12px 24px rgba(0,0,0,0.5)',
+    '0px 16px 32px rgba(0,0,0,0.6)',
+    '0px 20px 40px rgba(0,0,0,0.6)',
+    '0px 24px 48px rgba(0,0,0,0.7)',
+    '0px 28px 56px rgba(0,0,0,0.7)',
+    '0px 32px 64px rgba(0,0,0,0.8)',
+    ...Array(15).fill('0px 32px 64px rgba(0,0,0,0.8)')
+  ] as any,
   components: {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#000000',
+          backgroundColor: '#0A0908',
+          backgroundImage: `radial-gradient(circle at 50% -20%, ${alpha('#6366F1', 0.12)} 0%, transparent 70%), 
+                           linear-gradient(180deg, ${alpha('#161412', 0.4)} 0%, transparent 100%)`,
+          backgroundAttachment: 'fixed',
           color: '#F2F2F2',
           fontFamily: 'var(--font-satoshi), "Satoshi", sans-serif',
           scrollbarColor: '#222222 transparent',
@@ -114,11 +129,12 @@ const getDesignTokens = (): ThemeOptions => ({
           borderRadius: '12px',
           padding: '8px 20px',
           fontSize: '0.875rem',
-          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           textTransform: 'none',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
           '&:hover': {
-            transform: 'translateY(-1px)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 12px 24px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
           },
           '&:active': {
             transform: 'scale(0.98)',
@@ -132,11 +148,13 @@ const getDesignTokens = (): ThemeOptions => ({
         },
         containedPrimary: {
           backgroundColor: '#6366F1',
-          color: '#000000',
+          color: '#FFFFFF',
           border: 'none',
+          backgroundImage: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
           '&:hover': {
             backgroundColor: '#00D1DB',
-            boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)',
+            boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
           },
         },
         outlined: {
@@ -189,21 +207,20 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(10, 10, 10, 0.8)',
-          backdropFilter: 'blur(20px) saturate(160%)',
+          backgroundColor: 'rgba(22, 20, 18, 0.98)',
           backgroundImage: 'none',
           border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)',
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 24,
-          backgroundColor: 'rgba(10, 10, 10, 0.9)',
-          backdropFilter: 'blur(30px) saturate(180%)',
+          borderRadius: 32,
+          backgroundColor: 'rgba(22, 20, 18, 0.99)',
           border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 32px 64px rgba(0, 0, 0, 0.6)',
+          boxShadow: '0 48px 96px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05)',
         },
       },
     },

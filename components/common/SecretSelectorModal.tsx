@@ -72,7 +72,7 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
         sx: {
           borderRadius: '24px',
           backgroundImage: 'none',
-          backgroundColor: 'rgba(10, 10, 10, 0.95)',
+          backgroundColor: 'rgba(15, 13, 12, 0.95)',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           boxShadow: '0 24px 48px rgba(0, 0, 0, 0.8)',

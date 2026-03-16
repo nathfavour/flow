@@ -124,8 +124,7 @@ export default function AppBar() {
       elevation={0}
       sx={{
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: 'rgba(5, 5, 5, 0.01)',
-        backdropFilter: 'blur(25px) saturate(180%)',
+        backgroundColor: 'rgba(11, 9, 8, 0.95)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}
     >
@@ -372,8 +371,7 @@ export default function AppBar() {
               width: 260,
               mt: 2,
               borderRadius: '24px',
-              bgcolor: 'rgba(5, 5, 5, 0.05)',
-              backdropFilter: 'blur(30px) saturate(180%)',
+              bgcolor: 'rgba(11, 9, 8, 0.98)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundImage: 'none',
               p: 1,
@@ -448,8 +446,7 @@ export default function AppBar() {
               mt: 2,
               p: 2,
               borderRadius: '28px',
-              bgcolor: 'rgba(5, 5, 5, 0.05)',
-              backdropFilter: 'blur(30px) saturate(180%)',
+              bgcolor: 'rgba(11, 9, 8, 0.98)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundImage: 'none',
               color: 'white'
@@ -533,8 +530,7 @@ export default function AppBar() {
               width: 380,
               mt: 2,
               borderRadius: '28px',
-              bgcolor: 'rgba(5, 5, 5, 0.05)',
-              backdropFilter: 'blur(35px) saturate(180%)',
+              bgcolor: 'rgba(11, 9, 8, 0.98)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundImage: 'none',
               color: 'white',

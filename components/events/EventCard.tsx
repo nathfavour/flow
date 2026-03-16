@@ -73,8 +73,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'rgba(255, 255, 255, 0.02)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(28, 26, 24, 0.98)',
       }}
       onClick={onClick}
     >
@@ -97,11 +96,10 @@ export default function EventCard({ event, onClick }: EventCardProps) {
             position: 'absolute',
             top: 12,
             left: 12,
-            bgcolor: 'rgba(10, 10, 10, 0.8)',
+            bgcolor: 'rgba(10, 10, 10, 0.95)',
             borderRadius: '12px',
             px: 1.5,
             py: 0.75,
-            backdropFilter: 'blur(12px)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -143,14 +141,13 @@ export default function EventCard({ event, onClick }: EventCardProps) {
               top: 12,
               right: 12,
               bgcolor: dateLabel === 'Today' 
-                ? 'rgba(76, 175, 80, 0.2)'
-                : 'rgba(33, 150, 243, 0.2)',
-              color: dateLabel === 'Today' ? '#4CAF50' : '#2196F3',
+                ? 'rgba(76, 175, 80, 0.9)'
+                : 'rgba(33, 150, 243, 0.9)',
+              color: 'black',
               border: `1px solid ${dateLabel === 'Today' ? 'rgba(76, 175, 80, 0.3)' : 'rgba(33, 150, 243, 0.3)'}`,
               fontWeight: 800,
               fontSize: '0.65rem',
               height: 22,
-              backdropFilter: 'blur(4px)',
               textTransform: 'uppercase',
             }}
           />
@@ -198,7 +195,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
                   width: 28, 
                   height: 28, 
                   fontSize: 11,
-                  border: '2px solid #0A0A0A',
+                  border: '2px solid #0F0D0C',
                   bgcolor: 'rgba(255, 255, 255, 0.05)',
                 } 
               }}
@@ -237,8 +234,7 @@ export default function EventCard({ event, onClick }: EventCardProps) {
           sx: { 
             minWidth: 180, 
             borderRadius: '16px',
-            backgroundColor: 'rgba(10, 10, 10, 0.95)',
-            backdropFilter: 'blur(20px)',
+            backgroundColor: 'rgba(22, 20, 18, 0.99)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
             backgroundImage: 'none',

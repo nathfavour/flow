@@ -196,8 +196,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
         sx: {
           borderRadius: '24px',
           backgroundImage: 'none',
-          backgroundColor: 'rgba(10, 10, 10, 0.95)',
-          backdropFilter: 'blur(20px)',
+          backgroundColor: 'rgba(22, 20, 18, 0.98)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           boxShadow: '0 32px 64px rgba(0, 0, 0, 0.7)',
           overflow: 'hidden',
@@ -266,7 +265,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
                   p: 0.5,
                   display: 'flex',
                   boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
-                  border: '2px solid #0A0A0A'
+                  border: '2px solid #0F0D0C'
                 }}
               >
                 <CheckCircle2 size={16} strokeWidth={3} />

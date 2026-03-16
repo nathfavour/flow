@@ -225,7 +225,7 @@ export function PasskeySetup({
       PaperProps={{
         sx: {
           borderRadius: '24px',
-          bgcolor: 'rgba(10, 10, 10, 0.95)',
+          bgcolor: 'rgba(15, 13, 12, 0.95)',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           backgroundImage: 'none',

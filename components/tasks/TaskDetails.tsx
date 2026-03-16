@@ -170,27 +170,36 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
   };
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'transparent' }}>
+    <Box sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      bgcolor: 'transparent',
+      perspective: '1200px',
+    }}>
       {/* Header */}
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: 3,
-          py: 2,
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          px: 4,
+          py: 3,
+          bgcolor: 'rgba(28, 26, 24, 0.95)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2)',
+          zIndex: 1
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Checkbox
             checked={task.status === 'done'}
             onChange={() => completeTask(task.id)}
             sx={{
               p: 0,
-              color: 'rgba(255, 255, 255, 0.2)',
+              color: 'rgba(255, 255, 255, 0.15)',
               '&.Mui-checked': { color: '#6366F1' },
-              '&:hover': { bgcolor: 'rgba(99, 102, 241, 0.05)' }
+              '&:hover': { bgcolor: alpha('#6366F1', 0.1) }
             }}
           />
           <Chip
@@ -199,31 +208,74 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
             onClick={(e) => setStatusAnchor(e.currentTarget)}
             sx={{ 
               cursor: 'pointer',
-              bgcolor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              fontWeight: 700,
+              bgcolor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              fontWeight: 800,
               fontSize: '0.65rem',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.1)' }
+              letterSpacing: '0.12em',
+              fontFamily: 'var(--font-clash-display)',
+              borderRadius: '8px',
+              transition: 'all 0.2s ease',
+              '&:hover': { 
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                transform: 'translateY(-1px)'
+              }
             }}
           />
         </Box>
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <IconButton size="small" onClick={handleStartEdit} sx={{ color: 'text.secondary', '&:hover': { color: '#F2F2F2' } }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton 
+            size="small" 
+            onClick={handleStartEdit} 
+            sx={{ 
+              color: 'text.secondary', 
+              bgcolor: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              transition: 'all 0.2s ease',
+              '&:hover': { color: '#F2F2F2', bgcolor: 'rgba(255, 255, 255, 0.08)', transform: 'translateY(-1px)' } 
+            }}
+          >
             <EditIcon sx={{ fontSize: 18 }} />
           </IconButton>
-          <IconButton size="small" onClick={closeSecondarySidebar} sx={{ color: 'text.secondary', '&:hover': { color: '#F2F2F2' } }}>
+          <IconButton 
+            size="small" 
+            onClick={closeSecondarySidebar} 
+            sx={{ 
+              color: 'text.secondary', 
+              bgcolor: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              transition: 'all 0.2s ease',
+              '&:hover': { color: '#F2F2F2', bgcolor: 'rgba(255, 255, 255, 0.08)', transform: 'translateY(-1px)' } 
+            }}
+          >
             <CloseIcon sx={{ fontSize: 20 }} />
           </IconButton>
         </Box>
       </Box>
 
       {/* Scrollable Content */}
-      <Box sx={{ px: 3, py: 4, overflow: 'auto', flexGrow: 1 }}>
+      <Box sx={{ 
+        px: 4, 
+        py: 5, 
+        overflow: 'auto', 
+        flexGrow: 1,
+        '&::-webkit-scrollbar': { width: 0 },
+        scrollbarWidth: 'none'
+      }}>
         {/* Title & Description */}
         {isEditing ? (
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ 
+            mb: 6,
+            p: 3,
+            bgcolor: alpha('#161412', 0.4),
+            borderRadius: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+          }}>
             <TextField
               fullWidth
               variant="standard"
@@ -231,12 +283,13 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               onChange={(e) => setEditTitle(e.target.value)}
               placeholder="Task title"
               autoFocus
-              sx={{ mb: 2 }}
+              sx={{ mb: 2.5 }}
               InputProps={{ 
                 sx: { 
-                    fontSize: '1.5rem', 
-                    fontWeight: 800, 
-                    fontFamily: 'var(--font-space-grotesk)',
+                    fontSize: '1.75rem', 
+                    fontWeight: 900, 
+                    fontFamily: 'var(--font-clash-display)',
+                    letterSpacing: '-0.02em',
                     '&:before, &:after': { display: 'none' } 
                 } 
               }}
@@ -244,34 +297,53 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
             <TextField
               fullWidth
               multiline
-              rows={3}
-              variant="outlined"
+              rows={4}
+              variant="standard"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               placeholder="Add more context..."
-              sx={{ 
-                '& .MuiOutlinedInput-root': {
+              InputProps={{
+                disableUnderline: true,
+                sx: { 
                     bgcolor: 'rgba(255, 255, 255, 0.02)',
-                    fontSize: '0.9rem'
+                    p: 2,
+                    borderRadius: '16px',
+                    fontSize: '0.95rem',
+                    fontFamily: 'var(--font-satoshi)',
+                    lineHeight: 1.6
                 }
               }}
             />
-            <Box sx={{ display: 'flex', gap: 1.5, mt: 2.5 }}>
-              <Button size="small" variant="contained" onClick={handleSaveEdit}>
-                Save Changes
+            <Box sx={{ display: 'flex', gap: 2, mt: 3.5 }}>
+              <Button 
+                variant="contained" 
+                onClick={handleSaveEdit}
+                sx={{ borderRadius: '12px', px: 3, fontWeight: 800 }}
+              >
+                Save
               </Button>
-              <Button size="small" onClick={() => setIsEditing(false)} sx={{ color: 'text.secondary' }}>
+              <Button 
+                onClick={() => setIsEditing(false)} 
+                sx={{ color: 'text.secondary', fontWeight: 700 }}
+              >
                 Cancel
               </Button>
             </Box>
           </Box>
         ) : (
-          <Box sx={{ mb: 5 }}>
+          <Box sx={{ 
+            mb: 6,
+            transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            '&:hover': { transform: 'translateZ(10px)' }
+          }}>
             <Typography
-              variant="h4"
+              variant="h3"
               sx={{
-                mb: 1.5,
-                lineHeight: 1.2,
+                mb: 2.5,
+                fontWeight: 900,
+                lineHeight: 1.1,
+                fontFamily: 'var(--font-clash-display)',
+                letterSpacing: '-0.03em',
                 textDecoration: task.status === 'done' ? 'line-through' : 'none',
                 color: task.status === 'done' ? 'text.disabled' : '#F2F2F2',
                 opacity: task.status === 'done' ? 0.6 : 1,
@@ -280,7 +352,17 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               {task.title}
             </Typography>
             {task.description && (
-              <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '0.95rem', lineHeight: 1.7 }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'text.secondary', 
+                  fontSize: '1rem', 
+                  lineHeight: 1.8,
+                  fontFamily: 'var(--font-satoshi)',
+                  fontWeight: 500,
+                  opacity: 0.8
+                }}
+              >
                 {task.description}
               </Typography>
             )}
@@ -288,31 +370,42 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
         )}
 
         {/* Actionable Meta Grid */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, mb: 5 }}>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr 1fr', 
+          gap: 4, 
+          mb: 6,
+          p: 4,
+          bgcolor: alpha('#161412', 0.2),
+          borderRadius: '32px',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.02)'
+        }}>
           {/* Project */}
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>Project</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: project?.color || '#6366F1' }} />
-                 <Typography variant="body2" fontWeight={600}>{project?.name || 'Inbox'}</Typography>
+            <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Project Domain</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                 <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: project?.color || '#6366F1', boxShadow: `0 0 10px ${alpha(project?.color || '#6366F1', 0.4)}` }} />
+                 <Typography variant="body2" fontWeight={800} sx={{ fontFamily: 'var(--font-clash-display)', letterSpacing: '0.02em' }}>{project?.name || 'Inbox'}</Typography>
             </Box>
           </Box>
 
           {/* Priority */}
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>Priority</Typography>
+            <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Urgency Level</Typography>
             <Box 
                 onClick={(e) => setPriorityAnchor(e.currentTarget)}
                 sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: 1, 
+                    gap: 1.5, 
                     cursor: 'pointer',
-                    '&:hover': { opacity: 0.8 }
+                    transition: 'opacity 0.2s',
+                    '&:hover': { opacity: 0.7 }
                 }}
             >
-                 <FlagIcon sx={{ fontSize: 16, color: priorityColors[task.priority] }} />
-                 <Typography variant="body2" fontWeight={600} sx={{ color: priorityColors[task.priority] }}>
+                 <FlagIcon sx={{ fontSize: 18, color: priorityColors[task.priority] }} />
+                 <Typography variant="body2" fontWeight={800} sx={{ color: priorityColors[task.priority], fontFamily: 'var(--font-clash-display)', letterSpacing: '0.05em' }}>
                     {task.priority.toUpperCase()}
                  </Typography>
             </Box>
@@ -320,11 +413,11 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
 
           {/* Due Date */}
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>Timeline</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                 <CalendarIcon sx={{ fontSize: 16 }} />
-                 <Typography variant="body2" fontWeight={500}>
-                    {task.dueDate ? format(new Date(task.dueDate), 'MMM d, yyyy') : 'Indefinite'}
+            <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Timeline Deadline</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'text.secondary' }}>
+                 <CalendarIcon sx={{ fontSize: 18, opacity: 0.6 }} />
+                 <Typography variant="body2" fontWeight={700} sx={{ fontFamily: 'var(--font-satoshi)' }}>
+                    {task.dueDate ? format(new Date(task.dueDate), 'MMM d, yyyy') : 'Open Schedule'}
                  </Typography>
             </Box>
           </Box>
@@ -332,20 +425,23 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
           {/* Labels */}
           {taskLabels.length > 0 && (
             <Box>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>Tags</Typography>
-                <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Meta Tags</Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {taskLabels.map((label) => (
                     <Chip
                         key={label.id}
                         label={label.name}
                         size="small"
                         sx={{
-                            height: 20,
-                            fontSize: '0.6rem',
-                            bgcolor: 'transparent',
-                            border: `1px solid ${alpha(label.color, 0.4)}`,
+                            height: 22,
+                            fontSize: '0.65rem',
+                            bgcolor: alpha(label.color, 0.08),
+                            border: `1px solid ${alpha(label.color, 0.2)}`,
                             color: label.color,
-                            fontWeight: 700,
+                            fontWeight: 800,
+                            fontFamily: 'var(--font-clash-display)',
+                            letterSpacing: '0.05em',
+                            borderRadius: '6px'
                         }}
                     />
                     ))}

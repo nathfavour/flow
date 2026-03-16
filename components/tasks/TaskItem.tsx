@@ -284,7 +284,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
           sx: { 
             minWidth: 180, 
             borderRadius: 2,
-            backgroundColor: '#0A0A0A',
+            backgroundColor: '#0F0D0C',
             border: '1px solid #222222',
             boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
           },
