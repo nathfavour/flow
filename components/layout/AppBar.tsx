@@ -384,29 +384,13 @@ export default function AppBar() {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           {user && (
-            <Box sx={{ px: 2.5, py: 2.5, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar 
-                src={profileUrl || undefined}
-                sx={{ 
-                  width: 44, 
-                  height: 44, 
-                  bgcolor: 'rgba(99, 102, 241, 0.1)',
-                  color: '#6366F1',
-                  borderRadius: '12px',
-                  fontWeight: 900,
-                  border: '1px solid rgba(99, 102, 241, 0.1)'
-                }}
-              >
-                {getInitials(user)}
-              </Avatar>
-              <Box sx={{ minWidth: 0 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 800, fontFamily: 'var(--font-satoshi)', lineHeight: 1.2 }}>
-                  {user.name}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'var(--font-mono)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }} noWrap>
-                  {user.email}
-                </Typography>
-              </Box>
+            <Box sx={{ px: 3, py: 2.5, bgcolor: 'rgba(255, 255, 255, 0.02)' }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                Account Identity
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: 'white', mt: 0.5, opacity: 0.9 }}>
+                {user?.email}
+              </Typography>
             </Box>
           )}
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', my: 1 }} />
