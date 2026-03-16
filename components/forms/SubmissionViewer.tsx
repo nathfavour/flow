@@ -32,8 +32,9 @@ import {
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { FormSubmissions } from '@/generated/appwrite/types';
+import ResponseDetailSidebar from './ResponseDetailSidebar';
 
-const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue, onToggleRead, onToggleFlag }: any) => (
+const SubmissionViewerTable = ({ submissions, headers, schemaMap, parsePayload, renderValue, onToggleRead, onToggleFlag, onRowClick }: any) => (
     <TableContainer component={Paper} sx={{ bgcolor: 'transparent', backgroundImage: 'none', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '24px', overflow: 'hidden' }}>
       <Table size="medium">
         <TableHead>
@@ -42,7 +43,7 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
             <TableCell sx={{ fontWeight: 900, color: 'text.secondary', py: 3, borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>TIMESTAMP</TableCell>
             <TableCell sx={{ fontWeight: 900, color: 'text.secondary', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>SUBMITTER</TableCell>
             {headers.map((h: string) => (
-              <TableCell key={h} sx={{ fontWeight: 900, color: 'text.secondary', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ fontWeight: 900, color: 'text.secondary', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', letterSpacing: '0.1em' }}>{schemaMap?.[h] || h}</TableCell>
             ))}
             <TableCell sx={{ width: 100, borderBottom: '1px solid rgba(255,255,255,0.05)' }}></TableCell>
           </TableRow>
@@ -54,7 +55,15 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
             const isFlagged = sub.flagged || false;
 
             return (
-              <TableRow key={sub.$id} sx={{ '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.01)' }, transition: 'background-color 0.2s', opacity: isRead ? 0.7 : 1 }}>
+              <TableRow 
+                key={sub.$id} 
+                onClick={() => onRowClick(sub)}
+                sx={{ 
+                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.02)', cursor: 'pointer' }, 
+                  transition: 'background-color 0.2s', 
+                  opacity: isRead ? 0.7 : 1 
+                }}
+              >
                 <TableCell sx={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                     {!isRead && <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'var(--color-primary)', boxShadow: `0 0 10px ${alpha('#6366F1', 0.5)}` }} />}
                 </TableCell>
@@ -79,7 +88,7 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
                     {renderValue(data[h])}
                   </TableCell>
                 ))}
-                <TableCell sx={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                <TableCell sx={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }} onClick={(e) => e.stopPropagation()}>
                     <Stack direction="row" spacing={1}>
                         <Tooltip title={isRead ? "Mark as unread" : "Mark as read"}>
                             <IconButton size="small" onClick={() => onToggleRead(sub.$id, !isRead)} sx={{ color: isRead ? 'rgba(255,255,255,0.2)' : 'var(--color-primary)' }}>
@@ -101,9 +110,25 @@ const SubmissionViewerTable = ({ submissions, headers, parsePayload, renderValue
     </TableContainer>
 );
 
-export default function SubmissionViewer({ formId }: { formId: string }) {
+export default function SubmissionViewer({ formId, formSchema }: { formId: string, formSchema?: string }) {
   const [submissions, setSubmissions] = useState<FormSubmissions[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSubmission, setSelectedSubmission] = useState<FormSubmissions | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Map of field IDs to labels
+  const schemaMap = React.useMemo(() => {
+    if (!formSchema) return {};
+    try {
+        const schema = JSON.parse(formSchema);
+        return schema.reduce((acc: any, field: any) => {
+            acc[field.id] = field.label;
+            return acc;
+        }, {});
+    } catch (e) {
+        return {};
+    }
+  }, [formSchema]);
 
   const fetchSubmissions = async () => {
     try {
@@ -136,6 +161,14 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
       setSubmissions(prev => prev.map(s => s.$id === id ? { ...s, flagged } : s));
     } catch (e) {
         console.error("Failed to update flagged status", e);
+    }
+  };
+
+  const handleRowClick = (sub: FormSubmissions) => {
+    setSelectedSubmission(sub);
+    setSidebarOpen(true);
+    if (!sub.read) {
+        handleToggleRead(sub.$id, true);
     }
   };
 
@@ -238,10 +271,18 @@ export default function SubmissionViewer({ formId }: { formId: string }) {
         <SubmissionViewerTable 
             submissions={submissions} 
             headers={headers} 
+            schemaMap={schemaMap}
             parsePayload={parsePayload} 
             renderValue={renderValue} 
             onToggleRead={handleToggleRead}
             onToggleFlag={handleToggleFlag}
+            onRowClick={handleRowClick}
+        />
+        <ResponseDetailSidebar 
+            open={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)} 
+            submission={selectedSubmission} 
+            schemaMap={schemaMap}
         />
     </Box>
   );
