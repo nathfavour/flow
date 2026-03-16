@@ -1,6 +1,6 @@
 'use client';
 
-import { createTheme, ThemeOptions } from '@mui/material/styles';
+import { createTheme, ThemeOptions, alpha } from '@mui/material/styles';
 
 const getDesignTokens = (): ThemeOptions => ({
   palette: {
@@ -207,9 +207,9 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(22, 20, 18, 0.98)',
+          backgroundColor: '#161412',
           backgroundImage: 'none',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
           boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)',
         },
       },
@@ -218,8 +218,8 @@ const getDesignTokens = (): ThemeOptions => ({
       styleOverrides: {
         paper: {
           borderRadius: 32,
-          backgroundColor: 'rgba(22, 20, 18, 0.99)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
+          backgroundColor: '#161412',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: '0 48px 96px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05)',
         },
       },

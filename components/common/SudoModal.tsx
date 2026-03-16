@@ -28,6 +28,7 @@ import {
     Eye,
     EyeOff,
 } from "lucide-react";
+import Logo from "./Logo";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { AppwriteService } from "@/lib/appwrite";
 import { useAuth } from "@/context/auth/AuthContext";
@@ -298,18 +299,16 @@ export default function SudoModal({
             <DialogTitle sx={{ textAlign: 'center', pt: 6, pb: 1, position: 'relative' }}>
                 <Box sx={{ position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)' }}>
                     <Box sx={{ position: 'relative' }}>
-                        <Box
-                            component="img"
-                            src="/logo.jpg"
-                            alt="App Logo"
+                        <Logo 
+                            variant="icon" 
+                            size={64} 
+                            app="flow"
                             sx={{
-                                width: 64,
-                                height: 64,
                                 borderRadius: '18px',
-                                objectFit: 'cover',
                                 border: '2px solid rgba(255, 255, 255, 0.1)',
-                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-                            }}
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                                bgcolor: '#0A0908'
+                            }} 
                         />
                         <Box sx={{
                             position: 'absolute',
