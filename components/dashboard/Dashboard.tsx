@@ -52,21 +52,30 @@ function StatCard({ title, value, subtitle, icon, color, onClick }: StatCardProp
   return (
     <Paper
       onClick={onClick}
-      className="glass-panel"
       sx={{
         p: 3,
         borderRadius: '24px',
         cursor: onClick ? 'pointer' : 'default',
-        backgroundColor: 'rgba(10, 10, 10, 0.4)',
+        backgroundColor: '#161412',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         position: 'relative',
-        overflow: 'hidden',
+        boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background: 'rgba(255, 255, 255, 0.03)',
+          borderRadius: '24px',
+        },
         '&:hover': onClick
           ? {
-            borderColor: alpha(resolvedColor, 0.4),
-            transform: 'translateY(-4px)',
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            boxShadow: `0 20px 40px ${alpha('#000000', 0.6)}, 0 0 20px ${alpha(resolvedColor, 0.1)}`,
+            borderColor: alpha(resolvedColor, 0.3),
+            transform: 'translateY(-2px)',
+            boxShadow: `0 20px 40px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4)`,
           }
           : {},
       }}
@@ -243,10 +252,10 @@ export default function Dashboard() {
       <Box sx={{ mb: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 3 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-            <Box sx={{ p: 0.8, borderRadius: '10px', bgcolor: alpha('#6366F1', 0.1), color: 'var(--color-brand)', border: '1px solid ' + alpha('#6366F1', 0.2) }}>
+            <Box sx={{ p: 0.8, borderRadius: '10px', bgcolor: alpha('#6366F1', 0.1), color: '#6366F1', border: '1px solid ' + alpha('#6366F1', 0.2) }}>
               <LayoutDashboard size={18} strokeWidth={2.5} />
             </Box>
-            <Typography variant="overline" sx={{ fontWeight: 800, color: 'var(--color-brand)', letterSpacing: '0.25em', fontFamily: 'var(--font-clash)' }}>
+            <Typography variant="overline" sx={{ fontWeight: 800, color: '#6366F1', letterSpacing: '0.25em', fontFamily: 'var(--font-clash)' }}>
               OVERVIEW
             </Typography>
           </Box>
@@ -268,9 +277,9 @@ export default function Dashboard() {
             </Typography>
             <Divider orientation="vertical" flexItem sx={{ height: 16, mx: 1, opacity: 0.1, bgcolor: 'white' }} />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Activity size={14} color="var(--color-app)" />
-              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
-                  <span style={{ color: 'var(--color-app)', fontWeight: 800 }}>{todayTasks.length} tasks</span> due today
+              <Activity size={14} color="#A855F7" />
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem', fontWeight: 500 }}>
+                  <span style={{ color: '#A855F7', fontWeight: 800 }}>{todayTasks.length} tasks</span> due today
               </Typography>
             </Box>
           </Box>
@@ -281,19 +290,29 @@ export default function Dashboard() {
           onClick={() => setTaskDialogOpen(true)}
           sx={{
             borderRadius: '16px',
-            bgcolor: 'var(--color-brand)',
-            color: 'white',
+            bgcolor: '#6366F1',
+            color: '#000',
             fontWeight: 800,
             px: 4,
             py: 1.8,
             fontFamily: 'var(--font-clash)',
             letterSpacing: '0.05em',
-            boxShadow: '0 8px 32px ' + alpha('#6366F1', 0.25),
+            boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
             transition: 'all 0.3s ease',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '1px',
+              background: 'rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+            },
             '&:hover': {
               bgcolor: alpha('#6366F1', 0.8),
               transform: 'translateY(-2px)',
-              boxShadow: '0 12px 40px ' + alpha('#6366F1', 0.35),
+              boxShadow: '0 10px 25px rgba(99, 102, 241, 0.2), 0 1px 0 rgba(0, 0, 0, 0.4)',
             }
           }}
         >
@@ -309,7 +328,7 @@ export default function Dashboard() {
             value={todayTasks.length}
             subtitle={`${tomorrowTasks.length} pending tomorrow`}
             icon={<Clock />}
-            color="var(--color-brand)"
+            color="#6366F1"
             onClick={() => handleViewTasks('today')}
           />
         </Grid>
@@ -319,7 +338,7 @@ export default function Dashboard() {
             value={overdueTasks.length}
             subtitle="Immediate action required"
             icon={<AlertTriangle />}
-            color="#FF4D4D"
+            color="#ef4444"
             onClick={() => handleViewTasks('overdue')}
           />
         </Grid>
@@ -329,7 +348,7 @@ export default function Dashboard() {
             value={inProgressTasks.length}
             subtitle={`${urgentTasks.length} identified as urgent`}
             icon={<Activity />}
-            color="var(--color-app)"
+            color="#A855F7"
             onClick={() => handleViewTasks('in-progress')}
           />
         </Grid>
@@ -351,15 +370,25 @@ export default function Dashboard() {
           {/* Urgent Tasks Section */}
           {(urgentTasks.length > 0 || highPriorityTasks.length > 0) && (
             <Paper
-              className="glass-panel"
               sx={{
                 p: 4,
                 mb: 4,
                 borderRadius: '32px',
-                backgroundColor: 'rgba(255, 77, 77, 0.02)',
-                border: '1px solid rgba(255, 77, 77, 0.1)',
+                backgroundColor: alpha('#ef4444', 0.02),
+                border: '1px solid rgba(239, 68, 68, 0.1)',
                 position: 'relative',
                 overflow: 'hidden',
+                boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  background: 'rgba(239, 68, 68, 0.05)',
+                  borderRadius: '32px',
+                },
                 '&::after': {
                   content: '""',
                   position: 'absolute',
@@ -367,14 +396,14 @@ export default function Dashboard() {
                   right: 0,
                   width: '200px',
                   height: '200px',
-                  background: 'radial-gradient(circle, rgba(255, 77, 77, 0.05) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(239, 68, 68, 0.05) 0%, transparent 70%)',
                   zIndex: 0
                 }
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, position: 'relative', zIndex: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1, borderRadius: '12px', bgcolor: 'rgba(255, 77, 77, 0.1)', color: '#FF4D4D' }}>
+                  <Box sx={{ p: 1, borderRadius: '12px', bgcolor: alpha('#ef4444', 0.1), color: '#ef4444' }}>
                     <Flag size={20} strokeWidth={2.5} />
                   </Box>
                   <Typography variant="h4" sx={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
@@ -384,7 +413,7 @@ export default function Dashboard() {
                     label={`${urgentTasks.length + highPriorityTasks.length} ITEMS`} 
                     size="small" 
                     sx={{ 
-                      bgcolor: '#FF4D4D', 
+                      bgcolor: '#ef4444', 
                       color: '#000', 
                       fontWeight: 900,
                       borderRadius: '8px',
@@ -408,16 +437,28 @@ export default function Dashboard() {
 
           {/* Active Tasks */}
           <Paper
-            className="glass-panel"
             sx={{
               p: 4,
               borderRadius: '32px',
-              backgroundColor: 'rgba(10, 10, 10, 0.3)',
+              backgroundColor: '#161412',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '1px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '32px',
+              },
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ p: 1, borderRadius: '12px', bgcolor: alpha('#6366F1', 0.05), color: 'var(--color-brand)' }}>
+                <Box sx={{ p: 1, borderRadius: '12px', bgcolor: alpha('#6366F1', 0.1), color: '#6366F1' }}>
                   <Calendar size={20} strokeWidth={2.5} />
                 </Box>
                 <Typography variant="h4" sx={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-clash)', letterSpacing: '-0.01em' }}>
@@ -428,7 +469,7 @@ export default function Dashboard() {
                   size="small" 
                   sx={{ 
                     bgcolor: alpha('#6366F1', 0.1), 
-                    color: 'var(--color-brand)', 
+                    color: '#6366F1', 
                     fontWeight: 900,
                     borderRadius: '8px',
                     fontSize: '0.65rem',
@@ -448,7 +489,7 @@ export default function Dashboard() {
                   fontSize: '0.75rem', 
                   letterSpacing: '0.1em',
                   fontFamily: 'var(--font-clash)',
-                  '&:hover': { color: 'var(--color-brand)', bgcolor: 'transparent' } 
+                  '&:hover': { color: '#6366F1', bgcolor: 'transparent' } 
                 }}
               >
                 VIEW ALL
@@ -503,12 +544,24 @@ export default function Dashboard() {
         <Grid size={{ xs: 12, lg: 4 }}>
           {/* Statistics */}
           <Paper
-            className="glass-panel"
             sx={{
               p: 4,
               mb: 4,
               borderRadius: '32px',
-              backgroundColor: 'rgba(10, 10, 10, 0.3)',
+              backgroundColor: '#161412',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '1px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '32px',
+              },
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
@@ -530,7 +583,7 @@ export default function Dashboard() {
                     {completedTasks.length} <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400 }}>/ {activeTasks.length}</span>
                   </Typography>
                 </Box>
-                  <Typography variant="h5" sx={{ color: 'var(--color-brand)', fontWeight: 900, fontFamily: 'var(--font-clash)' }}>
+                  <Typography variant="h5" sx={{ color: '#6366F1', fontWeight: 900, fontFamily: 'var(--font-clash)' }}>
                   {completionRate}%
                 </Typography>
               </Box>
@@ -543,7 +596,7 @@ export default function Dashboard() {
                   backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   '& .MuiLinearProgress-bar': {
                     borderRadius: 3,
-                    backgroundColor: 'var(--color-brand)',
+                    backgroundColor: '#6366F1',
                     boxShadow: '0 0 15px ' + alpha('#6366F1', 0.6)
                   },
                 }}
@@ -573,7 +626,7 @@ export default function Dashboard() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'var(--color-app)',
+                  color: '#A855F7',
                   border: '1px solid ' + alpha('#A855F7', 0.1)
                 }}
               >
@@ -583,7 +636,7 @@ export default function Dashboard() {
                 <Typography variant="caption" sx={{ color: alpha('#A855F7', 0.7), fontWeight: 800, letterSpacing: '0.1em', display: 'block', mb: 0.5, fontSize: '0.65rem' }}>
                   STREAK
                 </Typography>
-                <Typography variant="h4" sx={{ color: 'var(--color-app)', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'var(--font-clash)' }}>
+                <Typography variant="h4" sx={{ color: '#A855F7', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'var(--font-clash)' }}>
                   5 DAYS
                 </Typography>
               </Box>
@@ -592,12 +645,12 @@ export default function Dashboard() {
 
           {/* Productivity Tip */}
           <Paper
-            className="glass-panel"
             sx={{
               p: 4,
               borderRadius: '32px',
-              backgroundColor: alpha('#A855F7', 0.01),
-              border: '1px solid ' + alpha('#A855F7', 0.08),
+              backgroundColor: '#161412',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
               position: 'relative',
               overflow: 'hidden',
               '&::before': {
@@ -605,16 +658,26 @@ export default function Dashboard() {
                 position: 'absolute',
                 top: 0,
                 left: 0,
+                right: 0,
+                height: '1px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '32px',
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
                 width: '4px',
                 height: '100%',
-                bgcolor: 'var(--color-app)',
+                bgcolor: '#A855F7',
                 opacity: 0.5
               }
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <Lightbulb size={20} color="var(--color-app)" strokeWidth={2} />
-              <Typography variant="caption" sx={{ fontWeight: 900, color: 'var(--color-app)', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'var(--font-clash)' }}>
+              <Lightbulb size={20} color="#A855F7" strokeWidth={2} />
+              <Typography variant="caption" sx={{ fontWeight: 900, color: '#A855F7', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'var(--font-clash)' }}>
                 PRO TIP
               </Typography>
             </Box>
@@ -625,8 +688,8 @@ export default function Dashboard() {
               size="small" 
               sx={{ 
                 mt: 2, 
-                color: 'var(--color-app)', 
-                fontWeight: 700, 
+                color: '#A855F7', 
+                fontWeight: 800, 
                 fontSize: '0.7rem',
                 p: 0,
                 '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }

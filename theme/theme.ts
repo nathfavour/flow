@@ -21,7 +21,7 @@ const getDesignTokens = (): ThemeOptions => ({
       secondary: '#94A3B8', // Muted Slate
       disabled: '#404040',  // Carbon
     },
-    divider: 'rgba(255, 255, 255, 0.08)', // Subtle Border
+    divider: 'rgba(255, 255, 255, 0.05)', // Subtle Border
   },
   typography: {
     fontFamily: 'var(--font-satoshi), "Satoshi", sans-serif',
@@ -48,6 +48,16 @@ const getDesignTokens = (): ThemeOptions => ({
       fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
       fontSize: '1.5rem',
       fontWeight: 900,
+    },
+    h5: {
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
+      fontSize: '1.25rem',
+      fontWeight: 800,
+    },
+    h6: {
+      fontFamily: 'var(--font-clash), "Clash Display", sans-serif',
+      fontSize: '1.1rem',
+      fontWeight: 800,
     },
     subtitle1: {
       fontSize: '1.1rem',
@@ -126,35 +136,43 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '12px',
-          padding: '8px 20px',
-          fontSize: '0.875rem',
-          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          textTransform: 'none',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+          borderRadius: 12,
+          padding: '10px 20px',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '12px',
+          },
           '&:hover': {
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
             transform: 'translateY(-2px)',
-            boxShadow: '0 12px 24px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
           },
           '&:active': {
             transform: 'scale(0.98)',
           },
         },
-        contained: {
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          '&:hover': {
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-          }
-        },
         containedPrimary: {
           backgroundColor: '#6366F1',
-          color: '#FFFFFF',
+          color: '#000000',
           border: 'none',
-          backgroundImage: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
+          backgroundImage: 'none',
+          fontWeight: 800,
+          boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+          '&::before': {
+            background: 'rgba(255, 255, 255, 0.15)',
+          },
           '&:hover': {
-            backgroundColor: '#00D1DB',
-            boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
+            backgroundColor: alpha('#6366F1', 0.8),
+            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.2), 0 1px 0 rgba(0, 0, 0, 0.4)',
           },
         },
         outlined: {
@@ -162,7 +180,7 @@ const getDesignTokens = (): ThemeOptions => ({
           color: '#F2F2F2',
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            borderColor: 'rgba(255, 255, 255, 0.3)',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
           },
         },
       },
@@ -207,20 +225,50 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiPaper: {
       styleOverrides: {
         root: {
+          borderRadius: 24,
           backgroundColor: '#161412',
           backgroundImage: 'none',
           border: '1px solid rgba(255, 255, 255, 0.05)',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)',
+          position: 'relative',
+          boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '24px',
+          },
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            borderColor: 'rgba(99, 102, 241, 0.2)',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4)'
+          },
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 32,
+          borderRadius: 24,
           backgroundColor: '#161412',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 48px 96px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundImage: 'none',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(0, 0, 0, 0.4)',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '24px',
+          },
         },
       },
     },
