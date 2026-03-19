@@ -18,15 +18,17 @@ import {
   ToggleButton,
   Tooltip,
   alpha,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import {
   Close as CloseIcon,
   LocationOn,
   Link as LinkIcon,
-  Image as ImageIcon,
   Public as PublicIcon,
   Lock as PrivateIcon,
   LinkOff as UnlistedIcon,
+  VideoCall as VideoIcon,
 } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -60,6 +62,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
   const [coverImage, setCoverImage] = useState('');
   const [visibility, setVisibility] = useState<EventVisibility>('public');
   const [selectedGuests, setSelectedGuests] = useState<User[]>([]);
+  const [autoCreateCall, setAutoCreateCall] = useState(true);
 
   const handleSubmit = () => {
     if (!title.trim() || !startTime || !endTime) return;
@@ -74,6 +77,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
       coverImage,
       visibility,
       guests: selectedGuests.map(g => g.id),
+      autoCreateCall
     });
 
     resetForm();
@@ -89,6 +93,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
     setCoverImage('');
     setVisibility('public');
     setSelectedGuests([]);
+    setAutoCreateCall(true);
   };
 
   const handleClose = () => {
@@ -105,122 +110,238 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            borderRadius: '28px',
+            bgcolor: 'rgba(10, 10, 10, 0.9)',
+            backdropFilter: 'blur(25px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundImage: 'none',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+            overflow: 'hidden'
           },
         }}
       >
         <DialogTitle
           sx={{
+            p: 3,
+            pb: 2,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            pb: 1,
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
           }}
         >
-          <Typography variant="h6" fontWeight={600}>
-            Create New Event
-          </Typography>
-          <IconButton onClick={handleClose} size="small">
-            <CloseIcon sx={{ fontSize: 20 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ 
+              p: 1, 
+              borderRadius: '12px', 
+              bgcolor: alpha('#6366F1', 0.1), 
+              color: '#6366F1',
+              display: 'flex'
+            }}>
+              <VideoIcon size={24} />
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                Create New Event
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600 }}>
+                Orchestrate a new moment in the ecosystem
+              </Typography>
+            </Box>
+          </Box>
+          <IconButton onClick={handleClose} sx={{ color: 'rgba(255, 255, 255, 0.3)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}>
+            <CloseIcon size={20} />
           </IconButton>
         </DialogTitle>
 
-        <Divider />
-
-        <DialogContent sx={{ pt: 2 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <DialogContent sx={{ p: 3, mt: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Title */}
             <TextField
               autoFocus
-              label="Event title"
-              placeholder="Event Name"
+              placeholder="Event Title"
               value={title}
-              onChange={(_e) => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               fullWidth
-              required
+              variant="standard"
               InputProps={{
-                sx: { fontSize: '1.1rem' },
+                disableUnderline: true,
+                sx: { 
+                  fontSize: '1.5rem', 
+                  fontWeight: 900,
+                  fontFamily: 'var(--font-clash)',
+                  color: 'white',
+                  '&::placeholder': { color: 'rgba(255, 255, 255, 0.2)', opacity: 1 }
+                },
               }}
             />
 
             {/* Description */}
             <TextField
-              label="Description"
-              placeholder="Add details..."
+              placeholder="Add description or agenda..."
               value={description}
-              onChange={(_e) => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               fullWidth
               multiline
-              rows={3}
+              rows={2}
+              variant="standard"
+              InputProps={{
+                disableUnderline: true,
+                sx: { 
+                  fontSize: '1rem', 
+                  fontWeight: 500,
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  '&::placeholder': { color: 'rgba(255, 255, 255, 0.3)', opacity: 1 }
+                },
+              }}
             />
 
+            <Divider sx={{ opacity: 0.05 }} />
+
             {/* Date Time Row */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <DateTimePicker
-                label="Start Time"
-                value={startTime}
-                onChange={(newValue) => setStartTime(newValue)}
-                slotProps={{ textField: { fullWidth: true } }}
+            <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 700, mb: 1, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Starts At
+                </Typography>
+                <DateTimePicker
+                  value={startTime}
+                  onChange={(newValue) => setStartTime(newValue)}
+                  slotProps={{ 
+                    textField: { 
+                      fullWidth: true,
+                      variant: 'standard',
+                      InputProps: { 
+                        disableUnderline: true,
+                        sx: { 
+                          bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                          p: 1.5, 
+                          borderRadius: '12px',
+                          border: '1px solid rgba(255, 255, 255, 0.05)',
+                          fontSize: '0.9rem',
+                          fontWeight: 600
+                        } 
+                      }
+                    } 
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 700, mb: 1, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Ends At
+                </Typography>
+                <DateTimePicker
+                  value={endTime}
+                  onChange={(newValue) => setEndTime(newValue)}
+                  slotProps={{ 
+                    textField: { 
+                      fullWidth: true,
+                      variant: 'standard',
+                      InputProps: { 
+                        disableUnderline: true,
+                        sx: { 
+                          bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                          p: 1.5, 
+                          borderRadius: '12px',
+                          border: '1px solid rgba(255, 255, 255, 0.05)',
+                          fontSize: '0.9rem',
+                          fontWeight: 600
+                        } 
+                      }
+                    } 
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* Location & Link Row */}
+            <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <TextField
+                placeholder="Location (Physical or Virtual)"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                fullWidth
+                variant="standard"
+                InputProps={{
+                  disableUnderline: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocationOn sx={{ fontSize: 18, color: '#6366F1' }} />
+                    </InputAdornment>
+                  ),
+                  sx: { 
+                    bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                    p: 1.5, 
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    fontSize: '0.9rem',
+                    fontWeight: 600
+                  }
+                }}
               />
-              <DateTimePicker
-                label="End Time"
-                value={endTime}
-                onChange={(newValue) => setEndTime(newValue)}
-                slotProps={{ textField: { fullWidth: true } }}
+              <TextField
+                placeholder="External Link (Optional)"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                fullWidth
+                variant="standard"
+                InputProps={{
+                  disableUnderline: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LinkIcon sx={{ fontSize: 18, color: '#6366F1' }} />
+                    </InputAdornment>
+                  ),
+                  sx: { 
+                    bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                    p: 1.5, 
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    fontSize: '0.9rem',
+                    fontWeight: 600
+                  }
+                }}
               />
             </Box>
 
-            {/* Location */}
-            <TextField
-              label="Location"
-              placeholder="Add location or link"
-              value={location}
-              onChange={(_e) => setLocation(e.target.value)}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LocationOn sx={{ fontSize: 20, color: theme.palette.action.active }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            {/* URL */}
-            <TextField
-              label="Event Link"
-              placeholder="https://..."
-              value={url}
-              onChange={(_e) => setUrl(e.target.value)}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LinkIcon sx={{ fontSize: 20, color: theme.palette.action.active }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            {/* Cover Image URL */}
-            <TextField
-              label="Cover Image URL"
-              placeholder="https://..."
-              value={coverImage}
-              onChange={(_e) => setCoverImage(e.target.value)}
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <ImageIcon sx={{ fontSize: 20, color: theme.palette.action.active }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            {/* Auto-create Call */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              p: 2,
+              borderRadius: '16px',
+              bgcolor: alpha('#6366F1', 0.05),
+              border: `1px solid ${alpha('#6366F1', 0.1)}`,
+              transition: 'all 0.2s ease',
+              '&:hover': { bgcolor: alpha('#6366F1', 0.08) }
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ p: 1, bgcolor: alpha('#6366F1', 0.1), borderRadius: '10px', color: '#6366F1' }}>
+                  <VideoIcon sx={{ fontSize: 20 }} />
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" fontWeight={800} sx={{ color: 'white' }}>
+                    Kylrix Connect Call
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600 }}>
+                    Auto-generate a secure video call link
+                  </Typography>
+                </Box>
+              </Box>
+              <Switch 
+                checked={autoCreateCall}
+                onChange={(e) => setAutoCreateCall(e.target.checked)}
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#6366F1' },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#6366F1' },
+                }}
+              />
+            </Box>
 
             {/* Visibility */}
             <Box>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 700, mb: 1.5, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Event Visibility
               </Typography>
               <ToggleButtonGroup
@@ -229,52 +350,46 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
                 onChange={(_, value) => value && setVisibility(value)}
                 fullWidth
                 sx={{
-                  '& .MuiToggleButton-root': {
-                    py: 1.5,
-                    flex: 1,
+                  gap: 1,
+                  '& .MuiToggleButtonGroup-grouped': {
+                    border: '1px solid rgba(255, 255, 255, 0.05) !important',
+                    borderRadius: '12px !important',
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    textTransform: 'none',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    bgcolor: 'rgba(255, 255, 255, 0.02)',
                     '&.Mui-selected': {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                      borderColor: theme.palette.primary.main,
-                      '&:hover': {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.15),
-                      },
+                      bgcolor: alpha('#6366F1', 0.1),
+                      color: '#6366F1',
+                      borderColor: alpha('#6366F1', 0.3) + ' !important',
                     },
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                    }
                   },
                 }}
               >
                 <ToggleButton value="public">
-                  <Tooltip title="Anyone can discover and view this event">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PublicIcon sx={{ fontSize: 18 }} />
-                      <Typography variant="body2">Public</Typography>
-                    </Box>
-                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PublicIcon sx={{ fontSize: 16 }} />
+                    Public
+                  </Box>
                 </ToggleButton>
                 <ToggleButton value="unlisted">
-                  <Tooltip title="Only people with the link can view">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <UnlistedIcon sx={{ fontSize: 18 }} />
-                      <Typography variant="body2">Unlisted</Typography>
-                    </Box>
-                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <UnlistedIcon sx={{ fontSize: 16 }} />
+                    Unlisted
+                  </Box>
                 </ToggleButton>
                 <ToggleButton value="private">
-                  <Tooltip title="Only you can view this event">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PrivateIcon sx={{ fontSize: 18 }} />
-                      <Typography variant="body2">Private</Typography>
-                    </Box>
-                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PrivateIcon sx={{ fontSize: 16 }} />
+                    Private
+                  </Box>
                 </ToggleButton>
               </ToggleButtonGroup>
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                {visibility === 'public' && 'This event will be visible to everyone and can be discovered.'}
-                {visibility === 'unlisted' && 'Only people with the direct link can view this event.'}
-                {visibility === 'private' && 'Only you can see this event. Others cannot access it.'}
-              </Typography>
             </Box>
-
-            <Divider />
 
             {/* Guests */}
             <UserSearch
@@ -287,16 +402,40 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
           </Box>
         </DialogContent>
 
-        <Divider />
-
-        <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button onClick={handleClose} color="inherit">
+        <DialogActions sx={{ p: 3, pt: 1, gap: 1.5 }}>
+          <Button 
+            onClick={handleClose} 
+            sx={{ 
+              color: 'rgba(255, 255, 255, 0.5)', 
+              fontWeight: 700, 
+              textTransform: 'none',
+              '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' }
+            }}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             variant="contained"
             disabled={!title.trim() || !startTime || !endTime}
+            sx={{
+              borderRadius: '12px',
+              px: 4,
+              py: 1,
+              fontWeight: 800,
+              textTransform: 'none',
+              bgcolor: '#6366F1',
+              color: 'white',
+              boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)',
+              '&:hover': { 
+                bgcolor: alpha('#6366F1', 0.8),
+                boxShadow: '0 12px 28px rgba(99, 102, 241, 0.4)',
+              },
+              '&.Mui-disabled': {
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                color: 'rgba(255, 255, 255, 0.2)'
+              }
+            }}
           >
             Create Event
           </Button>

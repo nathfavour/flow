@@ -125,7 +125,7 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
             acc[field.id] = field.label;
             return acc;
         }, {});
-    } catch (e) {
+    } catch (_e) {
         return {};
     }
   }, [formSchema]);
@@ -134,8 +134,8 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
     try {
       const res = await FormsService.listSubmissions(formId);
       setSubmissions(res.rows);
-    } catch (e) {
-      console.error('Failed to fetch submissions', e);
+    } catch (_e) {
+      console.error('Failed to fetch submissions', _e);
     } finally {
       setLoading(false);
     }
@@ -150,8 +150,8 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
     try {
       await FormsService.updateSubmission(id, { read } as any);
       setSubmissions(prev => prev.map(s => s.$id === id ? { ...s, read } : s));
-    } catch (e) {
-        console.error("Failed to update read status", e);
+    } catch (_e) {
+        console.error("Failed to update read status", _e);
     }
   };
 
@@ -159,8 +159,8 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
     try {
       await FormsService.updateSubmission(id, { flagged } as any);
       setSubmissions(prev => prev.map(s => s.$id === id ? { ...s, flagged } : s));
-    } catch (e) {
-        console.error("Failed to update flagged status", e);
+    } catch (_e) {
+        console.error("Failed to update flagged status", _e);
     }
   };
 
@@ -185,7 +185,7 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
   const parsePayload = (payload: string) => {
     try {
       return JSON.parse(payload);
-    } catch (e) {
+    } catch (_e) {
       return { data: payload };
     }
   };

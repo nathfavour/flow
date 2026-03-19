@@ -33,7 +33,7 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
   let data = {};
   try {
     data = JSON.parse(submission.payload);
-  } catch (e) {
+  } catch (_e) {
     data = { raw: submission.payload };
   }
 

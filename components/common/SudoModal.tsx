@@ -20,11 +20,6 @@ import {
 import {
     Lock,
     Fingerprint,
-    X,
-    Shield,
-    LayoutGrid,
-    KeyRound,
-    LogOut,
     Eye,
     EyeOff,
 } from "lucide-react";
@@ -50,8 +45,7 @@ export default function SudoModal({
     onCancel,
     intent,
 }: SudoModalProps) {
-    const { user, logout } = useAuth();
-    const router = useRouter();
+    const { user } = useAuth();
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [pin, setPin] = useState("");
@@ -162,14 +156,6 @@ export default function SudoModal({
         }
     }, [user?.$id, isOpen, handleSuccessWithSync]);
 
-    const handleLogout = async () => {
-        setLoading(true);
-        await logout();
-        setLoading(false);
-        onCancel();
-        window.location.href = "/";
-    };
-
     // Check if user has passkey and PIN set up
     useEffect(() => {
         if (isOpen && user?.$id) {
@@ -236,7 +222,7 @@ export default function SudoModal({
         if (isOpen && mode === "passkey" && hasPasskey && !passkeyLoading) {
             handlePasskeyVerify();
         }
-    }, [isOpen, mode, hasPasskey, handlePasskeyVerify]);
+    }, [isOpen, mode, hasPasskey, passkeyLoading, handlePasskeyVerify]);
 
     const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.replace(/\D/g, '').slice(0, 4);

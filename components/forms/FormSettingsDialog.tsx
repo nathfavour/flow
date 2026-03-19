@@ -25,9 +25,7 @@ import {
   ContentCopy as CopyIcon,
   Launch as LaunchIcon,
   EventBusy as ExpiryIcon,
-  Security as SecurityIcon,
   Public as PublicIcon,
-  PersonOff as AnonymousIcon,
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { Forms } from '@/generated/appwrite/types';

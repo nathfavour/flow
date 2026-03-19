@@ -18,8 +18,7 @@ import {
     FormGroup,
     Select,
     MenuItem,
-    FormControl,
-    alpha
+    FormControl
 } from '@mui/material';
 import { Send as SendIcon, CheckCircleOutline as SuccessIcon } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
@@ -47,7 +46,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                 let settings: any = {};
                 try {
                     settings = JSON.parse(data.settings || '{}');
-                } catch (e) {}
+                } catch (_e) {}
 
                 const currentUser = await FormsService.getCurrentUser();
                 const isOwner = currentUser?.$id === data.userId;
@@ -118,7 +117,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
     }
 
     let schema: any[] = [];
-    try { schema = JSON.parse(form?.schema || '[]'); } catch (e) {}
+    try { schema = JSON.parse(form?.schema || '[]'); } catch (_e) {}
 
     const renderField = (field: any) => {
         switch (field.type) {

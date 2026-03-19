@@ -49,7 +49,7 @@ export const DraftsService = {
         if (!raw) return null;
         try {
             return JSON.parse(raw);
-        } catch (e) {
+        } catch (_e) {
             return null;
         }
     },
@@ -82,7 +82,7 @@ export const DraftsService = {
         if (!raw) return {};
         try {
             return JSON.parse(raw);
-        } catch (e) {
+        } catch (_e) {
             return {};
         }
     },

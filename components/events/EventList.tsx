@@ -8,6 +8,7 @@ import {
   Tabs,
   Tab,
   CircularProgress,
+  alpha,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Add as AddIcon } from '@mui/icons-material';
@@ -19,6 +20,8 @@ import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { permissions, EventVisibility } from '@/lib/permissions';
+import { CallService } from '@/lib/services/call';
+import toast from 'react-hot-toast';
 
 export default function EventList() {
   const [tabValue, setTabValue] = useState(0);
@@ -37,7 +40,16 @@ export default function EventList() {
     const fetchEvents = async () => {
       try {
         setIsLoading(true);
-        const list = await eventApi.list();
+        
+        const queries = [];
+        if (userId) {
+          queries.push(`equal("userId", "${userId}")`);
+        } else if (!isAuthenticated) {
+          // If not authenticated, maybe only show public events or nothing
+          queries.push('equal("visibility", "public")');
+        }
+
+        const list = await eventApi.list(queries);
         const mapped = list.rows.map(doc => ({
           id: doc.$id,
           title: doc.title,
@@ -62,7 +74,7 @@ export default function EventList() {
     };
 
     fetchEvents();
-  }, []);
+  }, [userId, isAuthenticated]);
 
   const handleCreateEvent = async (eventData: any) => {
     try {
@@ -74,6 +86,27 @@ export default function EventList() {
       // Get appropriate permissions based on visibility
       const eventPermissions = permissions.forVisibility(visibility, currentUserId);
       
+      let meetingUrl = eventData.url || '';
+
+      // Auto-create call if requested
+      if (eventData.autoCreateCall && currentUserId !== 'guest') {
+        try {
+          const call = await CallService.createCallLink(
+            currentUserId,
+            'video',
+            undefined,
+            eventData.title,
+            eventData.startTime.toISOString(),
+            60 // 1 hour duration
+          );
+          meetingUrl = `https://connect.kylrix.space/call/${call.$id}`;
+          toast.success('Kylrix Connect call scheduled');
+        } catch (callErr) {
+          console.error('Failed to create call link', callErr);
+          toast.error('Failed to create call link, but event will be created');
+        }
+      }
+
       const newDoc = await eventApi.create(
         {
           title: eventData.title,
@@ -81,7 +114,7 @@ export default function EventList() {
           startTime: eventData.startTime.toISOString(),
           endTime: eventData.endTime.toISOString(),
           location: eventData.location || '',
-          meetingUrl: eventData.url || '',
+          meetingUrl: meetingUrl,
           visibility: visibility,
           status: 'confirmed',
           coverImageId: eventData.coverImage || '',
@@ -131,23 +164,56 @@ export default function EventList() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          mb: 3,
+          mb: 4,
           flexWrap: 'wrap',
           gap: 2,
+          p: 1,
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight="bold">
+          <Typography 
+            variant="h4" 
+            fontWeight="900"
+            sx={{ 
+              fontFamily: 'var(--font-clash)',
+              letterSpacing: '-0.03em',
+              color: 'white',
+              mb: 0.5
+            }}
+          >
             Events
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: 'rgba(255, 255, 255, 0.5)',
+              fontWeight: 600,
+              letterSpacing: '0.01em'
+            }}
+          >
             Discover and manage your schedule
           </Typography>
         </Box>
         <Button
           variant="contained"
           startIcon={<AddIcon sx={{ fontSize: 20 }} />}
-          sx={{ borderRadius: 50, px: 3 }}
+          sx={{ 
+            borderRadius: '14px', 
+            px: 3, 
+            py: 1.2,
+            bgcolor: '#6366F1',
+            color: 'white',
+            fontWeight: 800,
+            textTransform: 'none',
+            fontSize: '0.9rem',
+            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)',
+            '&:hover': {
+              bgcolor: alpha('#6366F1', 0.8),
+              transform: 'translateY(-2px)',
+              boxShadow: '0 12px 28px rgba(99, 102, 241, 0.4)',
+            },
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
           onClick={() => {
             if (!isAuthenticated) {
               openLoginPopup();
@@ -160,8 +226,43 @@ export default function EventList() {
         </Button>
       </Box>
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="event tabs">
+      <Box sx={{ 
+        mb: 4, 
+        bgcolor: 'rgba(255, 255, 255, 0.02)', 
+        borderRadius: '16px', 
+        p: 0.5,
+        width: 'fit-content',
+        border: '1px solid rgba(255, 255, 255, 0.05)'
+      }}>
+        <Tabs 
+          value={tabValue} 
+          onChange={handleTabChange} 
+          aria-label="event tabs"
+          sx={{
+            minHeight: 40,
+            '& .MuiTabs-indicator': {
+              display: 'none',
+            },
+            '& .MuiTab-root': {
+              minHeight: 40,
+              borderRadius: '12px',
+              textTransform: 'none',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              color: 'rgba(255, 255, 255, 0.5)',
+              px: 3,
+              transition: 'all 0.2s ease',
+              '&.Mui-selected': {
+                color: 'white',
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
+              },
+              '&:hover': {
+                color: 'white',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
+              }
+            }
+          }}
+        >
           <Tab label="Upcoming" />
           <Tab label="Past" />
           {isAuthenticated && <Tab label="My Events" />}

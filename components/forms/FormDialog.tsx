@@ -87,7 +87,6 @@ const FIELD_TYPES = [
 function SortableField({ 
   field, 
   fIdx, 
-  fieldsLength, 
   updateField, 
   removeField, 
   addOption, 

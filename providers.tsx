@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/theme/ThemeProvider';
 import { TaskProvider } from '@/context/TaskContext';
 import { AuthProvider } from '@/context/auth/AuthContext';
 import { LayoutProvider } from '@/context/LayoutContext';
-import { OriginProvider } from '@/context/origin/OriginProvider';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { SudoProvider } from '@/context/SudoContext';
 import { SubscriptionProvider } from '@/context/subscription/SubscriptionContext';
@@ -29,14 +28,12 @@ export function AppProviders({ children }: AppProvidersProps) {
         <AuthProvider>
           <NotificationProvider>
             <LayoutProvider>
-              <OriginProvider>
-                <SudoProvider>
-                  <TaskProvider>
-                    <EcosystemHandler />
-                    {children}
-                  </TaskProvider>
-                </SudoProvider>
-              </OriginProvider>
+              <SudoProvider>
+                <TaskProvider>
+                  <EcosystemHandler />
+                  {children}
+                </TaskProvider>
+              </SudoProvider>
             </LayoutProvider>
           </NotificationProvider>
         </AuthProvider>

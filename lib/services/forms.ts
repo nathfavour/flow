@@ -90,7 +90,7 @@ export const FormsService = {
         let currentSettings: any = {};
         try {
             currentSettings = JSON.parse(data.settings || form.settings || '{}');
-        } catch (e) {}
+        } catch (_e) {}
 
         // 2. Build the exact permission set for this form row
         // We always ensure the owner has full control

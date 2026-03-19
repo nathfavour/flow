@@ -32,7 +32,6 @@ import {
   ChevronDown as ChevronDownIcon,
   Settings as SettingsIcon,
   FileText as FormIcon,
-  Layers as ProjectIcon,
 } from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 

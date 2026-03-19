@@ -37,12 +37,6 @@ import { useTask } from '@/context/TaskContext';
 import { Priority, TaskStatus } from '@/types';
 import { useLayout } from '@/context/LayoutContext';
 import { useAI } from '@/hooks/useAI';
-import dynamic from 'next/dynamic';
-
-const OriginSocialSection = dynamic(() => import('./OriginSocialSection'), {
-  loading: () => null,
-  ssr: false,
-});
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
@@ -451,9 +445,6 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
         </Box>
 
         <Divider sx={{ my: 4, opacity: 0.05 }} />
-
-        {/* Social Context - Origin Integration */}
-        <OriginSocialSection taskTitle={task.title} />
 
         {/* Subtasks Section */}
         <Box sx={{ mb: 5 }}>

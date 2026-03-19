@@ -34,13 +34,7 @@ import { useTask } from '@/context/TaskContext';
 import { Task } from '@/types';
 import { focusSessions } from '@/lib/kylrixflow';
 import { useAI } from '@/hooks/useAI';
-import dynamic from 'next/dynamic';
 import { tablesDB } from '@/lib/appwrite';
-
-const OriginFocusSection = dynamic(() => import('./OriginFocusSection'), {
-  loading: () => null,
-  ssr: false,
-});
 
 export default function FocusMode() {
   const theme = useTheme();
@@ -52,9 +46,6 @@ export default function FocusMode() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  // Origin Integration
-  const [selectedPlaylist, setSelectedPlaylist] = useState<string>('');
 
   // AI Integration
   const { generate } = useAI();
@@ -326,12 +317,6 @@ export default function FocusMode() {
           ))}
         </Stack>
       )}
-
-      {/* Origin Spotify Integration */}
-      <OriginFocusSection 
-        selectedPlaylist={selectedPlaylist} 
-        onPlaylistSelect={setSelectedPlaylist} 
-      />
 
       {/* Selected Task */}
       <Box sx={{ mb: 4, width: '100%', maxWidth: 500 }}>
