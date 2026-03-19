@@ -22,6 +22,7 @@ import {
     Fingerprint,
     Eye,
     EyeOff,
+    LayoutGrid,
 } from "lucide-react";
 import Logo from "./Logo";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";

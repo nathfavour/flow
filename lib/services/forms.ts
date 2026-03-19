@@ -145,7 +145,7 @@ export const FormsService = {
         let settings: any = {};
         try {
             settings = JSON.parse(form.settings || '{}');
-        } catch (e) {}
+        } catch (_e) {}
 
         if (settings.expiresAt) {
             const expiry = new Date(settings.expiresAt);
