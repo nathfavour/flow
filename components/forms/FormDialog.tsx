@@ -39,8 +39,6 @@ import {
   CloudUpload as SyncIcon,
   Warning as WarningIcon,
   Settings as SettingsIcon,
-  ArrowUpward as UpIcon,
-  ArrowDownward as DownIcon,
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';

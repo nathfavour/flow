@@ -12,11 +12,9 @@ import {
   IconButton,
   Typography,
   Divider,
-  useTheme,
   InputAdornment,
   ToggleButtonGroup,
   ToggleButton,
-  Tooltip,
   alpha,
   FormControlLabel,
   Switch,
@@ -52,7 +50,6 @@ interface EventDialogProps {
 }
 
 export default function EventDialog({ open, onClose, onSubmit }: EventDialogProps) {
-  const theme = useTheme();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState<Date | null>(new Date());

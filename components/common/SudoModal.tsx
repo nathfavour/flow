@@ -31,7 +31,6 @@ import { useAuth } from "@/context/auth/AuthContext";
 import toast from "react-hot-toast";
 import { unlockWithPasskey } from "@/lib/passkey";
 import { PasskeySetup } from "./PasskeySetup";
-import { useRouter } from "next/navigation";
 
 interface SudoModalProps {
     isOpen: boolean;
@@ -43,7 +42,7 @@ interface SudoModalProps {
 export default function SudoModal({
     isOpen,
     onSuccess,
-    onCancel,
+    onCancel: _onCancel,
     intent,
 }: SudoModalProps) {
     const { user } = useAuth();
