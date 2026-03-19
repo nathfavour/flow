@@ -400,7 +400,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
             setStatus(form.status as any);
             try {
                 setFields(JSON.parse(form.schema || '[]'));
-            } catch (e) {
+            } catch (_e) {
                 setFields([]);
             }
             setIsRestored(false);
@@ -507,7 +507,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
       setStatus(form.status as any);
       try {
         setFields(JSON.parse(form.schema || '[]'));
-      } catch (e) {
+      } catch (_e) {
         setFields([]);
       }
     } else {

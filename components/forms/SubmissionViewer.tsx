@@ -20,8 +20,6 @@ import {
   Stack
 } from '@mui/material';
 import { 
-  Visibility as ViewIcon, 
-  Delete as DeleteIcon,
   Download as DownloadIcon,
   TableRows as CSVIcon,
   DataObject as JSONIcon,
