@@ -151,3 +151,5 @@ export const Logo: React.FC<LogoProps> = ({
     </Box>
   );
 };
+
+export default Logo;

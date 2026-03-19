@@ -16,7 +16,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   alpha,
-  FormControlLabel,
   Switch,
 } from '@mui/material';
 import {
@@ -49,7 +48,7 @@ interface EventDialogProps {
   onSubmit: (eventData: any) => void;
 }
 
-export default function EventDialog({ open, onClose, onSubmit }: EventDialogProps) {
+export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmit }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState<Date | null>(new Date());
@@ -135,7 +134,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
               color: '#6366F1',
               display: 'flex'
             }}>
-              <VideoIcon size={24} />
+              <VideoIcon sx={{ fontSize: 24 }} />
             </Box>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
@@ -147,7 +146,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
             </Box>
           </Box>
           <IconButton onClick={handleClose} sx={{ color: 'rgba(255, 255, 255, 0.3)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}>
-            <CloseIcon size={20} />
+            <CloseIcon sx={{ fontSize: 20 }} />
           </IconButton>
         </DialogTitle>
 
@@ -269,7 +268,7 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
                   sx: { 
                     bgcolor: 'rgba(255, 255, 255, 0.03)', 
                     p: 1.5, 
-                    borderRadius: '12px',
+                    borderRadius: '12px', 
                     border: '1px solid rgba(255, 255, 255, 0.05)',
                     fontSize: '0.9rem',
                     fontWeight: 600
@@ -441,3 +440,5 @@ export default function EventDialog({ open, onClose, onSubmit }: EventDialogProp
     </LocalizationProvider>
   );
 }
+
+export default EventDialog;

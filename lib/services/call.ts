@@ -37,9 +37,9 @@ export const CallService = {
                     Permission.delete(Role.user(userId)),
                 ]
             });
-        } catch (e) {
-            console.error('[CallService] createCallLink failed:', e);
-            throw e;
+        } catch (_e) {
+            console.error('[CallService] createCallLink failed:', _e);
+            throw _e;
         }
     }
 };
