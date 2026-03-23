@@ -42,6 +42,8 @@ import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-prev
 import { getUserProfilePicId } from '@/lib/user-utils';
 import { Button } from '@mui/material';
 
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+
 const AICommandModal = dynamic(() => import('@/components/ai/AICommandModal'), { ssr: false });
 const EcosystemPortal = dynamic(() => import('@/components/common/EcosystemPortal'), { ssr: false });
 const WalletSidebar = dynamic(() => import('@/components/overlays/WalletSidebar').then(mod => mod.WalletSidebar), { ssr: false });
@@ -68,6 +70,21 @@ export default function AppBar() {
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string | null>(null);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  React.useEffect(() => {
+    if (searchParams.get('openWallet') === 'true') {
+      setWalletOpen(true);
+      // Optional: Clean up URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('openWallet');
+      const newQuery = params.toString();
+      router.replace(pathname + (newQuery ? `?${newQuery}` : ''));
+    }
+  }, [searchParams, router, pathname]);
 
   React.useEffect(() => {
     let mounted = true;
@@ -217,28 +234,6 @@ export default function AppBar() {
 
           {/* Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
-          {/* Wallet Toggle */}
-          <Tooltip title="Secure Wallet">
-            <IconButton
-              onClick={() => setWalletOpen(true)}
-              sx={{
-                backgroundColor: alpha('#A855F7', 0.03),
-                color: '#A855F7',
-                borderRadius: '12px',
-                p: { xs: 1, sm: 1.25 },
-                border: '1px solid',
-                borderColor: alpha('#A855F7', 0.1),
-                '&:hover': {
-                  backgroundColor: alpha('#A855F7', 0.08),
-                  borderColor: '#A855F7',
-                  boxShadow: '0 0 15px rgba(168, 85, 247, 0.2)'
-                },
-              }}
-            >
-              <Wallet size={18} strokeWidth={1.5} />
-            </IconButton>
-          </Tooltip>
-
           {/* AI Assistant Button */}
           <Tooltip title="AI Assistant">
             <IconButton
@@ -258,6 +253,28 @@ export default function AppBar() {
               }}
             >
               <Sparkles size={18} strokeWidth={1.5} />
+            </IconButton>
+          </Tooltip>
+
+          {/* Wallet Toggle */}
+          <Tooltip title="Secure Wallet">
+            <IconButton
+              onClick={() => setWalletOpen(true)}
+              sx={{
+                backgroundColor: alpha('#A855F7', 0.03),
+                color: '#A855F7',
+                borderRadius: '12px',
+                p: { xs: 1, sm: 1.25 },
+                border: '1px solid',
+                borderColor: alpha('#A855F7', 0.1),
+                '&:hover': {
+                  backgroundColor: alpha('#A855F7', 0.08),
+                  borderColor: '#A855F7',
+                  boxShadow: '0 0 15px rgba(168, 85, 247, 0.2)'
+                },
+              }}
+            >
+              <Wallet size={18} strokeWidth={1.5} />
             </IconButton>
           </Tooltip>
 
