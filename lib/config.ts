@@ -38,8 +38,10 @@ export const APPWRITE_CONFIG = {
     TASK_ATTACHMENTS: 'task_attachments',
     EVENT_COVERS: 'event_covers',
   },
-  FUNCTIONS: {
-    SEARCH_USERS: '69a582720012957d2027',
+    FUNCTIONS: {
+        PERMISSION_UPDATER: 'permission-updater',
+        CLAIM_GHOST_NOTES: 'claim-ghost-notes',
+        SEARCH_USERS: '69a582720012957d2027',
     SYNC_USER_PROFILE: '69a583ac002b674685b0',
     NOTIFY_ON_SHARE: '69a58c1c001c39695bf6',
     NOTIFY_ON_SOCIAL_ACTIVITY: '69a6bf6200180e70aca1',
