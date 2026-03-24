@@ -25,7 +25,7 @@ import {
     ShieldOutlined as ShieldIcon
 } from '@mui/icons-material';
 import { ecosystemSecurity } from '@/lib/ecosystem/security';
-import { AppwriteService, getCurrentUser } from '@/lib/appwrite';
+import { AppwriteService, getCurrentUser } from '@/lib/appwrite/client';
 import { PasskeySetup } from '@/components/common/PasskeySetup';
 import { DiscoverabilitySettings } from '@/components/settings/DiscoverabilitySettings';
 import toast from 'react-hot-toast';

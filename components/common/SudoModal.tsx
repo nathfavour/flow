@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import Logo from "./Logo";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
-import { AppwriteService } from "@/lib/appwrite";
+import { AppwriteService } from "@/lib/appwrite/client";
 import { useAuth } from "@/context/auth/AuthContext";
 import toast from "react-hot-toast";
 import { unlockWithPasskey } from "@/lib/passkey";
@@ -57,6 +57,8 @@ export default function SudoModal({
     const [isDetecting, setIsDetecting] = useState(true);
     const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
 
+    const [isKylrixDomain, setIsKylrixDomain] = useState(false);
+
     const handleSuccessWithSync = useCallback(async () => {
         if (user?.$id) {
             try {
@@ -72,8 +74,9 @@ export default function SudoModal({
                 // Passkey Incentive
                 const entries = await AppwriteService.listKeychainEntries(user.$id);
                 const hasPasskey = entries.some((e: any) => e.type === 'passkey');
+                const onKylrixDomain = window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space');
                 
-                if (!hasPasskey) {
+                if (!hasPasskey && onKylrixDomain) {
                     const lastSkip = localStorage.getItem(`passkey_skip_${user.$id}`);
                     const sevenDays = 7 * 24 * 60 * 60 * 1000;
                     if (!lastSkip || (Date.now() - parseInt(lastSkip)) > sevenDays) {
@@ -168,7 +171,9 @@ export default function SudoModal({
                 const passwordPresent = entries.some((e: any) => e.type === 'password');
                 const pinPresent = entries.some((e: any) => e.type === 'pin') || pinSet;
                 
-                setHasPasskey(passkeyPresent);
+                const onKylrixDomain = window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space');
+                setIsKylrixDomain(onKylrixDomain);
+                setHasPasskey(passkeyPresent && onKylrixDomain);
                 setHasPin(pinPresent);
 
                 // Intent Logic: Setup vs Unlock
@@ -196,7 +201,7 @@ export default function SudoModal({
                     return;
                 }
 
-                if (passkeyPresent) {
+                if (passkeyPresent && onKylrixDomain) {
                     setMode("passkey");
                 } else if (pinPresent) {
                     setMode("pin");
@@ -511,7 +516,7 @@ export default function SudoModal({
                             {loading ? <CircularProgress size={24} color="inherit" /> : "Verify Identity"}
                         </Button>
 
-                        {hasPasskey && mode !== "passkey" && (
+                        {hasPasskey && mode !== "passkey" && isKylrixDomain && (
                             <Button
                                 fullWidth
                                 variant="text"

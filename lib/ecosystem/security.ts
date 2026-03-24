@@ -5,7 +5,7 @@
  */
 
 import { MeshProtocol } from './mesh';
-import { tablesDB } from '../appwrite';
+import { tablesDB } from '../appwrite/client';
 import { Query, ID } from 'appwrite';
 
 export class EcosystemSecurity {

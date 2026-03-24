@@ -31,7 +31,7 @@ const MiniChat = () => {
 };
 
 import { ecosystemSecurity } from '@/lib/ecosystem/security';
-import { AppwriteService } from '@/lib/appwrite';
+import { AppwriteService } from '@/lib/appwrite/client';
 import { useAuth } from '@/context/auth/AuthContext';
 import SudoModal from '@/components/common/SudoModal';
 import { useEffect } from 'react';

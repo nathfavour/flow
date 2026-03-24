@@ -34,7 +34,7 @@ import { useTask } from '@/context/TaskContext';
 import { Task } from '@/types';
 import { focusSessions } from '@/lib/kylrixflow';
 import { useAI } from '@/hooks/useAI';
-import { tablesDB } from '@/lib/appwrite';
+import { tablesDB } from '@/lib/appwrite/client';
 
 export default function FocusMode() {
   const theme = useTheme();

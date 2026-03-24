@@ -1,7 +1,7 @@
 import React from 'react';
 import MainLayout from "@/components/layout/MainLayout";
 
-export default function DashboardLayout({
+export default function FlowLayout({
   children,
 }: {
   children: React.ReactNode;

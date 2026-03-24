@@ -1,4 +1,4 @@
-import { getProfilePicturePreview } from '@/lib/appwrite';
+import { getProfilePicturePreview } from '@/lib/appwrite/client';
 
 const previewCache = new Map<string, string | null>();
 const PREVIEW_STORE_KEY = 'kylrix_avatar_cache';

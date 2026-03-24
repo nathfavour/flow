@@ -14,7 +14,7 @@ import Stack from "@mui/material/Stack";
 import CircularProgress from "@mui/material/CircularProgress";
 import { alpha } from "@mui/material/styles";
 import { startRegistration } from "@simplewebauthn/browser";
-import { AppwriteService } from "@/lib/appwrite";
+import { AppwriteService } from "@/lib/appwrite/client";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import toast from "react-hot-toast";
 import VisibilityIcon from "@mui/icons-material/Visibility";

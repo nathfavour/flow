@@ -46,7 +46,7 @@ import FormDialog from '@/components/forms/FormDialog';
 import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
 
-export default function FormsDashboard() {
+export default function FormsPage() {
     const { user } = useAuth();
     const [forms, setForms] = useState<Forms[]>([]);
     const [offlineDrafts, setOfflineDrafts] = useState<FormDraft[]>([]);

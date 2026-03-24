@@ -1,4 +1,4 @@
-import { tablesDB, account as _account } from '../appwrite';
+import { tablesDB, account as _account } from '../appwrite/client';
 
 const CONNECT_DATABASE_ID = 'chat';
 const CONNECT_COLLECTION_ID_USERS = 'users';

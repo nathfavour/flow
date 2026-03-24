@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { Models } from 'appwrite';
-import { account } from '@/lib/appwrite';
+import { account } from '@/lib/appwrite/client';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';

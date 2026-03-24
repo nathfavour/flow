@@ -1,6 +1,6 @@
 import { Permission, Role } from 'appwrite';
-import { tablesDB } from './appwrite';
-import { APPWRITE_CONFIG } from './config';
+import { tablesDB } from './appwrite/client';
+import { APPWRITE_CONFIG } from './appwrite/config';
 
 const { DATABASE_ID, TABLES } = APPWRITE_CONFIG;
 

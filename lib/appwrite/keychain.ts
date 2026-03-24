@@ -1,6 +1,6 @@
 import { ID, Query } from 'appwrite';
-import { tablesDB } from '../appwrite';
-import { APPWRITE_CONFIG } from '../config';
+import { tablesDB } from '../appwrite/client';
+import { APPWRITE_CONFIG } from './config';
 
 const DB_ID = APPWRITE_CONFIG.DATABASES.VAULT;
 const KEYCHAIN_TABLE = APPWRITE_CONFIG.TABLES.VAULT.KEYCHAIN;

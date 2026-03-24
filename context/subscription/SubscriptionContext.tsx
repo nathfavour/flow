@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { account, tablesDB } from '@/lib/appwrite';
-import { APPWRITE_CONFIG } from '@/lib/config';
+import { account, tablesDB } from '@/lib/appwrite/client';
+import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Query } from 'appwrite';
 
 interface SubscriptionContextType {

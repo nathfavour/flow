@@ -20,11 +20,9 @@ import {
   alpha,
 } from '@mui/material';
 import {
-  LayoutDashboard as LayoutDashboardIcon,
   CheckSquare as CheckSquareIcon,
   Calendar as CalendarIcon,
   Zap as ZapIcon,
-  Flame as FlameIcon,
   Inbox as InboxIcon,
   Clock as ClockIcon,
   CheckCircle2 as CheckCircle2Icon,
@@ -32,6 +30,8 @@ import {
   ChevronDown as ChevronDownIcon,
   Settings as SettingsIcon,
   FileText as FormIcon,
+  LayoutList as ListIcon,
+  Folder as FolderIcon
 } from 'lucide-react';
 import { useTask } from '@/context/TaskContext';
 
@@ -59,7 +59,9 @@ export default function Sidebar() {
     filter,
   } = useTask();
 
-  const [projectsOpen, setProjectsOpen] = useState(true);
+  const [tasksOpen, setTasksOpen] = useState(true);
+  const [smartListsOpen, setSmartListsOpen] = useState(false);
+  const [projectsOpen, setProjectsOpen] = useState(false);
 
   // Calculate stats
   const now = new Date();
@@ -93,30 +95,18 @@ export default function Sidebar() {
     (t) => t.status === 'done' && !t.isArchived
   ).length;
 
-  const mainNav: NavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboardIcon size={20} />, href: '/dashboard' },
-    { id: 'tasks', label: 'Tasks', icon: <CheckSquareIcon size={20} />, href: '/tasks' },
-    { id: 'forms', label: 'Forms', icon: <FormIcon size={20} />, href: '/forms' },
-  ];
-
-  const toolsNav: NavItem[] = [
-    { id: 'events', label: 'Events', icon: <ZapIcon size={20} />, href: '/events' },
-    { id: 'focus', label: 'Focus Mode', icon: <FlameIcon size={20} />, href: '/focus' },
-    { id: 'settings', label: 'Settings', icon: <SettingsIcon size={20} />, href: '/settings' },
-  ];
-
   const smartLists: NavItem[] = [
-    { id: 'inbox', label: 'Inbox', icon: <InboxIcon sx={{ fontSize: 18 }} />, badge: inboxCount },
-    { id: 'today', label: 'Today', icon: <CalendarIcon sx={{ fontSize: 18 }} />, badge: todayCount, color: '#10b981' },
-    { id: 'upcoming', label: 'Upcoming', icon: <ClockIcon sx={{ fontSize: 18 }} />, badge: upcomingCount, color: '#3b82f6' },
+    { id: 'inbox', label: 'Inbox', icon: <InboxIcon size={16} />, badge: inboxCount },
+    { id: 'today', label: 'Today', icon: <CalendarIcon size={16} />, badge: todayCount, color: '#10b981' },
+    { id: 'upcoming', label: 'Upcoming', icon: <ClockIcon size={16} />, badge: upcomingCount, color: '#3b82f6' },
     {
       id: 'overdue',
       label: 'Overdue',
-      icon: <CalendarIcon sx={{ fontSize: 18 }} />,
+      icon: <CalendarIcon size={16} />,
       badge: overdueCount,
       color: '#ef4444',
     },
-    { id: 'completed', label: 'Completed', icon: <CheckCircle2Icon sx={{ fontSize: 18 }} />, badge: completedCount },
+    { id: 'completed', label: 'Completed', icon: <CheckCircle2Icon size={16} />, badge: completedCount },
   ];
 
   const handleSmartListClick = (id: string) => {
@@ -179,6 +169,27 @@ export default function Sidebar() {
 
   const regularProjects = projects.filter((p) => !p.isFavorite && !p.isArchived && p.id !== 'inbox');
 
+  const navItemStyles = (href?: string, isSelected?: boolean) => ({
+    borderRadius: '12px',
+    py: 1.25,
+    mb: 0.5,
+    transition: 'all 0.2s ease',
+    ...(isSelected || (href && pathname === href) ? {
+      backgroundColor: alpha('#6366F1', 0.1),
+      color: 'var(--color-brand)',
+      '& .MuiListItemIcon-root': {
+        color: 'var(--color-brand)',
+      },
+      '&:hover': {
+        backgroundColor: alpha('#6366F1', 0.15),
+      },
+    } : {
+      '&:hover': {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      }
+    })
+  });
+
   return (
     <Drawer
       variant="persistent"
@@ -198,281 +209,196 @@ export default function Sidebar() {
         },
       }}
     >
-      <Box sx={{ overflow: 'auto', py: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* Main Navigation */}
-        <List dense sx={{ px: 2 }}>
-          {mainNav.map((item) => (
-            <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                component={Link}
-                href={item.href || '#'}
-                selected={pathname === item.href}
-                sx={{
-                  borderRadius: '12px',
-                  py: 1.25,
-                  transition: 'all 0.2s ease',
-                  '&.Mui-selected': {
-                    backgroundColor: alpha('#6366F1', 0.1),
-                    color: 'var(--color-brand)',
-                    '& .MuiListItemIcon-root': {
-                      color: 'var(--color-brand)',
-                    },
-                    '&:hover': {
-                      backgroundColor: alpha('#6366F1', 0.15),
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  }
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 36,
-                    color: pathname === item.href ? 'var(--color-brand)' : '#A1A1AA',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    fontWeight: pathname === item.href ? 900 : 700,
-                    fontSize: '0.85rem',
-                    letterSpacing: '0.01em',
-                    fontFamily: 'var(--font-satoshi)'
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-
-        <Divider sx={{ my: 2, mx: 3, borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-
-        {/* Tools Section */}
-        <Typography
-          variant="overline"
-          sx={{ px: 4, color: 'text.disabled', display: 'block', mt: 1, mb: 1, fontWeight: 800, fontSize: '0.65rem', letterSpacing: '0.15em' }}
-        >
-          TOOLS
-        </Typography>
-        <List dense sx={{ px: 2 }}>
-          {toolsNav.map((item) => (
-            <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                component={Link}
-                href={item.href || '#'}
-                selected={pathname === item.href}
-                sx={{
-                  borderRadius: '12px',
-                  py: 1.25,
-                  transition: 'all 0.2s ease',
-                  '&.Mui-selected': {
-                    backgroundColor: alpha('#A855F7', 0.1),
-                    color: 'var(--color-app)',
-                    '& .MuiListItemIcon-root': {
-                      color: 'var(--color-app)',
-                    },
-                    '&:hover': {
-                      backgroundColor: alpha('#A855F7', 0.15),
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  }
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 36,
-                    color: pathname === item.href ? 'var(--color-app)' : '#A1A1AA',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    fontWeight: pathname === item.href ? 900 : 700,
-                    fontSize: '0.85rem',
-                    letterSpacing: '0.01em',
-                    fontFamily: 'var(--font-satoshi)'
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-
-        <Divider sx={{ my: 2, mx: 3, borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-
-        {/* Smart Lists */}
-        <Typography
-          variant="overline"
-          sx={{ px: 4, color: 'text.disabled', display: 'block', mt: 1, mb: 1, fontWeight: 800, fontSize: '0.65rem', letterSpacing: '0.15em' }}
-        >
-          SMART LISTS
-        </Typography>
-        <List dense sx={{ px: 2 }}>
-          {smartLists.map((item) => (
-            <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                selected={pathname === '/tasks' && (filter.projectId === item.id || (item.id === 'completed' && filter.status?.includes('done')))}
-                onClick={() => handleSmartListClick(item.id)}
-                sx={{
-                  borderRadius: '12px',
-                  py: 1,
-                  '&.Mui-selected': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    color: '#F2F2F2',
-                    '& .MuiListItemIcon-root': {
-                      color: item.color || '#F2F2F2',
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                  }
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 36,
-                    color: item.color || '#A1A1AA',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    fontWeight: 700,
-                    fontSize: '0.8rem'
-                  }}
-                />
-                {item.badge !== undefined && item.badge > 0 && (
-                  <Badge
-                    badgeContent={item.badge}
-                    sx={{
-                      '& .MuiBadge-badge': {
-                        backgroundColor: item.id === 'overdue' ? '#ef4444' : '#141414',
-                        color: '#F2F2F2',
-                        fontWeight: 800,
-                        fontSize: '0.65rem',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                      },
-                    }}
-                  />
-                )}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-
-        <Divider sx={{ my: 2, mx: 3, borderColor: 'rgba(255, 255, 255, 0.08)' }} />
-
-        {/* Projects */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            px: 4,
-            py: 0.5,
-            mb: 1,
-          }}
-        >
-          <Typography
-            variant="overline"
-            sx={{ color: 'text.disabled', flexGrow: 1, cursor: 'pointer', fontWeight: 800, fontSize: '0.65rem', letterSpacing: '0.15em' }}
-            onClick={() => setProjectsOpen(!projectsOpen)}
+      <Box sx={{ overflow: 'auto', py: 2, px: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Tasks Section with Sub-items */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            component={Link}
+            href="/tasks"
+            selected={pathname === '/tasks'}
+            sx={navItemStyles('/tasks')}
           >
-            PROJECTS
-          </Typography>
-          <IconButton size="small" onClick={() => setProjectsOpen(!projectsOpen)} sx={{ color: 'text.disabled' }}>
-            {projectsOpen ? <ChevronUpIcon sx={{ fontSize: 18 }} /> : <ChevronDownIcon sx={{ fontSize: 18 }} />}
-          </IconButton>
-        </Box>
+            <ListItemIcon sx={{ minWidth: 36, color: pathname === '/tasks' ? 'var(--color-brand)' : '#A1A1AA' }}>
+              <CheckSquareIcon size={20} />
+            </ListItemIcon>
+            <ListItemText 
+                primary="Tasks" 
+                primaryTypographyProps={{ 
+                    fontWeight: pathname === '/tasks' ? 900 : 700, 
+                    fontSize: '0.85rem',
+                    fontFamily: 'var(--font-satoshi)'
+                }} 
+            />
+            <IconButton 
+              size="small" 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setTasksOpen(!tasksOpen);
+              }}
+              sx={{ color: 'text.disabled', p: 0 }}
+            >
+              {tasksOpen ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />}
+            </IconButton>
+          </ListItemButton>
+        </ListItem>
 
-        <Collapse in={projectsOpen}>
-          <List dense sx={{ px: 2 }}>
-            {regularProjects.map((project) => (
-              <ListItem key={project.id} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  selected={pathname === '/tasks' && selectedProjectId === project.id}
-                  onClick={() => handleProjectClick(project.id)}
-                  sx={{
-                    borderRadius: '12px',
-                    py: 1,
-                    '&.Mui-selected': {
-                      backgroundColor: alpha(project.color, 0.1),
-                      '&:hover': {
-                        backgroundColor: alpha(project.color, 0.15),
+        <Collapse in={tasksOpen} timeout="auto" unmountOnExit>
+          <List dense component="div" disablePadding sx={{ pl: 2 }}>
+            {/* Smart Lists Toggle */}
+            <ListItemButton 
+              onClick={() => setSmartListsOpen(!smartListsOpen)}
+              sx={{ borderRadius: '10px', py: 0.8, mb: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 28, color: '#A1A1AA' }}>
+                <ListIcon size={16} />
+              </ListItemIcon>
+              <ListItemText primary="Views" primaryTypographyProps={{ fontSize: '0.75rem', fontWeight: 700 }} />
+              {smartListsOpen ? <ChevronUpIcon size={14} /> : <ChevronDownIcon size={14} />}
+            </ListItemButton>
+            
+            <Collapse in={smartListsOpen} timeout="auto">
+              <List dense component="div" disablePadding>
+                {smartLists.map((item) => (
+                  <ListItemButton
+                    key={item.id}
+                    selected={pathname === '/tasks' && (filter.projectId === item.id || (item.id === 'completed' && filter.status?.includes('done')))}
+                    onClick={() => handleSmartListClick(item.id)}
+                    sx={{
+                      borderRadius: '10px',
+                      py: 0.5,
+                      pl: 4,
+                      '&.Mui-selected': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        '& .MuiListItemIcon-root': { color: item.color || '#F2F2F2' },
                       }
-                    },
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                    }
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 32 }}>
-                    <Box
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        backgroundColor: project.color,
-                        boxShadow: `0 0 12px ${alpha(project.color, 0.6)}`,
-                      }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={project.name}
-                    primaryTypographyProps={{
-                      fontWeight: 600,
-                      fontSize: '0.8rem'
                     }}
-                  />
-                  <Typography variant="caption" sx={{ ml: 1, fontWeight: 800, color: 'text.disabled' }}>
-                    {getProjectTaskCount(project.id)}
-                  </Typography>
-                </ListItemButton>
-              </ListItem>
-            ))}
+                  >
+                    <ListItemIcon sx={{ minWidth: 24, color: item.color || '#A1A1AA' }}>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '0.75rem', fontWeight: 600 }} />
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <Badge badgeContent={item.badge} sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', height: 16, minWidth: 16 } }} />
+                    )}
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+
+            {/* Projects Toggle */}
+            <ListItemButton 
+              onClick={() => setProjectsOpen(!projectsOpen)}
+              sx={{ borderRadius: '10px', py: 0.8, mb: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 28, color: '#A1A1AA' }}>
+                <FolderIcon size={16} />
+              </ListItemIcon>
+              <ListItemText primary="Projects" primaryTypographyProps={{ fontSize: '0.75rem', fontWeight: 700 }} />
+              {projectsOpen ? <ChevronUpIcon size={14} /> : <ChevronDownIcon size={14} />}
+            </ListItemButton>
+
+            <Collapse in={projectsOpen} timeout="auto">
+              <List dense component="div" disablePadding>
+                {regularProjects.map((project) => (
+                  <ListItemButton
+                    key={project.id}
+                    selected={pathname === '/tasks' && selectedProjectId === project.id}
+                    onClick={() => handleProjectClick(project.id)}
+                    sx={{
+                      borderRadius: '10px',
+                      py: 0.5,
+                      pl: 4,
+                      '&.Mui-selected': { backgroundColor: alpha(project.color, 0.1) }
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 24 }}>
+                      <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: project.color }} />
+                    </ListItemIcon>
+                    <ListItemText primary={project.name} primaryTypographyProps={{ fontSize: '0.75rem', fontWeight: 600 }} />
+                    <Typography variant="caption" sx={{ fontSize: '0.65rem', color: 'text.disabled' }}>
+                      {getProjectTaskCount(project.id)}
+                    </Typography>
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
           </List>
         </Collapse>
 
-        <Box sx={{ mt: 'auto', p: 3 }}>
+        {/* Forms */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            component={Link}
+            href="/forms"
+            selected={pathname === '/forms'}
+            sx={navItemStyles('/forms')}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: pathname === '/forms' ? 'var(--color-brand)' : '#A1A1AA' }}>
+              <FormIcon size={20} />
+            </ListItemIcon>
+            <ListItemText primary="Forms" primaryTypographyProps={{ fontWeight: pathname === '/forms' ? 900 : 700, fontSize: '0.85rem', fontFamily: 'var(--font-satoshi)' }} />
+          </ListItemButton>
+        </ListItem>
+
+        {/* Events */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            component={Link}
+            href="/events"
+            selected={pathname === '/events'}
+            sx={navItemStyles('/events')}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: pathname === '/events' ? 'var(--color-app)' : '#A1A1AA' }}>
+              <ZapIcon size={20} />
+            </ListItemIcon>
+            <ListItemText primary="Events" primaryTypographyProps={{ fontWeight: pathname === '/events' ? 900 : 700, fontSize: '0.85rem', fontFamily: 'var(--font-satoshi)' }} />
+          </ListItemButton>
+        </ListItem>
+
+        {/* Settings */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            component={Link}
+            href="/settings"
+            selected={pathname === '/settings'}
+            sx={navItemStyles('/settings')}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: pathname === '/settings' ? 'var(--color-app)' : '#A1A1AA' }}>
+              <SettingsIcon size={20} />
+            </ListItemIcon>
+            <ListItemText primary="Settings" primaryTypographyProps={{ fontWeight: pathname === '/settings' ? 900 : 700, fontSize: '0.85rem', fontFamily: 'var(--font-satoshi)' }} />
+          </ListItemButton>
+        </ListItem>
+
+        <Box sx={{ mt: 'auto', p: 2 }}>
           <Box
             sx={{
-              p: 2.5,
-              borderRadius: '20px',
+              p: 2,
+              borderRadius: '16px',
               backgroundColor: 'rgba(255, 255, 255, 0.02)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, display: 'block', mb: 1.5, letterSpacing: '0.05em' }}>
-              STORAGE USED
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, display: 'block', mb: 1, letterSpacing: '0.05em' }}>
+              STORAGE
             </Typography>
             <LinearProgress
               variant="determinate"
               value={45}
               sx={{
-                height: 6,
-                borderRadius: 3,
+                height: 4,
+                borderRadius: 2,
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 '& .MuiLinearProgress-bar': {
                   backgroundColor: 'var(--color-app)',
-                  borderRadius: 3,
-                  boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)'
+                  borderRadius: 2,
                 },
               }}
             />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
-              <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 600 }}>
-                4.5GB of 10GB
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'var(--color-app)', fontWeight: 800 }}>
-                45%
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
+                4.5GB / 10GB
               </Typography>
             </Box>
           </Box>

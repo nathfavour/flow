@@ -27,11 +27,10 @@ export default function BottomNav() {
 
   // Determine active value based on pathname
   const getValue = () => {
-    if (pathname.startsWith('/dashboard')) return 'dashboard';
     if (pathname.startsWith('/tasks')) return 'tasks';
     if (pathname.startsWith('/focus')) return 'focus';
     if (pathname.startsWith('/forms')) return 'forms';
-    return 'dashboard'; // Default
+    return 'tasks'; // Default
   };
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -88,11 +87,6 @@ export default function BottomNav() {
             },
           }}
         >
-          <BottomNavigationAction
-            value="dashboard"
-            label="Dashboard"
-            icon={<DashboardIcon />}
-          />
           <BottomNavigationAction
             value="tasks"
             label="Tasks"

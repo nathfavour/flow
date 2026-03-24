@@ -19,7 +19,6 @@ import { useTheme, alpha } from '@mui/material/styles';
 import {
   Menu as LucideMenu,
   Search,
-  Plus,
   Bell,
   Settings,
   LogOut,
@@ -275,30 +274,6 @@ export default function AppBar() {
               }}
             >
               <Wallet size={18} strokeWidth={1.5} />
-            </IconButton>
-          </Tooltip>
-
-          {/* Add Task Button */}
-          <Tooltip title="Add task (Ctrl+N)">
-            <IconButton
-              onClick={() => setTaskDialogOpen(true)}
-              sx={{
-                background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-                color: '#FFFFFF',
-                borderRadius: '12px',
-                p: { xs: 1, sm: 1.25 },
-                boxShadow: '0 8px 16px rgba(99, 102, 241, 0.15)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #818CF8 0%, #6366F1 100%)',
-                  boxShadow: '0 10px 20px rgba(99, 102, 241, 0.25)',
-                  transform: 'translateY(-1px)',
-                },
-                '&:active': {
-                  transform: 'scale(0.95)',
-                },
-              }}
-            >
-              <Plus size={18} strokeWidth={2.5} />
             </IconButton>
           </Tooltip>
 

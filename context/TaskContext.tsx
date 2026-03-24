@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useReducer, useCallback, ReactNode, useEffect } from 'react';
 import { ID } from 'appwrite';
 import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/lib/kylrixflow';
-import { account } from '@/lib/appwrite';
-import { APPWRITE_CONFIG } from '@/lib/config';
+import { account } from '@/lib/appwrite/client';
+import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import {
   Task,

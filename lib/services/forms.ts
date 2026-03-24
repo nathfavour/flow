@@ -1,5 +1,5 @@
-import { tablesDB, getCurrentUser } from "../appwrite";
-import { APPWRITE_CONFIG } from "../config";
+import { tablesDB, getCurrentUser } from "../appwrite/client";
+import { APPWRITE_CONFIG } from "../appwrite/config";
 import { ID, Query, Permission, Role } from "appwrite";
 import { Forms, FormSubmissions, ActivityLogCreate, FormSubmissionsStatus } from "../../generated/appwrite/types";
 

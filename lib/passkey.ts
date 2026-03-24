@@ -1,7 +1,7 @@
 "use client";
 
 import { startAuthentication } from "@simplewebauthn/browser";
-import { AppwriteService } from "@/lib/appwrite";
+import { AppwriteService } from "@/lib/appwrite/client";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import toast from "react-hot-toast";
 

@@ -1,4 +1,4 @@
-import { PROJECT_ID, ENDPOINT } from '../generated/appwrite/constants';
+import { PROJECT_ID, ENDPOINT } from '../../generated/appwrite/constants';
 
 export const APPWRITE_CONFIG = {
   ENDPOINT,
@@ -8,7 +8,10 @@ export const APPWRITE_CONFIG = {
     NOTE: '67ff05a9000296822396',
     VAULT: 'passwordManagerDb',
     FLOW: 'whisperrflow',
-    CHAT: 'chat'
+    CHAT: 'chat',
+    PASSWORD_MANAGER: 'passwordManagerDb',
+    KYLRIXNOTE: '67ff05a9000296822396',
+    KYLRIXFLOW: 'whisperrflow'
   },
   TABLES: {
     CALENDARS: 'calendars',
@@ -17,13 +20,22 @@ export const APPWRITE_CONFIG = {
     EVENT_GUESTS: 'eventGuests',
     FOCUS_SESSIONS: 'focusSessions',
     NOTES: '67ff05f3002502ef239e',
+    PASSWORD_MANAGER: {
+      KEYCHAIN: 'keychain',
+      IDENTITIES: 'identities',
+      WALLETS: 'wallets',
+    },
+    KYLRIXNOTE: {
+      WALLET_MAP: 'walletMap',
+    },
     VAULT: {
       CREDENTIALS: 'credentials',
       TOTP_SECRETS: 'totpSecrets',
       FOLDERS: 'folders',
       SECURITY_LOGS: 'securityLogs',
       USER: 'user',
-      KEYCHAIN: 'keychain'
+      KEYCHAIN: 'keychain',
+      WALLETS: 'wallets'
     },
     FLOW: {
       TASKS: 'tasks',

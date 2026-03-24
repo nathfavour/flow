@@ -1,6 +1,6 @@
 import { ID, Permission, Role } from 'appwrite';
-import { tablesDB } from '../appwrite';
-import { APPWRITE_CONFIG } from '../config';
+import { tablesDB } from '../appwrite/client';
+import { APPWRITE_CONFIG } from '../appwrite/config';
 
 const DB_ID = APPWRITE_CONFIG.DATABASES.CHAT;
 const LINKS_TABLE = 'calls'; // Based on connect app config

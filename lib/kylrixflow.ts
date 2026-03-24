@@ -1,6 +1,6 @@
 import { ID, Models } from "appwrite";
-import { tablesDB, realtime } from "./appwrite";
-import { APPWRITE_CONFIG } from "./config";
+import { tablesDB, realtime } from "./appwrite/client";
+import { APPWRITE_CONFIG } from "./appwrite/config";
 import { Calendar, Task, Event, EventGuest, FocusSession } from "../types/kylrixflow";
 
 const { DATABASE_ID, TABLES } = APPWRITE_CONFIG;
