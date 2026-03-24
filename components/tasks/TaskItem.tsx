@@ -22,6 +22,7 @@ import {
   Archive as ArchiveIcon,
   ContentCopy as CopyIcon,
 } from '@mui/icons-material';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { format, isToday, isTomorrow, isPast, isThisWeek } from 'date-fns';
 import { Task, Priority } from '@/types';
 import { useTask } from '@/context/TaskContext';
@@ -48,6 +49,8 @@ const priorityLabels: Record<Priority, string> = {
 };
 
 export default React.memo(function TaskItem({ task, onClick, compact = false }: TaskItemProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { completeTask, deleteTask, updateTask, labels, projects, selectTask } = useTask();
   const { openSecondarySidebar } = useLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -108,7 +111,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         sx={{
-          p: compact ? 2 : 2.5,
+          p: compact || isMobile ? 1.5 : 2.5,
           mb: 1.5,
           cursor: 'pointer',
           borderRadius: 3,
@@ -119,7 +122,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'relative',
           '&:hover': {
-            transform: 'translateY(-2px)',
+            transform: isMobile ? 'none' : 'translateY(-2px)',
             boxShadow: '0 12px 24px rgba(0, 0, 0, 0.4)',
           },
           '&::before': {
@@ -131,12 +134,12 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
             width: 3,
             borderRadius: '0 4px 4px 0',
             backgroundColor: priorityColors[task.priority],
-            opacity: isHovered ? 1 : 0.4,
+            opacity: isHovered || isMobile ? 1 : 0.4,
             transition: 'all 0.3s',
           }
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: isMobile ? 1.5 : 2 }}>
           {/* Checkbox */}
           <Checkbox
             checked={task.status === 'done'}
@@ -162,10 +165,13 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
                     variant="body1"
                     sx={{
                         fontWeight: 700,
-                        fontSize: '1rem',
+                        fontSize: isMobile ? '0.9rem' : '1rem',
                         color: task.status === 'done' ? 'text.disabled' : '#F2F2F2',
                         textDecoration: task.status === 'done' ? 'line-through' : 'none',
                         letterSpacing: '-0.01em',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
                     }}
                 >
                     {task.title}
@@ -173,14 +179,14 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
 
                 <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
                     {/* Indicators */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: isMobile ? 1 : 1.5, mr: 1 }}>
                         {totalSubtasks > 0 && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, opacity: 0.4 }}>
                             <SubtaskIcon sx={{ fontSize: 14 }} />
                             <Typography variant="caption" sx={{ fontWeight: 800 }}>{completedSubtasks}/{totalSubtasks}</Typography>
                         </Box>
                         )}
-                        {task.comments.length > 0 && (
+                        {!isMobile && task.comments.length > 0 && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, opacity: 0.4 }}>
                             <CommentIcon sx={{ fontSize: 13 }} />
                             <Typography variant="caption" sx={{ fontWeight: 800 }}>{task.comments.length}</Typography>
@@ -195,7 +201,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
                         sx={{ 
                             p: 0.5, 
                             color: 'text.disabled',
-                            opacity: isHovered ? 1 : 0,
+                            opacity: isHovered || isMobile ? 1 : 0,
                             transition: 'opacity 0.2s',
                             '&:hover': { color: '#F2F2F2' }
                         }}
@@ -205,8 +211,8 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
                 </Box>
             </Box>
 
-            {/* Description (if not compact) */}
-            {!compact && task.description && (
+            {/* Description (if not compact and not mobile) */}
+            {!compact && !isMobile && task.description && (
               <Typography
                 variant="body2"
                 sx={{
@@ -231,14 +237,14 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
-                gap: 2,
+                gap: isMobile ? 1.5 : 2,
               }}
             >
               {/* Project Badge */}
               {project && project.id !== 'inbox' && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: project.color }} />
-                    <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.05em' }}>
+                    <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.05em', fontSize: isMobile ? '0.65rem' : '0.75rem' }}>
                         {project.name.toUpperCase()}
                     </Typography>
                 </Box>
@@ -247,7 +253,7 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
               {/* Priority Indicator */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                    <FlagIcon sx={{ fontSize: 12, color: priorityColors[task.priority] }} />
-                   <Typography variant="caption" sx={{ color: priorityColors[task.priority], fontWeight: 800 }}>
+                   <Typography variant="caption" sx={{ color: priorityColors[task.priority], fontWeight: 800, fontSize: isMobile ? '0.65rem' : '0.75rem' }}>
                         {priorityLabels[task.priority]}
                    </Typography>
               </Box>
@@ -256,14 +262,14 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
               {task.dueDate && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                   <ScheduleIcon sx={{ fontSize: 12, color: getDueDateColor() }} />
-                  <Typography variant="caption" sx={{ color: getDueDateColor(), fontWeight: 800 }}>
+                  <Typography variant="caption" sx={{ color: getDueDateColor(), fontWeight: 800, fontSize: isMobile ? '0.65rem' : '0.75rem' }}>
                     {formatDueDate(new Date(task.dueDate)).toUpperCase()}
                   </Typography>
                 </Box>
               )}
 
               {/* Space for labels if any */}
-              {taskLabels.length > 0 && (
+              {taskLabels.length > 0 && !isMobile && (
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
                       {taskLabels.slice(0, 2).map(l => (
                           <Box key={l.id} sx={{ height: 4, width: 12, borderRadius: 2, bgcolor: l.color, opacity: 0.6 }} />

@@ -24,12 +24,14 @@ import {
   ArrowDownward as DescIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
+import { Fab, useMediaQuery } from '@mui/material';
 import TaskItem from './TaskItem';
 import { useTask } from '@/context/TaskContext';
 import { ViewMode, SortField, TaskStatus } from '@/types';
 
 export default function TaskList() {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const {
     getFilteredTasks,
     viewMode,
@@ -136,15 +138,15 @@ export default function TaskList() {
       <Box
         sx={{
           display: 'flex',
-          alignItems: 'center',
+          alignItems: isMobile ? 'flex-start' : 'center',
           justifyContent: 'space-between',
-          mb: 5,
-          flexWrap: 'wrap',
-          gap: 3,
+          mb: isMobile ? 3 : 5,
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? 2 : 3,
         }}
       >
         <Box>
-          <Typography variant="h3" sx={{ mb: 1, letterSpacing: '-0.03em' }}>
+          <Typography variant={isMobile ? "h4" : "h3"} sx={{ mb: 1, letterSpacing: '-0.03em', fontWeight: 800 }}>
             {getViewTitle()}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -155,7 +157,15 @@ export default function TaskList() {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: isMobile ? 1 : 2,
+            width: isMobile ? '100%' : 'auto',
+            justifyContent: isMobile ? 'space-between' : 'flex-end'
+          }}
+        >
           {/* View Mode Toggle */}
           <Box 
             sx={{ 
@@ -177,39 +187,45 @@ export default function TaskList() {
                     onClick={() => setViewMode(mode.id as ViewMode)}
                     sx={{
                         borderRadius: 1.5,
-                        px: 1.5,
+                        px: isMobile ? 1 : 1.5,
                         color: viewMode === mode.id ? '#10B981' : 'text.disabled',
                         bgcolor: viewMode === mode.id ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
                         '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
                     }}
                 >
-                    <mode.icon sx={{ fontSize: 20 }} />
+                    <mode.icon sx={{ fontSize: isMobile ? 18 : 20 }} />
                 </IconButton>
             ))}
           </Box>
 
-          <Divider orientation="vertical" flexItem sx={{ mx: 1, opacity: 0.1 }} />
+          {!isMobile && <Divider orientation="vertical" flexItem sx={{ mx: 1, opacity: 0.1 }} />}
 
           {/* Sort & Filter Group */}
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
                 size="small"
                 variant="outlined"
-                startIcon={<SortIcon />}
                 onClick={handleSortClick}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  minWidth: isMobile ? 'auto' : 80,
+                  px: isMobile ? 1.5 : 2
+                }}
             >
-                Sort
+                {isMobile ? <SortIcon fontSize="small" /> : 'Sort'}
             </Button>
 
             <Button
                 size="small"
                 variant="outlined"
-                startIcon={<FilterIcon />}
                 onClick={handleFilterClick}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  minWidth: isMobile ? 'auto' : 80,
+                  px: isMobile ? 1.5 : 2
+                }}
             >
-                Filter
+                {isMobile ? <FilterIcon fontSize="small" /> : 'Filter'}
                 {(filter.status?.length || filter.labels?.length) && (
                 <Box sx={{ ml: 1, width: 16, height: 16, borderRadius: '50%', bgcolor: '#10B981', color: '#000', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
                     {(filter.status?.length || 0) + (filter.labels?.length || 0)}
@@ -218,20 +234,22 @@ export default function TaskList() {
             </Button>
           </Box>
 
-          {/* Add Task */}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setTaskDialogOpen(true)}
-            sx={{ 
-                borderRadius: 2,
-                px: 3,
-                boxShadow: '0 8px 20px rgba(16, 185, 129, 0.2)'
-            }}
-          >
-            New Task
-          </Button>
+          {/* Add Task (Desktop) */}
+          {!isMobile && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={() => setTaskDialogOpen(true)}
+              sx={{ 
+                  borderRadius: 2,
+                  px: 3,
+                  boxShadow: '0 8px 20px rgba(16, 185, 129, 0.2)'
+              }}
+            >
+              New Task
+            </Button>
+          )}
         </Box>
       </Box>
 

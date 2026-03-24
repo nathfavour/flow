@@ -11,34 +11,28 @@ import {
   alpha,
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
-  ListAlt as TasksIcon,
-  Assignment as FormIcon,
-  TrackChanges as FocusIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
-import { useTask } from '@/context/TaskContext';
+  CheckSquare as TasksIcon,
+  FileText as FormIcon,
+  Zap as EventsIcon,
+  Settings as SettingsIcon,
+} from 'lucide-react';
 
 export default function BottomNav() {
   const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
-  const { setTaskDialogOpen } = useTask();
 
   // Determine active value based on pathname
   const getValue = () => {
     if (pathname.startsWith('/tasks')) return 'tasks';
-    if (pathname.startsWith('/focus')) return 'focus';
     if (pathname.startsWith('/forms')) return 'forms';
+    if (pathname.startsWith('/events')) return 'events';
+    if (pathname.startsWith('/settings')) return 'settings';
     return 'tasks'; // Default
   };
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
-    if (newValue === 'add') {
-      setTaskDialogOpen(true);
-    } else {
-      router.push(`/${newValue}`);
-    }
+    router.push(`/${newValue}`);
   };
 
   return (
@@ -46,88 +40,62 @@ export default function BottomNav() {
       sx={{
         display: { xs: 'block', md: 'none' },
         position: 'fixed',
-        bottom: 16,
-        left: 16,
-        right: 16,
+        bottom: 24,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 'calc(100% - 48px)',
+        maxWidth: '400px',
         zIndex: theme.zIndex.appBar + 1,
       }}
     >
       <Paper
-        elevation={8}
+        elevation={0}
         sx={{
-          borderRadius: 4,
+          borderRadius: '24px',
           overflow: 'hidden',
-          backgroundColor: alpha(theme.palette.background.paper, 0.95),
-          backdropFilter: 'blur(10px)',
-          border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+          backgroundColor: 'rgba(11, 9, 8, 0.8)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
         }}
       >
         <BottomNavigation
           value={getValue()}
           onChange={handleChange}
-          showLabels
+          showLabels={false}
           sx={{
             backgroundColor: 'transparent',
-            height: 64,
+            height: 72,
             '& .MuiBottomNavigationAction-root': {
               minWidth: 'auto',
-              padding: '6px 0',
-              color: theme.palette.text.secondary,
+              padding: '0',
+              color: 'rgba(255, 255, 255, 0.4)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '&.Mui-selected': {
-                color: theme.palette.primary.main,
-              },
-            },
-            '& .MuiBottomNavigationAction-label': {
-              fontSize: '0.65rem',
-              marginTop: '2px',
-              '&.Mui-selected': {
-                fontSize: '0.65rem',
-                fontWeight: 600,
+                color: '#A855F7',
+                '& .lucide': {
+                  transform: 'scale(1.2) translateY(-2px)',
+                  filter: 'drop-shadow(0 0 8px rgba(168, 85, 247, 0.5))',
+                }
               },
             },
           }}
         >
           <BottomNavigationAction
             value="tasks"
-            label="Tasks"
-            icon={<TasksIcon />}
-          />
-          <BottomNavigationAction
-            value="add"
-            label="Add"
-            icon={
-              <Box
-                sx={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: '50%',
-                  backgroundColor: theme.palette.primary.main,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: theme.palette.primary.contrastText,
-                  boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.4)}`,
-                  transform: 'translateY(-8px)',
-                }}
-              >
-                <AddIcon />
-              </Box>
-            }
+            icon={<TasksIcon size={24} strokeWidth={1.5} className="lucide" />}
           />
           <BottomNavigationAction
             value="forms"
-            label="Forms"
-            icon={<FormIcon />}
-            sx={{
-              '&.Mui-selected': {
-                color: '#6366F1 !important',
-              },
-            }}
+            icon={<FormIcon size={24} strokeWidth={1.5} className="lucide" />}
           />
           <BottomNavigationAction
-            value="focus"
-            label="Focus"
-            icon={<FocusIcon />}
+            value="events"
+            icon={<EventsIcon size={24} strokeWidth={1.5} className="lucide" />}
+          />
+          <BottomNavigationAction
+            value="settings"
+            icon={<SettingsIcon size={24} strokeWidth={1.5} className="lucide" />}
           />
         </BottomNavigation>
       </Paper>

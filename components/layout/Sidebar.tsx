@@ -356,6 +356,36 @@ export default function Sidebar() {
           </ListItemButton>
         </ListItem>
 
+        {/* Calendar */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            component={Link}
+            href="/calendar"
+            selected={pathname === '/calendar'}
+            sx={navItemStyles('/calendar')}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: pathname === '/calendar' ? 'var(--color-brand)' : '#A1A1AA' }}>
+              <CalendarIcon size={20} />
+            </ListItemIcon>
+            <ListItemText primary="Calendar" primaryTypographyProps={{ fontWeight: pathname === '/calendar' ? 900 : 700, fontSize: '0.85rem', fontFamily: 'var(--font-satoshi)' }} />
+          </ListItemButton>
+        </ListItem>
+
+        {/* Focus Mode */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            component={Link}
+            href="/focus"
+            selected={pathname === '/focus'}
+            sx={navItemStyles('/focus')}
+          >
+            <ListItemIcon sx={{ minWidth: 36, color: pathname === '/focus' ? 'var(--color-brand)' : '#A1A1AA' }}>
+              <ClockIcon size={20} />
+            </ListItemIcon>
+            <ListItemText primary="Focus Mode" primaryTypographyProps={{ fontWeight: pathname === '/focus' ? 900 : 700, fontSize: '0.85rem', fontFamily: 'var(--font-satoshi)' }} />
+          </ListItemButton>
+        </ListItem>
+
         {/* Settings */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
@@ -370,39 +400,6 @@ export default function Sidebar() {
             <ListItemText primary="Settings" primaryTypographyProps={{ fontWeight: pathname === '/settings' ? 900 : 700, fontSize: '0.85rem', fontFamily: 'var(--font-satoshi)' }} />
           </ListItemButton>
         </ListItem>
-
-        <Box sx={{ mt: 'auto', p: 2 }}>
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: '16px',
-              backgroundColor: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
-          >
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, display: 'block', mb: 1, letterSpacing: '0.05em' }}>
-              STORAGE
-            </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={45}
-              sx={{
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                '& .MuiLinearProgress-bar': {
-                  backgroundColor: 'var(--color-app)',
-                  borderRadius: 2,
-                },
-              }}
-            />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem' }}>
-                4.5GB / 10GB
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
       </Box>
     </Drawer>
   );

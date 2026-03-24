@@ -8,6 +8,7 @@ import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
 import AppBar from '@/components/layout/AppBar';
 import BottomNav from '@/components/layout/BottomNav';
+import GlobalFAB from '@/components/layout/GlobalFAB';
 
 const Sidebar = dynamic(() => import('@/components/layout/Sidebar'), { ssr: false });
 const RightSidebar = dynamic(() => import('@/components/layout/RightSidebar'), { ssr: false });
@@ -107,6 +108,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </Box>
       
       <RightSidebar />
+      
+      <GlobalFAB />
       
       {/* BottomNav only visible on mobile */}
       {isMobile && !isEventPage && <BottomNav />}
