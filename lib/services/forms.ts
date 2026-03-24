@@ -87,10 +87,6 @@ export const FormsService = {
         
         // 1. Determine current state (merged from existing + incoming updates)
         const currentStatus = data.status || form.status;
-        let currentSettings: any = {};
-        try {
-            currentSettings = JSON.parse(data.settings || form.settings || '{}');
-        } catch (_e) {}
 
         // 2. Build the exact permission set for this form row
         // We always ensure the owner has full control

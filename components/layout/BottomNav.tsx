@@ -8,7 +8,6 @@ import {
   BottomNavigationAction,
   Paper,
   useTheme,
-  alpha,
 } from '@mui/material';
 import {
   CheckSquare as TasksIcon,

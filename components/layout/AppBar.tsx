@@ -60,7 +60,7 @@ function getInitials(user: { name?: string | null; email?: string | null } | nul
 
 export default function AppBar() {
   const theme = useTheme();
-  const { toggleSidebar, setSearchQuery, searchQuery, setTaskDialogOpen } = useTask();
+  const { toggleSidebar, setSearchQuery, searchQuery } = useTask();
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

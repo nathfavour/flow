@@ -49,7 +49,7 @@ export default function FormSettingsDialog({ open, onClose, form, onSaved }: For
       let settings: any = {};
       try {
         settings = JSON.parse(form.settings || '{}');
-      } catch (e) {}
+      } catch (_e) {}
       
       setAllowAnonymousView(settings.allowAnonymousView ?? (form.status === 'published'));
       setAllowAnonymousFill(settings.allowAnonymousFill ?? false);

@@ -8,7 +8,6 @@ import {
   Typography, 
   Backdrop, 
   Zoom,
-  useTheme,
   alpha,
 } from '@mui/material';
 import { 
@@ -20,7 +19,6 @@ import {
 import { useTask } from '@/context/TaskContext';
 
 export default function GlobalFAB() {
-  const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const { setTaskDialogOpen } = useTask();

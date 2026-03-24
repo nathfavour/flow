@@ -24,7 +24,7 @@ import {
   ArrowDownward as DescIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
-import { Fab, useMediaQuery } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import TaskItem from './TaskItem';
 import { useTask } from '@/context/TaskContext';
 import { ViewMode, SortField, TaskStatus } from '@/types';

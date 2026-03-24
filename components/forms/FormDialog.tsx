@@ -435,7 +435,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
             if (title === form.title && description === (form.description || '') && status === form.status && currentFieldsStr === JSON.stringify(originalFields)) {
                 isDifferent = false;
             }
-        } catch(e) {}
+        } catch(_e) {}
     }
 
     if (isDifferent) {

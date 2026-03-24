@@ -20,7 +20,6 @@ import {
   Stack
 } from '@mui/material';
 import { 
-  Download as DownloadIcon,
   TableRows as CSVIcon,
   DataObject as JSONIcon,
   MarkEmailRead as ReadIcon,
