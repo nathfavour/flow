@@ -171,8 +171,8 @@ export default function Sidebar() {
 
   const navItemStyles = (href?: string, isSelected?: boolean) => ({
     borderRadius: '12px',
-    py: 1.25,
-    mb: 0.5,
+    py: 1.5,
+    mb: 1.2,
     transition: 'all 0.2s ease',
     ...(isSelected || (href && pathname === href) ? {
       backgroundColor: alpha('#6366F1', 0.1),
