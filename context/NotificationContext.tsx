@@ -4,8 +4,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { 
   realtime, 
   tablesDB as databases,
-} from '@/lib/appwrite/client';
-import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
+} from '@/lib/appwrite';
+import { APPWRITE_CONFIG } from '@/lib/config';
 import { Query } from 'appwrite';
 import { useAuth } from './auth/AuthContext';
 

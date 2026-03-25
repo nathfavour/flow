@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
     Box, 
     Typography, 
@@ -11,6 +11,7 @@ import {
     Chip, 
     IconButton, 
     Tooltip,
+    CircularProgress,
     Fade,
     Paper,
     Divider,
@@ -46,7 +47,7 @@ import FormDialog from '@/components/forms/FormDialog';
 import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
 
-export default function FormsPage() {
+export default function FormsDashboard() {
     const { user } = useAuth();
     const [forms, setForms] = useState<Forms[]>([]);
     const [offlineDrafts, setOfflineDrafts] = useState<FormDraft[]>([]);
@@ -61,7 +62,7 @@ export default function FormsPage() {
     const [menuAnchor, setMenuAnchor] = useState<{ element: HTMLElement, form: Forms } | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-    const fetchForms = useCallback(async (showLoading = true) => {
+    const fetchForms = async (showLoading = true) => {
         if (!user) return;
         
         // Only show loading if we don't have forms yet, to prevent blinking
@@ -92,7 +93,7 @@ export default function FormsPage() {
         } finally {
             if (shouldShowLoading) setLoading(false);
         }
-    }, [user, forms.length]);
+    };
 
     const handleCreate = () => {
         setSelectedForm(null);
@@ -155,7 +156,7 @@ export default function FormsPage() {
         if (user) {
             fetchForms();
         }
-    }, [fetchForms, user]);
+    }, [user]);
 
     const getStatusColor = (status: string) => {
         switch (status) {

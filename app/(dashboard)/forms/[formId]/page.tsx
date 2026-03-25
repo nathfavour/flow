@@ -1,15 +1,20 @@
 'use client';
 
-import React, { useEffect, useState, use, useCallback } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import { 
     Box, 
     Typography, 
     Button, 
+    Grid, 
+    Card, 
+    CardContent, 
     Chip, 
     IconButton, 
+    Tooltip,
     CircularProgress,
     Fade,
     Paper,
+    Divider,
     Tabs,
     Tab,
     Stack,
@@ -17,9 +22,13 @@ import {
     Alert
 } from '@mui/material';
 import { 
+    Add as AddIcon, 
     Edit as EditIcon, 
+    Delete as DeleteIcon, 
     Launch as LaunchIcon,
     Assignment as FormIcon,
+    Visibility as ViewIcon,
+    MoreVert as MoreIcon,
     ContentCopy as CopyIcon,
     ArrowBack as BackIcon,
     Insights as InsightsIcon
@@ -38,7 +47,7 @@ export default function FormDetailsPage({ params }: { params: Promise<{ formId: 
     const [isEditing, setIsEditing] = useState(false);
     const [snackbar, setSnackbar] = useState<string | null>(null);
 
-    const fetchForm = useCallback(async () => {
+    const fetchForm = async () => {
         setLoading(true);
         try {
             const data = await FormsService.getForm(resolvedParams.formId);
@@ -48,11 +57,11 @@ export default function FormDetailsPage({ params }: { params: Promise<{ formId: 
         } finally {
             setLoading(false);
         }
-    }, [resolvedParams.formId]);
+    };
 
     useEffect(() => {
         fetchForm();
-    }, [fetchForm]);
+    }, [resolvedParams.formId]);
 
     const handleCopyLink = () => {
         const url = `${window.location.origin}/form/${resolvedParams.formId}`;
@@ -155,7 +164,7 @@ export default function FormDetailsPage({ params }: { params: Promise<{ formId: 
             {tab === 0 && (
                 <Fade in={true}>
                     <Box>
-                        <SubmissionViewer formId={resolvedParams.formId} />
+                        <SubmissionViewer formId={params.formId} />
                     </Box>
                 </Fade>
             )}
