@@ -132,7 +132,7 @@ export const FormsService = {
         return res.rows.find(s => {
             try {
                 return JSON.parse(s.metadata || '{}').isDraft;
-            } catch (e) { return false; }
+            } catch (_e) { return false; }
         });
     },
 
@@ -153,7 +153,7 @@ export const FormsService = {
         const existingDraft = res.rows.find(s => {
             try {
                 return JSON.parse(s.metadata || '{}').isDraft;
-            } catch (e) { return false; }
+            } catch (_e) { return false; }
         });
 
         const submissionPermissions = [
@@ -272,7 +272,7 @@ export const FormsService = {
             const existingDraft = res.rows.find(s => {
                 try {
                     return JSON.parse(s.metadata || '{}').isDraft;
-                } catch (e) { return false; }
+                } catch (_e) { return false; }
             });
 
             if (existingDraft) {

@@ -465,7 +465,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
     };
 
     fetchData();
-  }, []);
+  }, [fetchOptimized]);
 
   // Realtime Subscriptions
   useEffect(() => {

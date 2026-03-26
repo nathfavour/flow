@@ -39,8 +39,6 @@ import {
   CloudUpload as SyncIcon,
   Warning as WarningIcon,
   Settings as SettingsIcon,
-  ArrowUpward as UpIcon,
-  ArrowDownward as DownIcon,
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';
@@ -88,7 +86,6 @@ const FIELD_TYPES = [
 function SortableField({ 
   field, 
   fIdx, 
-  fieldsLength, 
   updateField, 
   removeField, 
   addOption, 
@@ -405,7 +402,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
             setStatus(form.status as any);
             try {
                 setFields(JSON.parse(form.schema || '[]'));
-            } catch (e) {
+            } catch (_e) {
                 setFields([]);
             }
             setIsRestored(false);
@@ -440,7 +437,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
             if (title === form.title && description === (form.description || '') && status === form.status && currentFieldsStr === JSON.stringify(originalFields)) {
                 isDifferent = false;
             }
-        } catch(e) {}
+        } catch(_e) {}
     }
 
     if (isDifferent) {
@@ -512,7 +509,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
       setStatus(form.status as any);
       try {
         setFields(JSON.parse(form.schema || '[]'));
-      } catch (e) {
+      } catch (_e) {
         setFields([]);
       }
     } else {

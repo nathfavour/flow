@@ -135,7 +135,7 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
         try {
           const meta = JSON.parse(s.metadata || '{}');
           return !meta.isDraft;
-        } catch (e) {
+        } catch (_e) {
           return true;
         }
       });

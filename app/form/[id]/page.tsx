@@ -169,7 +169,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
     }
 
     let schema: any[] = [];
-    try { schema = JSON.parse(form?.schema || '[]'); } catch (e) {}
+    try { schema = JSON.parse(form?.schema || '[]'); } catch (_e) {}
 
     const renderField = (field: any) => {
         switch (field.type) {
