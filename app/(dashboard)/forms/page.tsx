@@ -46,9 +46,11 @@ import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
 import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function FormsDashboard() {
     const { user } = useAuth();
+    const router = useRouter();
     const [forms, setForms] = useState<Forms[]>([]);
     const [offlineDrafts, setOfflineDrafts] = useState<FormDraft[]>([]);
     const [loading, setLoading] = useState(true);
@@ -260,7 +262,21 @@ export default function FormsDashboard() {
                                     {filteredForms.map((form) => (
                                         <Grid item xs={12} md={6} lg={4} key={form.$id}>
                                             <Fade in={true}>
-                                                <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
+                                                <Card 
+                                                    onClick={() => router.push(`/forms/${form.$id}`)}
+                                                    sx={{ 
+                                                        bgcolor: 'rgba(255, 255, 255, 0.02)', 
+                                                        border: '1px solid rgba(255, 255, 255, 0.05)', 
+                                                        borderRadius: 3,
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease-in-out',
+                                                        '&:hover': {
+                                                            bgcolor: 'rgba(255, 255, 255, 0.04)',
+                                                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                                                            transform: 'translateY(-2px)'
+                                                        }
+                                                    }}
+                                                >
                                                     <CardContent sx={{ p: 3 }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                                                             <Stack direction="row" spacing={1} alignItems="center">
@@ -272,7 +288,10 @@ export default function FormsDashboard() {
                                                             <IconButton 
                                                                 size="small" 
                                                                 sx={{ opacity: 0.4 }}
-                                                                onClick={(e) => handleMenuOpen(e, form)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleMenuOpen(e, form);
+                                                                }}
                                                             >
                                                                 <MoreIcon />
                                                             </IconButton>
@@ -283,11 +302,39 @@ export default function FormsDashboard() {
                                                         </Typography>
                                                         <Divider sx={{ opacity: 0.05, mb: 3 }} />
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
-                                                            <Tooltip title="View Submissions"><IconButton component={Link} href={`/forms/${form.$id}`} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}><ViewIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>
-                                                            <Tooltip title="Preview Public Form"><IconButton size="small" component={Link} href={`/form/${form.$id}`} target="_blank" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}><LaunchIcon sx={{ fontSize: 18 }} /></IconButton></Tooltip>
+                                                            <Tooltip title="Preview Public Form">
+                                                                <IconButton 
+                                                                    size="small" 
+                                                                    component={Link} 
+                                                                    href={`/form/${form.$id}`} 
+                                                                    target="_blank" 
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}
+                                                                >
+                                                                    <LaunchIcon sx={{ fontSize: 18 }} />
+                                                                </IconButton>
+                                                            </Tooltip>
                                                             <Box sx={{ flexGrow: 1 }} />
-                                                            <IconButton size="small" onClick={() => handleEdit(form)} sx={{ opacity: 0.6 }}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
-                                                            <IconButton size="small" onClick={() => handleDelete(form.$id)} sx={{ color: '#D14343', opacity: 0.6 }}><DeleteIcon sx={{ fontSize: 18 }} /></IconButton>
+                                                            <IconButton 
+                                                                size="small" 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleEdit(form);
+                                                                }} 
+                                                                sx={{ opacity: 0.6 }}
+                                                            >
+                                                                <EditIcon sx={{ fontSize: 18 }} />
+                                                            </IconButton>
+                                                            <IconButton 
+                                                                size="small" 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDelete(form.$id);
+                                                                }} 
+                                                                sx={{ color: '#D14343', opacity: 0.6 }}
+                                                            >
+                                                                <DeleteIcon sx={{ fontSize: 18 }} />
+                                                            </IconButton>
                                                         </Box>
                                                     </CardContent>
                                                 </Card>

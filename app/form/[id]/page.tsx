@@ -33,6 +33,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     useEffect(() => {
         const fetchForm = async () => {
@@ -42,6 +43,9 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                     return;
                 }
 
+                const user = await FormsService.getCurrentUser();
+                setCurrentUser(user);
+
                 const data = await FormsService.getForm(resolvedParams.id);
                 
                 let settings: any = {};
@@ -49,8 +53,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                     settings = JSON.parse(data.settings || '{}');
                 } catch (e) {}
 
-                const currentUser = await FormsService.getCurrentUser();
-                const isOwner = currentUser?.$id === data.userId;
+                const isOwner = user?.$id === data.userId;
 
                 if (!isOwner && data.status !== 'published') {
                     setError('This form is not currently accepting submissions.');
@@ -63,6 +66,28 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                 }
 
                 setForm(data);
+
+                // Load existing draft/local data
+                const localKey = `form_draft_${resolvedParams.id}`;
+                const localData = localStorage.getItem(localKey);
+                if (localData) {
+                    try {
+                        setFormData(JSON.parse(localData));
+                    } catch (e) {}
+                }
+
+                // If logged in, prioritize DB draft if exists
+                if (user) {
+                    try {
+                        const draft = await FormsService.getDraft(resolvedParams.id, user.$id);
+                        if (draft) {
+                            setFormData(JSON.parse(draft.payload));
+                        }
+                    } catch (e) {
+                        console.error("Failed to check for remote draft", e);
+                    }
+                }
+
             } catch (err: any) {
                 setError(err.message || 'Form not found or inaccessible.');
             } finally {
@@ -71,6 +96,28 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
         };
         fetchForm();
     }, [resolvedParams.id]);
+
+    // Autosave logic
+    useEffect(() => {
+        if (!form || Object.keys(formData).length === 0 || submitted) return;
+
+        const timer = setTimeout(async () => {
+            // Local save
+            const localKey = `form_draft_${resolvedParams.id}`;
+            localStorage.setItem(localKey, JSON.stringify(formData));
+
+            // Remote save if logged in
+            if (currentUser) {
+                try {
+                    await FormsService.saveDraft(resolvedParams.id, JSON.stringify(formData), currentUser.$id);
+                } catch (e) {
+                    console.error("Autosave failed", e);
+                }
+            }
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [formData, resolvedParams.id, currentUser, form, submitted]);
 
     const handleFieldChange = (fieldId: string, value: any) => {
         setFormData(prev => ({ ...prev, [fieldId]: value }));
@@ -92,6 +139,8 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
         try {
             await FormsService.submitForm(resolvedParams.id, JSON.stringify(formData));
             setSubmitted(true);
+            // Clear local draft
+            localStorage.removeItem(`form_draft_${resolvedParams.id}`);
         } catch (err: any) {
             setError(err.message || 'Failed to submit form. Please try again.');
         } finally {
@@ -216,6 +265,26 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                                     {form.description}
                                 </Typography>
                             )}
+
+                            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+                                <Box 
+                                    sx={{ 
+                                        px: 2, 
+                                        py: 0.5, 
+                                        borderRadius: '20px', 
+                                        bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1
+                                    }}
+                                >
+                                    <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: currentUser ? '#10B981' : 'rgba(255,255,255,0.2)' }} />
+                                    <Typography variant="caption" sx={{ fontWeight: 800, color: currentUser ? 'text.primary' : 'text.secondary', letterSpacing: '0.02em', fontSize: '0.7rem' }}>
+                                        {currentUser ? `Filling as ${currentUser.name || currentUser.email}` : 'Filling anonymously'}
+                                    </Typography>
+                                </Box>
+                            </Box>
                         </Box>
 
                         {submitted ? (

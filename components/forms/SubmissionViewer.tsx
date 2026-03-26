@@ -130,7 +130,16 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
   const fetchSubmissions = async () => {
     try {
       const res = await FormsService.listSubmissions(formId);
-      setSubmissions(res.rows);
+      // Filter out drafts (work-in-progress)
+      const nonDrafts = res.rows.filter(s => {
+        try {
+          const meta = JSON.parse(s.metadata || '{}');
+          return !meta.isDraft;
+        } catch (e) {
+          return true;
+        }
+      });
+      setSubmissions(nonDrafts);
     } catch (_e) {
       console.error('Failed to fetch submissions', _e);
     } finally {

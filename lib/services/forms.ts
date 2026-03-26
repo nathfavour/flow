@@ -117,6 +117,85 @@ export const FormsService = {
     },
 
     /**
+     * Get a draft if it exists for a user and form
+     */
+    async getDraft(formId: string, userId: string) {
+        const res = await tablesDB.listRows<FormSubmissions>({
+            databaseId: DATABASE_ID,
+            tableId: SUBMISSIONS_TABLE,
+            queries: [
+                Query.equal('formId', formId),
+                Query.equal('submitterId', userId)
+            ]
+        });
+
+        return res.rows.find(s => {
+            try {
+                return JSON.parse(s.metadata || '{}').isDraft;
+            } catch (e) { return false; }
+        });
+    },
+
+    /**
+     * Save a draft response (Authenticated users only)
+     */
+    async saveDraft(formId: string, payload: string, userId: string) {
+        // Check for existing draft (fetch all and find in memory because metadata is encrypted and not queryable)
+        const res = await tablesDB.listRows<FormSubmissions>({
+            databaseId: DATABASE_ID,
+            tableId: SUBMISSIONS_TABLE,
+            queries: [
+                Query.equal('formId', formId),
+                Query.equal('submitterId', userId)
+            ]
+        });
+
+        const existingDraft = res.rows.find(s => {
+            try {
+                return JSON.parse(s.metadata || '{}').isDraft;
+            } catch (e) { return false; }
+        });
+
+        const submissionPermissions = [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+            Permission.delete(Role.user(userId)),
+        ];
+
+        if (existingDraft) {
+            return await tablesDB.updateRow<FormSubmissions>(
+                DATABASE_ID,
+                SUBMISSIONS_TABLE,
+                existingDraft.$id,
+                {
+                    payload,
+                    metadata: JSON.stringify({
+                        isDraft: true,
+                        updatedAt: new Date().toISOString()
+                    })
+                }
+            );
+        }
+
+        return await tablesDB.createRow<FormSubmissions>(
+            DATABASE_ID,
+            SUBMISSIONS_TABLE,
+            ID.unique(),
+            {
+                formId,
+                submitterId: userId,
+                payload,
+                status: FormSubmissionsStatus.UNREAD,
+                metadata: JSON.stringify({
+                    isDraft: true,
+                    updatedAt: new Date().toISOString()
+                })
+            },
+            submissionPermissions
+        );
+    },
+
+    /**
      * Submit form data
      */
     async submitForm(formId: string, payload: string, userId?: string) {
@@ -153,11 +232,16 @@ export const FormsService = {
         // Check anonymous fill
         const allowAnonymousFill = settings.allowAnonymousFill ?? false;
         
-        if (!userId && !allowAnonymousFill) {
-             const currentUser = await getCurrentUser();
-             if (!currentUser) {
-                throw new Error('Authentication required to submit this form.');
-             }
+        let submitterId = userId;
+        if (!submitterId) {
+            const currentUser = await getCurrentUser();
+            if (currentUser?.$id) {
+                submitterId = currentUser.$id;
+            }
+        }
+
+        if (!submitterId && !allowAnonymousFill) {
+            throw new Error('Authentication required to submit this form.');
         }
 
         // Submissions Table permissions:
@@ -169,33 +253,61 @@ export const FormsService = {
         ];
 
         // 2. If user is logged in, allow THEM to read their own submission later
-        let submitterId = userId;
-        if (!submitterId) {
-            const currentUser = await getCurrentUser();
-            if (currentUser?.$id) {
-                submitterId = currentUser.$id;
-            }
-        }
-
         if (submitterId) {
             submissionPermissions.push(Permission.read(Role.user(submitterId)));
         }
 
-        const submission = await tablesDB.createRow<FormSubmissions>(
-            DATABASE_ID,
-            SUBMISSIONS_TABLE,
-            ID.unique(),
-            {
-                formId,
-                submitterId: submitterId || null,
-                payload,
-                status: FormSubmissionsStatus.UNREAD,
-                metadata: JSON.stringify({
-                    submittedAt: new Date().toISOString(),
-                })
-            },
-            submissionPermissions
-        );
+        // CHECK FOR EXISTING DRAFT TO CONVERT
+        let submission;
+        if (submitterId) {
+            const res = await tablesDB.listRows<FormSubmissions>({
+                databaseId: DATABASE_ID,
+                tableId: SUBMISSIONS_TABLE,
+                queries: [
+                    Query.equal('formId', formId),
+                    Query.equal('submitterId', submitterId)
+                ]
+            });
+
+            const existingDraft = res.rows.find(s => {
+                try {
+                    return JSON.parse(s.metadata || '{}').isDraft;
+                } catch (e) { return false; }
+            });
+
+            if (existingDraft) {
+                submission = await tablesDB.updateRow<FormSubmissions>(
+                    DATABASE_ID,
+                    SUBMISSIONS_TABLE,
+                    existingDraft.$id,
+                    {
+                        payload,
+                        metadata: JSON.stringify({
+                            submittedAt: new Date().toISOString(),
+                            wasDraft: true
+                        })
+                    }
+                );
+            }
+        }
+
+        if (!submission) {
+            submission = await tablesDB.createRow<FormSubmissions>(
+                DATABASE_ID,
+                SUBMISSIONS_TABLE,
+                ID.unique(),
+                {
+                    formId,
+                    submitterId: submitterId || null,
+                    payload,
+                    status: FormSubmissionsStatus.UNREAD,
+                    metadata: JSON.stringify({
+                        submittedAt: new Date().toISOString(),
+                    })
+                },
+                submissionPermissions
+            );
+        }
 
         // Notify form owner via ActivityLog
         try {
