@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { 
     Box, 
     Typography, 
@@ -11,7 +11,6 @@ import {
     Chip, 
     IconButton, 
     Tooltip,
-    CircularProgress,
     Fade,
     Paper,
     Divider,
@@ -33,7 +32,6 @@ import {
     Delete as DeleteIcon, 
     Launch as LaunchIcon,
     Assignment as FormIcon,
-    Visibility as ViewIcon,
     MoreVert as MoreIcon,
     AutoAwesome as TemplateIcon,
     History as HistoryIcon,
@@ -66,11 +64,16 @@ export default function FormsDashboard() {
     const [menuAnchor, setMenuAnchor] = useState<{ element: HTMLElement, form: Forms } | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-    const fetchForms = async (showLoading = true) => {
+    const formsLengthRef = useRef(forms.length);
+    useEffect(() => {
+        formsLengthRef.current = forms.length;
+    }, [forms.length]);
+
+    const fetchForms = useCallback(async (showLoading = true) => {
         if (!user) return;
         
         // Only show loading if we don't have forms yet, to prevent blinking
-        const shouldShowLoading = showLoading && forms.length === 0;
+        const shouldShowLoading = showLoading && formsLengthRef.current === 0;
         if (shouldShowLoading) setLoading(true);
         
         try {
@@ -99,7 +102,7 @@ export default function FormsDashboard() {
         } finally {
             if (shouldShowLoading) setLoading(false);
         }
-    };
+    }, [user, fetchOptimized]);
 
     const handleCreate = () => {
         setSelectedForm(null);
@@ -163,7 +166,7 @@ export default function FormsDashboard() {
         if (user) {
             fetchForms();
         }
-    }, [user]);
+    }, [user, fetchForms]);
 
     const getStatusColor = (status: string) => {
         switch (status) {

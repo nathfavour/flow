@@ -18,8 +18,7 @@ import {
     FormGroup,
     Select,
     MenuItem,
-    FormControl,
-    alpha
+    FormControl
 } from '@mui/material';
 import { Send as SendIcon, CheckCircleOutline as SuccessIcon } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
@@ -55,7 +54,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                 let settings: any = {};
                 try {
                     settings = JSON.parse(data.settings || '{}');
-                } catch (e) {}
+                } catch (_e) {}
 
                 const isOwner = user?.$id === data.userId;
 
@@ -77,7 +76,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                 if (localData) {
                     try {
                         setFormData(JSON.parse(localData));
-                    } catch (e) {}
+                    } catch (_e) {}
                 }
 
                 // If logged in, prioritize DB draft if exists
@@ -87,8 +86,8 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                         if (draft) {
                             setFormData(JSON.parse(draft.payload));
                         }
-                    } catch (e) {
-                        console.error("Failed to check for remote draft", e);
+                    } catch (_e) {
+                        console.error("Failed to check for remote draft", _e);
                     }
                 }
 
@@ -99,7 +98,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
             }
         };
         fetchForm();
-    }, [resolvedParams.id]);
+    }, [resolvedParams.id, fetchOptimized]);
 
     // Autosave logic
     useEffect(() => {
@@ -112,17 +111,16 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
 
             // Remote save if logged in
             if (currentUser) {
-                try {
-                    await FormsService.saveDraft(resolvedParams.id, JSON.stringify(formData), currentUser.$id);
-                } catch (e) {
-                    console.error("Autosave failed", e);
-                }
+            try {
+                await FormsService.saveDraft(resolvedParams.id, JSON.stringify(formData), currentUser.$id);
+            } catch (_e) {
+                console.error("Autosave failed", _e);
             }
-        }, 1500);
+            }
+            }, 1500);
 
-        return () => clearTimeout(timer);
-    }, [formData, resolvedParams.id, currentUser, form, submitted]);
-
+            return () => clearTimeout(timer);
+            }, [formData, resolvedParams.id, currentUser, form, submitted]);
     const handleFieldChange = (fieldId: string, value: any) => {
         setFormData(prev => ({ ...prev, [fieldId]: value }));
     };
