@@ -47,10 +47,12 @@ import FormDialog from '@/components/forms/FormDialog';
 import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useDataNexus } from '@/context/DataNexusContext';
 
 export default function FormsDashboard() {
     const { user } = useAuth();
     const router = useRouter();
+    const { fetchOptimized, invalidate } = useDataNexus();
     const [forms, setForms] = useState<Forms[]>([]);
     const [offlineDrafts, setOfflineDrafts] = useState<FormDraft[]>([]);
     const [loading, setLoading] = useState(true);
@@ -72,7 +74,9 @@ export default function FormsDashboard() {
         if (shouldShowLoading) setLoading(true);
         
         try {
-            const response = await FormsService.listUserForms(user.$id); 
+            const response = await fetchOptimized(`f_user_forms_${user.$id}`, () => 
+                FormsService.listUserForms(user.$id)
+            ); 
             
             // Deduplicate by ID to prevent blinking
             const uniqueForms = response.rows.filter((form, index, self) =>
@@ -122,9 +126,10 @@ export default function FormsDashboard() {
     };
 
     const confirmDelete = async () => {
-        if (!deleteConfirm) return;
+        if (!deleteConfirm || !user) return;
         try {
             await FormsService.deleteForm(deleteConfirm);
+            invalidate(`f_user_forms_${user.$id}`);
             fetchForms(false);
             setDeleteConfirm(null);
         } catch (err) {

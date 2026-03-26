@@ -46,6 +46,7 @@ import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';
 import { Forms } from '@/generated/appwrite/types';
 import { useAuth } from '@/context/auth/AuthContext';
+import { useDataNexus } from '@/context/DataNexusContext';
 
 import {
   DndContext, 
@@ -343,6 +344,7 @@ function SortableField({
 export default function FormDialog({ open, onClose, form, initialDraft, onSaved }: FormDialogProps) {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const { invalidate } = useDataNexus();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft');
@@ -541,9 +543,12 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
 
       if (form) {
         await FormsService.updateForm(form.$id, formData);
+        if (user) invalidate(`f_user_forms_${user.$id}`);
+        invalidate(`f_form_schema_${form.$id}`);
         DraftsService.clearDraft(form.$id);
       } else {
         const newForm = await FormsService.createForm(user.$id, formData);
+        if (user) invalidate(`f_user_forms_${user.$id}`);
         // Clear both possible draft source IDs
         DraftsService.clearDraft('new');
         if (initialDraft) DraftsService.clearDraft(initialDraft.id);

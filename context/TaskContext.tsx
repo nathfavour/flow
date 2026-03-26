@@ -6,6 +6,7 @@ import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/
 import { account } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
+import { useDataNexus } from './DataNexusContext';
 import {
   Task,
   Project,
@@ -427,6 +428,7 @@ interface TaskProviderProps {
 
 export function TaskProvider({ children }: TaskProviderProps) {
   const [state, dispatch] = useReducer(taskReducer, initialState);
+  const { fetchOptimized, invalidate } = useDataNexus();
 
   // Initial Data Fetch
   useEffect(() => {
@@ -446,10 +448,10 @@ export function TaskProvider({ children }: TaskProviderProps) {
           console.warn('[TaskContext] Not logged in', error);
         }
 
-        // Fetch tasks and calendars
+        // Fetch tasks and calendars (Nexus Optimized)
         const [tasksList, calendarsList] = await Promise.all([
-          taskApi.list(),
-          calendarApi.list()
+          fetchOptimized(`f_tasks_${userId}`, () => taskApi.list()),
+          fetchOptimized(`f_calendars_${userId}`, () => calendarApi.list())
         ]);
 
         const tasks = tasksList.rows.map(mapAppwriteTaskToTask);
@@ -537,13 +539,15 @@ export function TaskProvider({ children }: TaskProviderProps) {
           recurrenceRule: task.recurrence ? JSON.stringify(task.recurrence) : '',
         });
 
+        invalidate(`f_tasks_${userId}`);
+
         dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(newTask) });
       } catch (error: unknown) {
         console.error('Failed to create task', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to create task' });
       }
     },
-    [state.userId]
+    [state.userId, invalidate]
   );
 
   const updateTask = useCallback(async (id: string, updates: Partial<Task>) => {
@@ -587,20 +591,22 @@ export function TaskProvider({ children }: TaskProviderProps) {
       }
 
       await taskApi.update(id, apiUpdates);
+      invalidate(`f_tasks_${state.userId || 'guest'}`);
     } catch (error: unknown) {
       console.error('Failed to update task', error);
       // Revert?
     }
-  }, [state.tasks]);
+  }, [state.tasks, state.userId, invalidate]);
 
   const deleteTask = useCallback(async (id: string) => {
     try {
       await taskApi.delete(id);
+      invalidate(`f_tasks_${state.userId || 'guest'}`);
       dispatch({ type: 'DELETE_TASK', payload: id });
     } catch (error: unknown) {
       console.error('Failed to delete task', error);
     }
-  }, []);
+  }, [state.userId, invalidate]);
 
   const completeTask = useCallback(async (id: string) => {
     try {
@@ -609,11 +615,12 @@ export function TaskProvider({ children }: TaskProviderProps) {
       
       const newStatus = task.status === 'done' ? 'todo' : 'done';
       await taskApi.update(id, { status: newStatus });
+      invalidate(`f_tasks_${state.userId || 'guest'}`);
       dispatch({ type: 'COMPLETE_TASK', payload: id });
     } catch (error: unknown) {
       console.error('Failed to complete task', error);
     }
-  }, [state.tasks]);
+  }, [state.tasks, state.userId, invalidate]);
 
   const selectTask = useCallback((id: string | null) => {
     dispatch({ type: 'SELECT_TASK', payload: id });
@@ -665,12 +672,13 @@ export function TaskProvider({ children }: TaskProviderProps) {
           isDefault: false,
           userId: userId,
         });
+        invalidate(`f_calendars_${userId}`);
         dispatch({ type: 'ADD_PROJECT', payload: mapAppwriteCalendarToProject(newCalendar) });
       } catch (error: unknown) {
         console.error('Failed to create project', error);
       }
     },
-    [state.userId]
+    [state.userId, invalidate]
   );
 
   const updateProject = useCallback(async (id: string, updates: Partial<Project>) => {
@@ -682,19 +690,21 @@ export function TaskProvider({ children }: TaskProviderProps) {
       if (updates.color) apiUpdates.color = updates.color;
       
       await calendarApi.update(id, apiUpdates);
+      invalidate(`f_calendars_${state.userId || 'guest'}`);
     } catch (error: unknown) {
       console.error('Failed to update project', error);
     }
-  }, []);
+  }, [state.userId, invalidate]);
 
   const deleteProject = useCallback(async (id: string) => {
     try {
       await calendarApi.delete(id);
+      invalidate(`f_calendars_${state.userId || 'guest'}`);
       dispatch({ type: 'DELETE_PROJECT', payload: id });
     } catch (error: unknown) {
       console.error('Failed to delete project', error);
     }
-  }, []);
+  }, [state.userId, invalidate]);
 
   const selectProject = useCallback((id: string | null) => {
     dispatch({ type: 'SELECT_PROJECT', payload: id });

@@ -8,6 +8,7 @@ import { LayoutProvider } from '@/context/LayoutContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { SudoProvider } from '@/context/SudoContext';
 import { SubscriptionProvider } from '@/context/subscription/SubscriptionContext';
+import { DataNexusProvider } from '@/context/DataNexusContext';
 import { useEcosystemIntents } from '@/hooks/useEcosystemIntents';
 import { useEcosystemNode } from '@/hooks/useEcosystemNode';
 
@@ -26,7 +27,8 @@ export function AppProviders({ children }: AppProvidersProps) {
     <SubscriptionProvider>
       <ThemeProvider>
         <AuthProvider>
-          <NotificationProvider>
+          <DataNexusProvider>
+            <NotificationProvider>
             <LayoutProvider>
               <SudoProvider>
                 <TaskProvider>
@@ -36,6 +38,7 @@ export function AppProviders({ children }: AppProvidersProps) {
               </SudoProvider>
             </LayoutProvider>
           </NotificationProvider>
+          </DataNexusProvider>
         </AuthProvider>
       </ThemeProvider>
     </SubscriptionProvider>

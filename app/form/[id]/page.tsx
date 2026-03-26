@@ -24,9 +24,11 @@ import {
 import { Send as SendIcon, CheckCircleOutline as SuccessIcon } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { Forms } from '@/generated/appwrite/types';
+import { useDataNexus } from '@/context/DataNexusContext';
 
 export default function PublicFormPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
+    const { fetchOptimized } = useDataNexus();
     const [form, setForm] = useState<Forms | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -46,7 +48,9 @@ export default function PublicFormPage({ params }: { params: Promise<{ id: strin
                 const user = await FormsService.getCurrentUser();
                 setCurrentUser(user);
 
-                const data = await FormsService.getForm(resolvedParams.id);
+                const data = await fetchOptimized(`f_form_schema_${resolvedParams.id}`, () => 
+                    FormsService.getForm(resolvedParams.id)
+                );
                 
                 let settings: any = {};
                 try {
