@@ -19,6 +19,7 @@ import {
   ListItemIcon,
   useTheme,
   Chip,
+  alpha,
 } from '@mui/material';
 import {
   PlayArrow,

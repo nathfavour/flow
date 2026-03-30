@@ -516,7 +516,7 @@ export default function SudoModal({
                             {loading ? <CircularProgress size={24} color="inherit" /> : "Verify Identity"}
                         </Button>
 
-                        {hasPasskey && mode !== "passkey" && isKylrixDomain && (
+                        {hasPasskey && isKylrixDomain && (
                             <Button
                                 fullWidth
                                 variant="text"
@@ -541,7 +541,7 @@ export default function SudoModal({
                             </Button>
                         )}
 
-                        {hasPin && mode !== "pin" && (
+                        {hasPin && (
                             <Button
                                 fullWidth
                                 variant="text"

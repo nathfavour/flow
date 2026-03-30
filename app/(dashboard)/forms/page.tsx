@@ -232,7 +232,7 @@ export default function FormsDashboard() {
             {loading ? (
                 <Grid container spacing={3}>
                     {[1, 2, 3].map((i) => (
-                        <Grid item xs={12} md={6} lg={4} key={i}>
+                        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={i}>
                             <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -268,7 +268,7 @@ export default function FormsDashboard() {
                             ) : (
                                 <Grid container spacing={3}>
                                     {filteredForms.map((form) => (
-                                        <Grid item xs={12} md={6} lg={4} key={form.$id}>
+                                        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={form.$id}>
                                             <Fade in={true}>
                                                 <Card 
                                                     onClick={() => router.push(`/forms/${form.$id}`)}
@@ -288,7 +288,7 @@ export default function FormsDashboard() {
                                                     <CardContent sx={{ p: 3 }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                                                             <Stack direction="row" spacing={1} alignItems="center">
-                                                                <Chip label={form.status.toUpperCase()} size="small" sx={{ fontSize: '10px', fontWeight: 900, color: getStatusColor(form.status), border: `1px solid ${getStatusColor(form.status)}20`, bgcolor: 'transparent' }} />
+                                                                <Chip label={(form.status || 'unknown').toUpperCase()} size="small" sx={{ fontSize: '10px', fontWeight: 900, color: getStatusColor(form.status || 'draft'), border: `1px solid ${getStatusColor(form.status || 'draft')}20`, bgcolor: 'transparent' }} />
                                                                 {DraftsService.hasDraft(form.$id) && (
                                                                     <Chip label="UNSYNCED DRAFT" size="small" sx={{ fontSize: '10px', fontWeight: 900, bgcolor: alpha('#FFB020', 0.1), color: '#FFB020', border: '1px solid rgba(255, 176, 32, 0.2)' }} />
                                                                 )}
@@ -373,7 +373,7 @@ export default function FormsDashboard() {
                             ) : (
                                 <Grid container spacing={3}>
                                     {offlineDrafts.map((draft) => (
-                                        <Grid item xs={12} md={6} lg={4} key={draft.id}>
+                                        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={draft.id}>
                                             <Fade in={true}>
                                                 <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 176, 32, 0.1)', borderRadius: 3 }}>
                                                     <CardContent sx={{ p: 3 }}>

@@ -121,6 +121,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             title: doc.displayName || doc.username,
             subtitle: `@${doc.username}`,
             avatar: doc.avatar,
+            profilePicId: doc.profilePicId,
             apps: doc.appsActive || []
         }));
     } catch (error: unknown) {

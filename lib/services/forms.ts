@@ -1,7 +1,7 @@
 import { tablesDB, getCurrentUser } from "../appwrite/client";
 import { APPWRITE_CONFIG } from "../appwrite/config";
 import { ID, Query, Permission, Role } from "appwrite";
-import { Forms, FormSubmissions, ActivityLogCreate, FormSubmissionsStatus } from "../../generated/appwrite/types";
+import { Forms, FormSubmissions, ActivityLogCreate, FormSubmissionsStatus, FormsStatus, ActivityLog } from "../../generated/appwrite/types";
 
 const DATABASE_ID = APPWRITE_CONFIG.DATABASES.FLOW;
 const FORMS_TABLE = APPWRITE_CONFIG.TABLES.FLOW.FORMS;
@@ -13,7 +13,7 @@ export const FormsService = {
     /**
      * Create a new form definition
      */
-    async createForm(userId: string, data: Omit<Forms, '$id' | '$createdAt' | '$updatedAt' | '$permissions' | '$databaseId' | '$collectionId'>) {
+    async createForm(userId: string, data: Omit<Forms, '$id' | '$createdAt' | '$updatedAt' | '$permissions' | '$databaseId' | '$collectionId' | 'userId' | '$sequence' | '$tableId'>) {
         return await tablesDB.createRow<Forms>(
             DATABASE_ID,
     FORMS_TABLE,
@@ -21,7 +21,7 @@ export const FormsService = {
     {
         ...data,
         userId,
-        status: data.status || 'draft',
+        status: (data.status || 'draft') as FormsStatus,
     },
     [
         Permission.read(Role.user(userId)),
@@ -308,10 +308,9 @@ export const FormsService = {
                 submissionPermissions
             );
         }
-
         // Notify form owner via ActivityLog
         try {
-            await tablesDB.createRow<ActivityLogCreate>(
+            await tablesDB.createRow<ActivityLog>(
                 NOTE_DATABASE_ID,
                 ACTIVITY_LOG_TABLE,
                 ID.unique(),
@@ -326,12 +325,7 @@ export const FormsService = {
                         submissionId: submission.$id,
                         formTitle: form.title
                     })
-                },
-                [
-                    Permission.read(Role.user(form.userId)),
-                    Permission.update(Role.user(form.userId)),
-                    Permission.delete(Role.user(form.userId)),
-                ]
+                }
             );
         } catch (e) {
             console.error('Failed to create notification activity log', e);

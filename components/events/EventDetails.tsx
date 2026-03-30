@@ -47,7 +47,7 @@ export default function EventDetails({ eventId, initialData }: EventDetailsProps
         const data = await eventApi.get(eventId);
         setEvent(data);
       } catch (_err: unknown) {
-        console.error('Failed to fetch event details', err);
+        console.error('Failed to fetch event details', _err);
         setError('Failed to load event');
       } finally {
         setLoading(false);

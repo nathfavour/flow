@@ -42,7 +42,7 @@ import {
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';
-import { Forms } from '@/generated/appwrite/types';
+import { Forms, FormsStatus } from '@/generated/appwrite/types';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useDataNexus } from '@/context/DataNexusContext';
 
@@ -533,9 +533,9 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
       const formData = {
         title,
         description,
-        status,
+        status: status as FormsStatus,
         schema: JSON.stringify(fields),
-        settings: JSON.stringify({}),
+        settings: form?.settings || '{}',
       };
 
       if (form) {

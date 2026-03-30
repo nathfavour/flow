@@ -48,8 +48,8 @@ const SubmissionViewerTable = ({ submissions, headers, schemaMap, parsePayload, 
         <TableBody>
           {submissions.map((sub: any) => {
             const data = parsePayload(sub.payload);
-            const isRead = sub.read || false;
-            const isFlagged = sub.flagged || false;
+            const isRead = (sub as any).read || false;
+            const isFlagged = (sub as any).flagged || false;
 
             return (
               <TableRow 
@@ -173,7 +173,7 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
   const handleRowClick = (sub: FormSubmissions) => {
     setSelectedSubmission(sub);
     setSidebarOpen(true);
-    if (!sub.read) {
+    if (!(sub as any).read) {
         handleToggleRead(sub.$id, true);
     }
   };

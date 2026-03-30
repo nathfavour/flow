@@ -67,7 +67,7 @@ export default function EventList() {
         }));
         setEvents(mapped);
       } catch (_error: unknown) {
-        console.error('Failed to fetch events', error);
+        console.error('Failed to fetch events', _error);
       } finally {
         setIsLoading(false);
       }
@@ -145,7 +145,7 @@ export default function EventList() {
       setEvents([newEvent, ...events]);
       setIsDialogOpen(false);
     } catch (_error: unknown) {
-      console.error('Failed to create event', error);
+      console.error('Failed to create event', _error);
     }
   };
 

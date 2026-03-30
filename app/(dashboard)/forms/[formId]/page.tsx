@@ -84,14 +84,14 @@ export default function FormDetailsPage({ params }: { params: Promise<{ formId: 
                         <Stack direction="row" spacing={1} alignItems="center">
                             <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: '-0.04em' }}>{form.title}</Typography>
                             <Chip 
-                                label={form.status.toUpperCase()} 
+                                label={(form.status || 'unknown').toUpperCase()} 
                                 size="small" 
                                 sx={{ 
                                     fontSize: '9px', 
                                     fontWeight: 900, 
                                     bgcolor: 'transparent',
-                                    color: getStatusColor(form.status),
-                                    border: `1px solid ${getStatusColor(form.status)}20`
+                                    color: getStatusColor(form.status || 'draft'),
+                                    border: `1px solid ${getStatusColor(form.status || 'draft')}20`
                                 }} 
                             />
                         </Stack>

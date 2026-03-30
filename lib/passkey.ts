@@ -36,7 +36,7 @@ export async function unlockWithPasskey(userId: string): Promise<boolean> {
     };
 
     // 3. Start WebAuthn authentication
-    const authResp = await startAuthentication(authOptions);
+    const authResp = await startAuthentication({ optionsJSON: authOptions as any });
 
     // 4. Find the matching keychain entry
     const matchingEntry = passkeyEntries.find(e => e.credentialId === authResp.id);

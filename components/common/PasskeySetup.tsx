@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -46,6 +47,7 @@ export function PasskeySetup({
   onSuccess,
   trustUnlocked = false,
 }: PasskeySetupProps) {
+  const router = useRouter();
   const [step, setStep] = useState(trustUnlocked && ecosystemSecurity.status.isUnlocked ? 2 : 1);
   const [loading, setLoading] = useState(false);
   const [masterPassword, setMasterPassword] = useState("");

@@ -68,5 +68,22 @@ export const UsersService = {
                 Permission.delete(Role.user(userId))
             ]
         );
+    },
+
+    async isUsernameAvailable(username: string): Promise<boolean> {
+        try {
+            const { Query } = await import("appwrite");
+            const res = await tablesDB.listRows<any>({
+                databaseId: DATABASE_ID,
+                tableId: TABLE_ID,
+                queries: [
+                    Query.equal('username', username.toLowerCase()),
+                    Query.limit(1)
+                ]
+            });
+            return res.rows.length === 0;
+        } catch (_e) {
+            return false;
+        }
     }
 };

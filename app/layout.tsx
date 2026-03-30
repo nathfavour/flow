@@ -10,6 +10,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://flow.kylrix.space'),
   title: "Kylrix Flow — Intelligence Layer Orchestration",
   description: "Secure, premium AI-driven orchestration and workflow management.",
   icons: {
