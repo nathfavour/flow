@@ -31,12 +31,15 @@ import {
   VideoCall as MeetingIcon,
   Send as SendIcon,
   AutoFixHigh as AutoFixHighIcon,
+  ArrowBack as BackIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useTask } from '@/context/TaskContext';
 import { Priority, TaskStatus } from '@/types';
 import { useLayout } from '@/context/LayoutContext';
 import { useAI } from '@/hooks/useAI';
+import { useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
@@ -58,6 +61,8 @@ interface TaskDetailsProps {
 }
 
 export default function TaskDetails({ taskId }: TaskDetailsProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { closeSecondarySidebar } = useLayout();
   const {
     tasks,
@@ -177,7 +182,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: 4,
+          px: { xs: 2, md: 4 },
           py: 3,
           bgcolor: 'rgba(28, 26, 24, 0.95)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
@@ -185,7 +190,15 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
           zIndex: 1
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, md: 2 } }}>
+          {isMobile && (
+            <IconButton 
+              onClick={closeSecondarySidebar}
+              sx={{ color: 'text.secondary', mr: 1 }}
+            >
+              <BackIcon />
+            </IconButton>
+          )}
           <Checkbox
             checked={task.status === 'done'}
             onChange={() => completeTask(task.id)}

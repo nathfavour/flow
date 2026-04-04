@@ -33,7 +33,7 @@ export default function RightSidebar() {
       anchor="right"
       open={isOpen}
       onClose={closeSecondarySidebar}
-      variant={isMobile ? 'temporary' : 'persistent'}
+      variant="temporary"
       ModalProps={{
         keepMounted: true, // Better mobile performance
       }}
