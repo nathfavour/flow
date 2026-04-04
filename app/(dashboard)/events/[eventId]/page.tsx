@@ -24,34 +24,51 @@ import { format } from 'date-fns';
 import { Query } from 'appwrite';
 import { generateEventPattern } from '@/utils/patternGenerator';
 import { fetchProfilePreview } from '@/lib/profile-preview';
+import { IdentityAvatar, computeIdentityFlags } from '@/components/common/IdentityBadge';
 
 function AttendeeAvatar({ guest, theme }: { guest: any, theme: any }) {
   const [url, setUrl] = useState<string | null>(null);
+  const [identity, setIdentity] = useState<{ verified: boolean; pro: boolean }>({ verified: false, pro: false });
+  const searchKey = guest.username || guest.displayName || guest.email || guest.userId;
 
   useEffect(() => {
     let mounted = true;
     const load = async () => {
       try {
         const { searchGlobalUsers } = await import('@/lib/ecosystem/identity');
-        const users = await searchGlobalUsers(guest.userId, 1);
-        if (users.length > 0 && users[0].profilePicId) {
-          const preview = await fetchProfilePreview(users[0].profilePicId, 64, 64);
+        const users = searchKey ? await searchGlobalUsers(searchKey, 1) : [];
+        if (users.length > 0) {
+          const user = users[0] as any;
+          setIdentity(computeIdentityFlags({
+            createdAt: user.$createdAt || user.createdAt || null,
+            lastUsernameEdit: user.last_username_edit || null,
+            profilePicId: user.profilePicId || user.avatar || null,
+            username: user.username || null,
+            bio: user.bio || null,
+            tier: user.tier || null,
+            publicKey: user.publicKey || null,
+          }));
+        }
+        const fileId = users[0]?.profilePicId || users[0]?.avatar || guest.profilePicId || guest.avatar || null;
+        if (users.length > 0 && fileId) {
+          const preview = await fetchProfilePreview(fileId, 64, 64);
           if (mounted) setUrl(preview);
         }
       } catch { }
     };
     load();
     return () => { mounted = false; };
-  }, [guest.userId]);
+  }, [searchKey, guest.profilePicId, guest.avatar]);
 
   return (
-    <Avatar
+    <IdentityAvatar
       src={url || undefined}
       alt={guest.email}
-      sx={{ bgcolor: alpha(theme.palette.primary.main, 0.2), color: theme.palette.primary.main, fontWeight: 800 }}
-    >
-      {guest.email?.charAt(0).toUpperCase() || 'U'}
-    </Avatar>
+      fallback={guest.email?.charAt(0).toUpperCase() || 'U'}
+      verified={identity.verified}
+      pro={identity.pro}
+      size={40}
+    />
   );
 }
 

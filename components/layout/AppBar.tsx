@@ -7,7 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
@@ -40,6 +39,8 @@ import dynamic from 'next/dynamic';
 import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-preview';
 import { getUserProfilePicId } from '@/lib/user-utils';
 import { Button } from '@mui/material';
+import { IdentityAvatar, computeIdentityFlags } from '../common/IdentityBadge';
+import { searchGlobalUsers } from '@/lib/ecosystem/identity';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
@@ -69,6 +70,8 @@ export default function AppBar() {
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string | null>(null);
+  const [profileRecord, setProfileRecord] = useState<any>(null);
+  const profileUsername = String((user?.prefs as any)?.username || user?.name || '').trim();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -107,6 +110,33 @@ export default function AppBar() {
     fetchPreview();
     return () => { mounted = false; };
   }, [user]);
+
+  React.useEffect(() => {
+    let mounted = true;
+    const loadProfileRecord = async () => {
+      if (!profileUsername) return;
+      try {
+        const results = await searchGlobalUsers(profileUsername, 1);
+        if (!mounted) return;
+        setProfileRecord(results[0] || null);
+      } catch (error) {
+        console.warn('[Flow AppBar] Failed to load profile record:', error);
+      }
+    };
+    loadProfileRecord();
+    return () => { mounted = false; };
+  }, [profileUsername]);
+
+  const identitySignals = computeIdentityFlags({
+    createdAt: profileRecord?.createdAt || (user as any)?.$createdAt || (user as any)?.createdAt || null,
+    lastUsernameEdit: profileRecord?.lastUsernameEdit || (user?.prefs as any)?.last_username_edit || null,
+    profilePicId: profileRecord?.profilePicId || getUserProfilePicId(user) || null,
+    username: profileRecord?.username || (user?.prefs as any)?.username || user?.name || null,
+    bio: profileRecord?.bio || (user?.prefs as any)?.bio || null,
+    tier: profileRecord?.tier || (user?.prefs as any)?.tier || null,
+    publicKey: profileRecord?.publicKey || (user?.prefs as any)?.publicKey || null,
+    emailVerified: Boolean((user as any)?.emailVerification),
+  });
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -349,22 +379,15 @@ export default function AppBar() {
                 '&:hover': { borderColor: alpha('#6366F1', 0.3), bgcolor: 'rgba(255, 255, 255, 0.05)', transform: 'scale(1.05)' },
                 transition: 'all 0.2s'
               }}>
-                <Avatar
+                <IdentityAvatar
                   src={profileUrl || undefined}
-                  sx={{
-                    width: { xs: 28, sm: 32 },
-                    height: { xs: 28, sm: 32 },
-                    borderRadius: '10px',
-                    bgcolor: '#6366F1',
-                    color: '#000000',
-                    fontSize: '0.85rem',
-                    fontFamily: 'var(--font-mono)',
-                    fontWeight: 800,
-                    border: '2px solid rgba(255, 255, 255, 0.1)'
-                  }}
-                >
-                  {getInitials(user)}
-                </Avatar>
+                  alt={user?.name || user?.email || 'profile'}
+                  fallback={getInitials(user)}
+                  verified={identitySignals.verified}
+                  pro={identitySignals.pro}
+                  size={32}
+                  borderRadius="10px"
+                />
               </IconButton>
             </Tooltip>
           ) : (

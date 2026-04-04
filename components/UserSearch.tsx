@@ -5,7 +5,6 @@ import {
   Box,
   TextField,
   Typography,
-  Avatar,
   List,
   ListItem,
   ListItemAvatar,
@@ -22,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { searchGlobalUsers } from '@/lib/ecosystem/identity';
 import { fetchProfilePreview } from '@/lib/profile-preview';
+import { IdentityAvatar, computeIdentityFlags } from './common/IdentityBadge';
 
 interface User {
   id: string;
@@ -122,12 +122,30 @@ export default function UserSearch({
             <Chip
               key={user.id}
               avatar={
-                <Avatar 
+                <IdentityAvatar 
                   src={previews[user.id] || undefined}
-                  sx={{ width: 24, height: 24, bgcolor: alpha('#6366F1', 0.2), color: '#6366F1', fontWeight: 700, fontSize: '0.65rem' }}
-                >
-                  {user.title.charAt(0).toUpperCase()}
-                </Avatar>
+                  alt={user.title}
+                  fallback={user.title.charAt(0).toUpperCase()}
+                  verified={computeIdentityFlags({
+                    createdAt: (user as any).$createdAt || (user as any).createdAt || null,
+                    lastUsernameEdit: (user as any).last_username_edit || null,
+                    profilePicId: (user as any).profilePicId || (user as any).avatar || null,
+                    username: (user as any).username || null,
+                    bio: (user as any).bio || null,
+                    tier: (user as any).tier || null,
+                    publicKey: (user as any).publicKey || null,
+                  }).verified}
+                  pro={computeIdentityFlags({
+                    createdAt: (user as any).$createdAt || (user as any).createdAt || null,
+                    lastUsernameEdit: (user as any).last_username_edit || null,
+                    profilePicId: (user as any).profilePicId || (user as any).avatar || null,
+                    username: (user as any).username || null,
+                    bio: (user as any).bio || null,
+                    tier: (user as any).tier || null,
+                    publicKey: (user as any).publicKey || null,
+                  }).pro}
+                  size={24}
+                />
               }
               label={user.title}
               onDelete={() => onRemove(user.id)}
@@ -232,12 +250,30 @@ export default function UserSearch({
                   }}
                 >
                   <ListItemAvatar sx={{ minWidth: 0 }}>
-                    <Avatar
+                    <IdentityAvatar
                       src={previews[user.id] || undefined}
-                      sx={{ width: 36, height: 36, bgcolor: alpha('#6366F1', 0.1), color: '#6366F1', fontWeight: 800, fontSize: '0.85rem' }}
-                    >
-                      {user.title.charAt(0).toUpperCase()}
-                    </Avatar>
+                      alt={user.title}
+                      fallback={user.title.charAt(0).toUpperCase()}
+                      verified={computeIdentityFlags({
+                        createdAt: (user as any).$createdAt || (user as any).createdAt || null,
+                        lastUsernameEdit: (user as any).last_username_edit || null,
+                        profilePicId: (user as any).profilePicId || (user as any).avatar || null,
+                        username: (user as any).username || null,
+                        bio: (user as any).bio || null,
+                        tier: (user as any).tier || null,
+                        publicKey: (user as any).publicKey || null,
+                      }).verified}
+                      pro={computeIdentityFlags({
+                        createdAt: (user as any).$createdAt || (user as any).createdAt || null,
+                        lastUsernameEdit: (user as any).last_username_edit || null,
+                        profilePicId: (user as any).profilePicId || (user as any).avatar || null,
+                        username: (user as any).username || null,
+                        bio: (user as any).bio || null,
+                        tier: (user as any).tier || null,
+                        publicKey: (user as any).publicKey || null,
+                      }).pro}
+                      size={36}
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     primary={user.title}
