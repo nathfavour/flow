@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     };
     config.module.rules.push({
       test: /\.wasm$/,
+      exclude: /node_modules\/next\/dist\/compiled\/@vercel\/og/,
       type: "webassembly/async",
     });
     return config;

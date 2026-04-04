@@ -18,7 +18,7 @@ function getFieldLabels(schema: string | null | undefined): string[] {
     return fields
       .slice(0, 3)
       .map((field: { label?: string }) => field?.label?.trim())
-      .filter(Boolean);
+      .filter((label): label is string => Boolean(label));
   } catch {
     return [];
   }
