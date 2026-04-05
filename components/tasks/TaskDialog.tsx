@@ -108,7 +108,11 @@ export default function TaskDialog() {
       attachments: [],
       reminders: [],
       timeEntries: [],
-      assigneeIds: selectedAssignees.length > 0 ? selectedAssignees.map(u => u.id).filter((id): id is string => id !== null) : [creatorId || 'guest'],
+      assigneeIds: selectedAssignees.length > 0
+        ? selectedAssignees.map(u => u.id).filter((id): id is string => id !== null)
+        : creatorId && creatorId !== 'guest'
+          ? [creatorId]
+          : [],
       creatorId: creatorId || 'guest',
       isArchived: false,
     });

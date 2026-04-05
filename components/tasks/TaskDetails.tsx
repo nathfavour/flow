@@ -34,12 +34,14 @@ import {
   ArrowBack as BackIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
+import { Query } from 'appwrite';
 import { useTask } from '@/context/TaskContext';
 import { Priority, TaskStatus } from '@/types';
 import { useLayout } from '@/context/LayoutContext';
 import { useAI } from '@/hooks/useAI';
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { notes as noteApi } from '@/lib/kylrixflow';
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
@@ -76,9 +78,31 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
     labels,
   } = useTask();
 
-  const task = tasks.find((t) => t.id === taskId);
+  const task = React.useMemo(() => {
+    const current = tasks.find((t) => t.id === taskId);
+    if (!current) return null;
+
+    const childSubtasks = tasks
+      .filter((candidate) => candidate.parentTaskId === taskId)
+      .map((child) => ({
+        id: child.id,
+        title: child.title,
+        completed: child.status === 'done',
+        createdAt: child.createdAt,
+        completedAt: child.status === 'done' ? child.completedAt : undefined,
+      }));
+
+    return {
+      ...current,
+      subtasks: [...(current.subtasks || []), ...childSubtasks],
+    };
+  }, [tasks, taskId]);
   const [newSubtask, setNewSubtask] = useState('');
   const [newComment, setNewComment] = useState('');
+  const [noteQuery, setNoteQuery] = useState('');
+  const [noteResults, setNoteResults] = useState<any[]>([]);
+  const [isSearchingNotes, setIsSearchingNotes] = useState(false);
+  const [linkedNoteTitles, setLinkedNoteTitles] = useState<Record<string, string>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
@@ -90,10 +114,11 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
   const [isGeneratingSubtasks, setIsGeneratingSubtasks] = useState(false);
 
   const handleGenerateSubtasks = async () => {
-    if (!task?.title) return;
+    const currentTask = task;
+    if (!currentTask?.title) return;
     setIsGeneratingSubtasks(true);
     try {
-      const prompt = `You are a Project Manager. The user wants to '${task.title}'. Generate a JSON array of 5 concrete, actionable sub-tasks. Return ONLY the JSON array of strings.`;
+      const prompt = `You are a Project Manager. The user wants to '${currentTask.title}'. Generate a JSON array of 5 concrete, actionable sub-tasks. Return ONLY the JSON array of strings.`;
       const result = await generate(prompt);
       const text = typeof result === 'string' ? result : (result as any).text;
       // Clean up markdown code blocks if present
@@ -101,11 +126,11 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
       const subtasks = JSON.parse(jsonString);
       
       if (Array.isArray(subtasks)) {
-        subtasks.forEach((st: string) => {
-            if (typeof st === 'string') {
-                addSubtask(task.id, st);
-            }
-        });
+        await Promise.all(
+          subtasks
+            .filter((st: unknown) => typeof st === 'string')
+            .map((st: string) => addSubtask(currentTask.id, st))
+        );
       }
     } catch (error: unknown) {
       console.error("Failed to generate subtasks", error);
@@ -113,6 +138,117 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
       setIsGeneratingSubtasks(false);
     }
   };
+
+  const handleStartEdit = () => {
+    const currentTask = task;
+    if (!currentTask) return;
+    setEditTitle(currentTask.title);
+    setEditDescription(currentTask.description || '');
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    const currentTask = task;
+    if (!currentTask) return;
+    updateTask(currentTask.id, {
+      title: editTitle,
+      description: editDescription || undefined,
+    });
+    setIsEditing(false);
+  };
+
+  const handleAddSubtask = async () => {
+    const currentTask = task;
+    if (!currentTask) return;
+    if (newSubtask.trim()) {
+      await addSubtask(currentTask.id, newSubtask.trim());
+      setNewSubtask('');
+    }
+  };
+
+  const handleAddComment = () => {
+    const currentTask = task;
+    if (!currentTask) return;
+    if (newComment.trim()) {
+      addComment(currentTask.id, newComment.trim());
+      setNewComment('');
+    }
+  };
+
+  const handleAttachNote = async (noteId: string) => {
+    const currentTask = task;
+    if (!currentTask) return;
+    const next = Array.from(new Set([...(currentTask.linkedNotes || []), noteId]));
+    await updateTask(currentTask.id, { linkedNotes: next });
+    setNoteQuery('');
+    setNoteResults([]);
+  };
+
+  const handleDetachNote = async (noteId: string) => {
+    const currentTask = task;
+    if (!currentTask) return;
+    const next = (currentTask.linkedNotes || []).filter((id) => id !== noteId);
+    await updateTask(currentTask.id, { linkedNotes: next });
+  };
+
+  React.useEffect(() => {
+    let active = true;
+
+    const searchNotes = async () => {
+      if (!task) return;
+      if (noteQuery.trim().length < 2) {
+        setNoteResults([]);
+        setIsSearchingNotes(false);
+        return;
+      }
+
+      setIsSearchingNotes(true);
+      try {
+        const res = await noteApi.list([
+          Query.or([
+            Query.search('title', noteQuery.trim()),
+            Query.search('content', noteQuery.trim()),
+          ]),
+          Query.limit(6),
+        ]);
+        if (!active) return;
+        setNoteResults(res.rows.filter((row: any) => row.$id !== task.id));
+      } catch (error) {
+        console.error('Failed to search notes', error);
+        if (active) setNoteResults([]);
+      } finally {
+        if (active) setIsSearchingNotes(false);
+      }
+    };
+
+    const timer = setTimeout(searchNotes, 250);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [noteQuery, task]);
+
+  React.useEffect(() => {
+    let active = true;
+    const loadLinkedNotes = async () => {
+      if (!task) return;
+      const next: Record<string, string> = {};
+      for (const noteId of task.linkedNotes || []) {
+        try {
+          const note = await noteApi.get(noteId);
+          next[noteId] = note?.title || noteId;
+        } catch (_error) {
+          next[noteId] = noteId;
+        }
+      }
+      if (active) setLinkedNoteTitles(next);
+    };
+
+    loadLinkedNotes();
+    return () => {
+      active = false;
+    };
+  }, [task]);
 
   if (!task) {
     return (
@@ -129,34 +265,6 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
   const subtaskProgress = task.subtasks.length > 0
     ? (completedSubtasks / task.subtasks.length) * 100
     : 0;
-
-  const handleStartEdit = () => {
-    setEditTitle(task.title);
-    setEditDescription(task.description || '');
-    setIsEditing(true);
-  };
-
-  const handleSaveEdit = () => {
-    updateTask(task.id, {
-      title: editTitle,
-      description: editDescription || undefined,
-    });
-    setIsEditing(false);
-  };
-
-  const handleAddSubtask = () => {
-    if (newSubtask.trim()) {
-      addSubtask(task.id, newSubtask.trim());
-      setNewSubtask('');
-    }
-  };
-
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      addComment(task.id, newComment.trim());
-      setNewComment('');
-    }
-  };
 
   const handleStatusChange = (status: TaskStatus) => {
     updateTask(task.id, { status });
@@ -455,6 +563,31 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
                 </Box>
             </Box>
           )}
+
+          {task.linkedNotes && task.linkedNotes.length > 0 && (
+            <Box>
+                <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Linked Notes</Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    {task.linkedNotes.map((noteId) => (
+                      <Chip
+                        key={noteId}
+                        label={linkedNoteTitles[noteId] || noteId}
+                        onDelete={() => handleDetachNote(noteId)}
+                        size="small"
+                        sx={{
+                          maxWidth: '100%',
+                          bgcolor: alpha('#6366F1', 0.08),
+                          border: `1px solid ${alpha('#6366F1', 0.15)}`,
+                          color: '#B8BDFB',
+                          fontWeight: 700,
+                          borderRadius: '6px',
+                          '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis' },
+                        }}
+                      />
+                    ))}
+                </Box>
+            </Box>
+          )}
         </Box>
 
         <Divider sx={{ my: 4, opacity: 0.05 }} />
@@ -595,6 +728,49 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
               Cal
             </Button>
           </Box>
+        </Box>
+
+        <Divider sx={{ my: 4, opacity: 0.05 }} />
+
+        {/* Note Attachment */}
+        <Box sx={{ mb: 5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="subtitle2">Attach Notes</Typography>
+            {isSearchingNotes && <CircularProgress size={14} />}
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end', bgcolor: 'rgba(255,255,255,0.02)', p: 1.5, borderRadius: 2, border: '1px solid rgba(255,255,255,0.05)', mb: 2 }}>
+            <TextField
+              size="small"
+              fullWidth
+              placeholder="Search notes by title..."
+              variant="standard"
+              value={noteQuery}
+              onChange={(e) => setNoteQuery(e.target.value)}
+              InputProps={{ disableUnderline: true, sx: { fontSize: '0.9rem' } }}
+            />
+          </Box>
+          {noteResults.length > 0 && (
+            <List disablePadding>
+              {noteResults.map((note: any) => (
+                <ListItem
+                  key={note.$id}
+                  secondaryAction={
+                    <Button size="small" onClick={() => handleAttachNote(note.$id)} sx={{ fontWeight: 800 }}>
+                      Attach
+                    </Button>
+                  }
+                  sx={{ px: 0, py: 0.5 }}
+                >
+                  <ListItemText
+                    primary={note.title || 'Untitled note'}
+                    secondary={note.content ? String(note.content).slice(0, 100) : note.$id}
+                    primaryTypographyProps={{ fontWeight: 700, fontSize: '0.9rem' }}
+                    secondaryTypographyProps={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
         </Box>
 
         {/* Comments Section */}

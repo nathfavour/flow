@@ -19,7 +19,7 @@ import {
   Search as SearchIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
-import { searchGlobalUsers } from '@/lib/ecosystem/identity';
+import { UsersService } from '@/lib/services/users';
 import { fetchProfilePreview } from '@/lib/profile-preview';
 import { IdentityAvatar, computeIdentityFlags } from './common/IdentityBadge';
 
@@ -63,7 +63,7 @@ export default function UserSearch({
 
     setIsSearching(true);
     try {
-      const users = await searchGlobalUsers(searchQuery);
+      const users = await UsersService.searchUsers(searchQuery);
       const filtered = users.filter(u => 
         !selectedUsers.some(s => s.id === u.id) && 
         !excludeIds.includes(u.id)

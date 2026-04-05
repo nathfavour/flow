@@ -2,7 +2,19 @@ import { tablesDB } from "../appwrite/client";
 import { APPWRITE_CONFIG } from "../appwrite/config";
 
 const DATABASE_ID = APPWRITE_CONFIG.DATABASES.CHAT;
-const TABLE_ID = APPWRITE_CONFIG.TABLES.VAULT.USER; // 'user' table in chat DB is used for profiles
+const TABLE_ID = APPWRITE_CONFIG.TABLES.CHAT.PROFILES;
+
+const normalizeProfile = (profile: any) => {
+    if (!profile) return null;
+    return {
+        ...profile,
+        id: profile.$id,
+        title: profile.displayName || profile.username,
+        subtitle: `@${profile.username}`,
+        avatar: profile.avatar,
+        profilePicId: profile.profilePicId || profile.avatar,
+    };
+};
 
 export const UsersService = {
     async getProfileById(userId: string) {
@@ -26,7 +38,7 @@ export const UsersService = {
                         Query.limit(1)
                     ]
                 });
-                return res.rows[0] || null;
+                return normalizeProfile(res.rows[0]) || null;
             } catch (_inner) {
                 return null;
             }
@@ -39,7 +51,7 @@ export const UsersService = {
             return await tablesDB.updateRow(
                 DATABASE_ID,
                 TABLE_ID,
-                profile.$id,
+                profile.$id || profile.id,
                 data
             );
         }
@@ -85,5 +97,25 @@ export const UsersService = {
         } catch (_e) {
             return false;
         }
+    },
+
+    async searchUsers(query: string) {
+        const cleaned = query.trim().replace(/^@/, '');
+        if (cleaned.length < 2) return [];
+
+        const { Query } = await import("appwrite");
+        const res = await tablesDB.listRows<any>({
+            databaseId: DATABASE_ID,
+            tableId: TABLE_ID,
+            queries: [
+                Query.or([
+                    Query.startsWith('username', cleaned.toLowerCase()),
+                    Query.startsWith('displayName', cleaned)
+                ]),
+                Query.limit(20)
+            ]
+        });
+
+        return res.rows.map(normalizeProfile).filter(Boolean);
     }
 };

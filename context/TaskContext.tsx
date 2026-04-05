@@ -7,6 +7,7 @@ import { account } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import { useDataNexus } from './DataNexusContext';
+import { Permission, Role } from 'appwrite';
 import {
   Task,
   Project,
@@ -22,12 +23,16 @@ import {
 
 // Mappers
 const mapAppwriteTaskToTask = (doc: AppwriteTask): Task => {
+  const raw = doc as any;
   // Extract project ID from tags if present (format: "project:ID")
-  const projectTag = doc.tags?.find(t => t.startsWith('project:'));
+  const projectTag = raw.tags?.find((t: string) => t.startsWith('project:'));
   const projectId = projectTag ? projectTag.split(':')[1] : 'inbox';
-  const userLabels = doc.tags?.filter(t => !t.startsWith('project:') && !t.startsWith('source:')) || [];
-  const linkedNotes = doc.tags?.filter(t => t.startsWith('source:kylrixnote:'))
-                               .map(t => t.split(':')[2]) || [];
+  const userLabels = raw.tags?.filter((t: string) => !t.startsWith('project:') && !t.startsWith('source:')) || [];
+  const linkedNotes = raw.tags?.filter((t: string) => t.startsWith('source:kylrixnote:'))
+                                .map((t: string) => t.split(':')[2]) || [];
+  const comments = Array.isArray(raw.comments)
+    ? raw.comments.map((entry: any) => parseCommentEntry(entry))
+    : [];
 
   return {
     id: doc.$id,
@@ -39,18 +44,104 @@ const mapAppwriteTaskToTask = (doc: AppwriteTask): Task => {
     labels: userLabels,
     linkedNotes: linkedNotes,
     subtasks: [],
-    comments: [],
+    comments,
     attachments: [],
     reminders: [],
     timeEntries: [],
-    assigneeIds: doc.assigneeIds || [],
-    creatorId: doc.userId,
-    dueDate: doc.dueDate ? new Date(doc.dueDate) : undefined,
+    assigneeIds: raw.assigneeIds || [],
+    creatorId: raw.userId,
+    parentTaskId: raw.parentId || null,
+    dueDate: raw.dueDate ? new Date(raw.dueDate) : undefined,
     createdAt: new Date(doc.$createdAt),
     updatedAt: new Date(doc.$updatedAt),
     position: 0,
     isArchived: false,
   };
+};
+
+const parseCommentEntry = (entry: any): Comment => {
+  if (entry && typeof entry === 'object' && entry.id && entry.content) {
+    return {
+      ...entry,
+      createdAt: entry.createdAt ? new Date(entry.createdAt) : new Date(),
+      updatedAt: entry.updatedAt ? new Date(entry.updatedAt) : undefined,
+    };
+  }
+
+  if (typeof entry === 'string') {
+    try {
+      return parseCommentEntry(JSON.parse(entry));
+    } catch (_e) {
+      return {
+        id: ID.unique(),
+        content: entry,
+        authorId: 'system',
+        authorName: 'System',
+        createdAt: new Date(),
+      };
+    }
+  }
+
+  return {
+    id: ID.unique(),
+    content: '',
+    authorId: 'system',
+    authorName: 'System',
+    createdAt: new Date(),
+  };
+};
+
+const serializeCommentEntry = (comment: Comment) =>
+  JSON.stringify({
+    ...comment,
+    createdAt: comment.createdAt.toISOString(),
+    updatedAt: comment.updatedAt?.toISOString() || null,
+  });
+
+const buildTaskPermissions = (creatorId: string | null, assigneeIds: string[] = []) => {
+  const activeAssignees = Array.from(new Set(assigneeIds.filter((id) => id && id !== 'guest')));
+  const permissions = new Set<string>();
+
+  if (creatorId && creatorId !== 'guest') {
+    permissions.add(Permission.read(Role.user(creatorId)));
+    permissions.add(Permission.update(Role.user(creatorId)));
+    permissions.add(Permission.delete(Role.user(creatorId)));
+  }
+
+  activeAssignees.forEach((assigneeId) => {
+    permissions.add(Permission.read(Role.user(assigneeId)));
+    permissions.add(Permission.update(Role.user(assigneeId)));
+  });
+
+  return Array.from(permissions);
+};
+
+const buildTaskHierarchy = (tasks: Task[]) => {
+  const cloned = tasks.map((task) => ({
+    ...task,
+    subtasks: [...(task.subtasks || [])],
+    comments: [...(task.comments || [])],
+  }));
+  const taskMap = new Map(cloned.map((task) => [task.id, task]));
+
+  cloned.forEach((task) => {
+    if (!task.parentTaskId) return;
+    const parent = taskMap.get(task.parentTaskId);
+    if (!parent) return;
+
+    parent.subtasks = [
+      ...parent.subtasks.filter((subtask) => subtask.id !== task.id),
+      {
+        id: task.id,
+        title: task.title,
+        completed: task.status === 'done',
+        createdAt: task.createdAt,
+        completedAt: task.status === 'done' ? task.completedAt : undefined,
+      },
+    ];
+  });
+
+  return cloned.filter((task) => !task.parentTaskId);
 };
 
 const mapAppwriteCalendarToProject = (doc: AppwriteCalendar): Project => ({
@@ -529,7 +620,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           description: task.description || '',
           status: task.status,
           priority: task.priority,
-          dueDate: task.dueDate?.toISOString() || '',
+          dueDate: task.dueDate ? task.dueDate.toISOString() : null,
           userId: userId,
           tags: tags,
           assigneeIds: task.assigneeIds || [],
@@ -537,7 +628,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           eventId: '',
           parentId: '',
           recurrenceRule: task.recurrence ? JSON.stringify(task.recurrence) : '',
-        });
+        }, buildTaskPermissions(userId, task.assigneeIds || []));
 
         invalidate(`f_tasks_${userId}`);
 
@@ -552,6 +643,9 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const updateTask = useCallback(async (id: string, updates: Partial<Task>) => {
     try {
+      const currentTask = state.tasks.find(t => t.id === id);
+      if (!currentTask) return;
+
       // Optimistic update
       dispatch({ type: 'UPDATE_TASK', payload: { id, updates } });
 
@@ -561,15 +655,24 @@ export function TaskProvider({ children }: TaskProviderProps) {
       if (updates.status !== undefined) apiUpdates.status = updates.status;
       if (updates.priority !== undefined) apiUpdates.priority = updates.priority;
       if (updates.dueDate !== undefined) apiUpdates.dueDate = updates.dueDate?.toISOString();
-      if (updates.labels !== undefined || updates.linkedNotes !== undefined) {
-        const currentTask = state.tasks.find(t => t.id === id);
-        const projectId = updates.projectId || currentTask?.projectId;
-        
-        // Start with provided labels or current ones
-        const finalTags = updates.labels !== undefined ? [...updates.labels] : [...(currentTask?.labels || [])];
-        
-        // Merge linked notes (source: tags)
-        const notesToLink = updates.linkedNotes !== undefined ? updates.linkedNotes : (currentTask?.linkedNotes || []);
+      if (updates.parentTaskId !== undefined) {
+        apiUpdates.parentId = updates.parentTaskId || null;
+      }
+      if (updates.assigneeIds !== undefined) {
+        apiUpdates.assigneeIds = updates.assigneeIds;
+      }
+      if (updates.comments !== undefined) {
+        apiUpdates.comments = updates.comments.map(serializeCommentEntry);
+      }
+      if (updates.attachments !== undefined) {
+        apiUpdates.attachmentIds = updates.attachments;
+      }
+      if (updates.labels !== undefined || updates.linkedNotes !== undefined || updates.projectId !== undefined) {
+        const projectId = updates.projectId || currentTask.projectId;
+
+        const finalTags = updates.labels !== undefined ? [...updates.labels] : [...(currentTask.labels || [])];
+
+        const notesToLink = updates.linkedNotes !== undefined ? updates.linkedNotes : (currentTask.linkedNotes || []);
         notesToLink.forEach(noteId => {
           const tag = `source:kylrixnote:${noteId}`;
           if (!finalTags.includes(tag)) finalTags.push(tag);
@@ -577,20 +680,14 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
         if (projectId && projectId !== 'inbox') {
           const projectTag = `project:${projectId}`;
-          if (!finalTags.includes(projectTag)) {
-            finalTags.push(projectTag);
-          }
+          if (!finalTags.includes(projectTag)) finalTags.push(projectTag);
         }
+
         apiUpdates.tags = finalTags;
       }
-      if (updates.projectId !== undefined) {
-         // We need to fetch current tags to update project tag
-         // For now, this is complex without reading current task state inside callback
-         // Assuming we can just append or we might need to handle this better.
-         // Skipping tag update for project change for simplicity in this iteration
-      }
 
-      await taskApi.update(id, apiUpdates);
+      const nextAssignees = updates.assigneeIds ?? currentTask.assigneeIds;
+      await taskApi.update(id, apiUpdates, buildTaskPermissions(currentTask.creatorId, nextAssignees));
       invalidate(`f_tasks_${state.userId || 'guest'}`);
     } catch (error: unknown) {
       console.error('Failed to update task', error);
@@ -600,13 +697,28 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const deleteTask = useCallback(async (id: string) => {
     try {
+      const collectDescendants = (taskId: string): string[] => {
+        const directChildren = state.tasks.filter(task => task.parentTaskId === taskId).map(task => task.id);
+        const descendantIds: string[] = [];
+        directChildren.forEach((childId) => {
+          descendantIds.push(childId, ...collectDescendants(childId));
+        });
+        return descendantIds;
+      };
+
+      const descendantIds = collectDescendants(id);
+      for (const childId of descendantIds) {
+        await taskApi.delete(childId);
+        dispatch({ type: 'DELETE_TASK', payload: childId });
+      }
+
       await taskApi.delete(id);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
       dispatch({ type: 'DELETE_TASK', payload: id });
     } catch (error: unknown) {
       console.error('Failed to delete task', error);
     }
-  }, [state.userId, invalidate]);
+  }, [state.tasks, state.userId, invalidate]);
 
   const completeTask = useCallback(async (id: string) => {
     try {
@@ -627,39 +739,72 @@ export function TaskProvider({ children }: TaskProviderProps) {
   }, []);
 
   // Subtask actions (Local only for now)
-  const addSubtask = useCallback((taskId: string, title: string) => {
-    const subtask: Subtask = {
-      id: ID.unique(),
-      title,
-      completed: false,
-      createdAt: new Date(),
-    };
-    dispatch({ type: 'ADD_SUBTASK', payload: { taskId, subtask } });
-  }, []);
+  const addSubtask = useCallback(async (taskId: string, title: string) => {
+    const parentTask = state.tasks.find(task => task.id === taskId);
+    if (!parentTask) return;
 
-  const updateSubtask = useCallback((taskId: string, subtaskId: string, updates: Partial<Subtask>) => {
-    dispatch({ type: 'UPDATE_SUBTASK', payload: { taskId, subtaskId, updates } });
-  }, []);
+    try {
+      const creatorId = state.userId || parentTask.creatorId || 'guest';
+      const childTask = await taskApi.create({
+        title,
+        description: '',
+        status: 'todo',
+        priority: parentTask.priority,
+        dueDate: parentTask.dueDate ? parentTask.dueDate.toISOString() : null,
+        userId: creatorId,
+        tags: [
+          ...(parentTask.labels || []),
+          ...(parentTask.projectId && parentTask.projectId !== 'inbox' ? [`project:${parentTask.projectId}`] : []),
+        ],
+        assigneeIds: parentTask.assigneeIds || [],
+        attachmentIds: [],
+        eventId: '',
+        parentId: parentTask.id,
+        recurrenceRule: '',
+      }, buildTaskPermissions(creatorId, parentTask.assigneeIds || []));
 
-  const deleteSubtask = useCallback((taskId: string, subtaskId: string) => {
-    dispatch({ type: 'DELETE_SUBTASK', payload: { taskId, subtaskId } });
-  }, []);
+      invalidate(`f_tasks_${state.userId || 'guest'}`);
+      dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(childTask) });
+    } catch (error: unknown) {
+      console.error('Failed to create subtask', error);
+    }
+  }, [state.tasks, state.userId, invalidate]);
 
-  const toggleSubtask = useCallback((taskId: string, subtaskId: string) => {
-    dispatch({ type: 'TOGGLE_SUBTASK', payload: { taskId, subtaskId } });
-  }, []);
+  const updateSubtask = useCallback(async (_taskId: string, subtaskId: string, updates: Partial<Subtask>) => {
+    const payload: Partial<Task> = {};
+    if (updates.title !== undefined) payload.title = updates.title;
+    if (updates.completed !== undefined) {
+      payload.status = updates.completed ? 'done' : 'todo';
+    }
+    await updateTask(subtaskId, payload);
+  }, [updateTask]);
 
-  // Comment actions (Local only for now)
-  const addComment = useCallback((taskId: string, content: string) => {
+  const deleteSubtask = useCallback(async (_taskId: string, subtaskId: string) => {
+    await deleteTask(subtaskId);
+  }, [deleteTask]);
+
+  const toggleSubtask = useCallback(async (_taskId: string, subtaskId: string) => {
+    const task = state.tasks.find(t => t.id === subtaskId);
+    if (!task) return;
+    await updateTask(subtaskId, { status: task.status === 'done' ? 'todo' : 'done' });
+  }, [state.tasks, updateTask]);
+
+  const addComment = useCallback(async (taskId: string, content: string) => {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+
     const comment: Comment = {
       id: ID.unique(),
       content,
-      authorId: state.userId || 'user',
+      authorId: state.userId || task.creatorId || 'user',
       authorName: 'You',
       createdAt: new Date(),
     };
-    dispatch({ type: 'ADD_COMMENT', payload: { taskId, comment } });
-  }, [state.userId]);
+
+    await updateTask(taskId, {
+      comments: [...(task.comments || []), comment],
+    });
+  }, [state.tasks, state.userId, updateTask]);
 
   // Project actions
   const addProject = useCallback(
@@ -759,7 +904,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   // Computed values
   const getFilteredTasks = useCallback(() => {
-    let filtered = [...state.tasks];
+    let filtered = buildTaskHierarchy(state.tasks);
 
     // Apply filters
     if (state.filter.status?.length) {
@@ -792,6 +937,12 @@ export function TaskProvider({ children }: TaskProviderProps) {
     // Apply sorting
     const { field, direction } = state.sort;
     filtered.sort((a, b) => {
+      const aDone = a.status === 'done';
+      const bDone = b.status === 'done';
+      if (aDone !== bDone) {
+        return aDone ? 1 : -1;
+      }
+
       let comparison = 0;
       
       switch (field) {
@@ -830,7 +981,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const getTasksByProject = useCallback(
     (projectId: string) => {
-      return state.tasks.filter(t => t.projectId === projectId && !t.isArchived);
+      return buildTaskHierarchy(state.tasks).filter(t => t.projectId === projectId && !t.isArchived);
     },
     [state.tasks]
   );
@@ -841,7 +992,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const activeTasks = state.tasks.filter(t => !t.isArchived);
+    const activeTasks = buildTaskHierarchy(state.tasks).filter(t => !t.isArchived);
     const completed = activeTasks.filter(t => t.status === 'done').length;
     const overdue = activeTasks.filter(
       t => t.dueDate && new Date(t.dueDate) < now && t.status !== 'done'
@@ -861,7 +1012,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
   }, [state.tasks]);
 
   const getSelectedTask = useCallback(() => {
-    return state.tasks.find(t => t.id === state.selectedTaskId) || null;
+    return buildTaskHierarchy(state.tasks).find(t => t.id === state.selectedTaskId) || state.tasks.find(t => t.id === state.selectedTaskId) || null;
   }, [state.tasks, state.selectedTaskId]);
 
   const getSelectedProject = useCallback(() => {

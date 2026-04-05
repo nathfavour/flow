@@ -58,7 +58,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
   const [coverImage, setCoverImage] = useState('');
   const [visibility, setVisibility] = useState<EventVisibility>('public');
   const [selectedGuests, setSelectedGuests] = useState<User[]>([]);
-  const [autoCreateCall, setAutoCreateCall] = useState(true);
+  const [autoCreateCall, setAutoCreateCall] = useState(false);
 
   const handleSubmit = () => {
     if (!title.trim() || !startTime || !endTime) return;
@@ -89,7 +89,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
     setCoverImage('');
     setVisibility('public');
     setSelectedGuests([]);
-    setAutoCreateCall(true);
+    setAutoCreateCall(false);
   };
 
   const handleClose = () => {
@@ -317,14 +317,14 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
                   <VideoIcon sx={{ fontSize: 20 }} />
                 </Box>
                 <Box>
-                  <Typography variant="subtitle2" fontWeight={800} sx={{ color: 'white' }}>
+                    <Typography variant="subtitle2" fontWeight={800} sx={{ color: 'white' }}>
                     Kylrix Connect Call
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600 }}>
-                    Auto-generate a secure video call link
-                  </Typography>
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600 }}>
+                     Create a secure video call link for this event
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
               <Switch 
                 checked={autoCreateCall}
                 onChange={(e) => setAutoCreateCall(e.target.checked)}

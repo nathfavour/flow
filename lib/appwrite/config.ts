@@ -19,6 +19,9 @@ export const APPWRITE_CONFIG = {
     EVENTS: 'events',
     EVENT_GUESTS: 'eventGuests',
     FOCUS_SESSIONS: 'focusSessions',
+    CHAT: {
+      PROFILES: 'profiles',
+    },
     NOTES: '67ff05f3002502ef239e',
     PASSWORD_MANAGER: {
       KEYCHAIN: 'keychain',

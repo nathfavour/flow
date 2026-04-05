@@ -183,8 +183,8 @@ export default function FormSettingsDialog({ open, onClose, form, onSaved }: For
                   control={<Switch size="small" checked={allowAnonymousFill} onChange={(e) => setAllowAnonymousFill(e.target.checked)} />}
                   label={
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 800 }}>Allow Anonymous Fill</Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>Submit without Kylrix session</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 800 }}>Allow guest submissions</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>If off, only signed-in users can respond</Typography>
                     </Box>
                   }
                   sx={{ mb: 1 }}

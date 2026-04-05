@@ -119,7 +119,7 @@ export default function SubmissionViewer({ formId, formSchema }: { formId: strin
     try {
         const schema = JSON.parse(formSchema);
         return schema.reduce((acc: any, field: any) => {
-            acc[field.id] = field.label;
+            acc[field.id] = field.label || field.id;
             return acc;
         }, {});
     } catch (_e) {

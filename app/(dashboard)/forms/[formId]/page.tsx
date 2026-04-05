@@ -155,7 +155,7 @@ export default function FormDetailsPage({ params }: { params: Promise<{ formId: 
             {tab === 0 && (
                 <Fade in={true}>
                     <Box>
-                        <SubmissionViewer formId={resolvedParams.formId} />
+                        <SubmissionViewer formId={resolvedParams.formId} formSchema={form.schema} />
                     </Box>
                 </Fade>
             )}

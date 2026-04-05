@@ -122,9 +122,19 @@ export const calendars = {
 
 export const tasks = {
     list: (queries?: string[]) => listRows<Task>(TABLES.TASKS, queries),
-    create: (data: TableCreateData<Task>) => createRow<Task>(TABLES.TASKS, data),
+    create: (data: TableCreateData<Task>, permissions?: string[]) => createRow<Task>(TABLES.TASKS, data, permissions),
     get: (id: string) => getRow<Task>(TABLES.TASKS, id),
-    update: (id: string, data: TableUpdateData<Task>) => updateRow<Task>(TABLES.TASKS, id, data),
+    update: (id: string, data: TableUpdateData<Task>, permissions?: string[]) =>
+        tablesDB.updateRow<Task>({
+            databaseId: DATABASE_ID,
+            tableId: TABLES.TASKS,
+            rowId: id,
+            data,
+            permissions
+        }).then((res) => {
+            clearCache(TABLES.TASKS);
+            return res;
+        }),
     delete: (id: string) => deleteRow(TABLES.TASKS, id)
 };
 
