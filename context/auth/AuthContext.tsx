@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Image from 'next/image';
 import { APP_CONFIG } from '@/lib/constants';
+import { getCurrentUser, invalidateCurrentUserCache } from '@/lib/appwrite/client';
 
 interface AuthState {
   user: Models.User<Models.Preferences> | null;
@@ -123,7 +124,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const checkSession = useCallback(async (retryCount = 0) => {
     console.log('[Auth] checkSession called', { retryCount });
     try {
-      const currentUser = await account.get();
+      const currentUser = await getCurrentUser();
+      if (!currentUser?.$id) throw new Error('No active session');
       console.log('[Auth] account.get() success', currentUser.$id);
       setUser(currentUser);
       setShowAuthOverlay(false);
@@ -153,7 +155,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       // Re-check after silent attempt
       try {
-        const retryUser = await account.get();
+        const retryUser = await getCurrentUser(true);
+        if (!retryUser?.$id) throw new Error('No active session');
         setUser(retryUser);
         setShowAuthOverlay(false);
         return;
@@ -215,29 +218,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [pathname, user, isLoading, isOnPublicRoute]);
 
-  // Poll for session when overlay is active
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (showAuthOverlay) {
-      interval = setInterval(() => {
-        // We do a "silent" check (maybe just Account.get) to see if session is established
-        // We won't trigger full loading state, just check
-        account.get()
-          .then((currentUser) => {
-            setUser(currentUser);
-            setShowAuthOverlay(false);
-            if (authWindow) {
-              authWindow.close();
-              setAuthWindow(null);
-            }
-          })
-          .catch(() => {
-            // Still no session
-          });
-      }, 2000);
-    }
-    return () => clearInterval(interval);
-  }, [showAuthOverlay, authWindow]);
+    if (!showAuthOverlay) return;
+
+    const handleFocus = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+      void checkSessionRef.current?.();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
+  }, [showAuthOverlay]);
 
   const openLoginPopup = useCallback(async () => {
     if (typeof window === 'undefined' || isAuthenticating) return;
@@ -246,7 +242,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // First, check if we already have a session locally
     try {
-      const currentUser = await account.get();
+      const currentUser = await getCurrentUser(true);
       if (currentUser) {
         console.log('Active session detected in kylrixflow, skipping IDM window');
         setUser(currentUser);
@@ -265,7 +261,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Try silent auth before opening popup
     await attemptSilentAuth();
     try {
-      const currentUser = await account.get();
+      const currentUser = await getCurrentUser(true);
       if (currentUser) {
         setUser(currentUser);
         setShowAuthOverlay(false);
@@ -315,6 +311,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     try {
       await account.deleteSession('current');
+      invalidateCurrentUserCache();
       setUser(null);
       setIsAuthenticating(false);
       // Only show overlay if not on public route
@@ -404,4 +401,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
     </AuthContext.Provider>
   );
 }
-

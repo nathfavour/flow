@@ -47,12 +47,10 @@ export default function SettingsPage() {
 
     useEffect(() => {
         setIsPinSet(ecosystemSecurity.isPinSet());
-        
-        const interval = setInterval(() => {
-            if (ecosystemSecurity.status.isUnlocked !== isUnlocked) {
-                setIsUnlocked(ecosystemSecurity.status.isUnlocked);
-            }
-        }, 1000);
+
+        const unsubscribe = ecosystemSecurity.onStatusChange((unlocked) => {
+            setIsUnlocked(unlocked);
+        });
 
         getCurrentUser().then(u => {
             setUser(u);
@@ -61,8 +59,8 @@ export default function SettingsPage() {
             }
         });
 
-        return () => clearInterval(interval);
-    }, [isUnlocked]);
+        return () => unsubscribe();
+    }, []);
 
     const loadPasskeys = async (userId: string) => {
         try {

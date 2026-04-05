@@ -10,6 +10,7 @@ import { Query, ID } from 'appwrite';
 
 export class EcosystemSecurity {
   private static instance: EcosystemSecurity;
+  private statusListeners = new Set<(isUnlocked: boolean) => void>();
   private masterKey: CryptoKey | null = null;
   private identityKeyPair: CryptoKeyPair | null = null;
   private isUnlocked = false;
@@ -51,6 +52,19 @@ export class EcosystemSecurity {
         this.lock();
       }
     });
+  }
+
+  private emitStatusChange() {
+    for (const listener of this.statusListeners) {
+      listener(this.isUnlocked);
+    }
+  }
+
+  onStatusChange(listener: (isUnlocked: boolean) => void) {
+    this.statusListeners.add(listener);
+    return () => {
+      this.statusListeners.delete(listener);
+    };
   }
 
   private getOrCreateSessionSecret(): Uint8Array {
@@ -284,6 +298,7 @@ export class EcosystemSecurity {
       if (typeof sessionStorage !== "undefined") {
         sessionStorage.setItem("kylrix_vault_unlocked", "true");
       }
+      this.emitStatusChange();
       return true;
     } catch (_e) {
       console.error("[Security] Failed to import master key", _e);
@@ -543,6 +558,7 @@ export class EcosystemSecurity {
       );
 
       this.isUnlocked = true;
+      this.emitStatusChange();
       return true;
     } catch (_e: unknown) {
       console.error("[Security] PIN unlock failed", _e);
@@ -618,6 +634,7 @@ export class EcosystemSecurity {
       // as the PIN is meant to unlock the system when it's locked.
       // It should only be purged on "Purge" (tab close/process exit).
     }
+    this.emitStatusChange();
   }
 
   get status() {

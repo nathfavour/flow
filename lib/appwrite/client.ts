@@ -23,6 +23,10 @@ export const account = new Account(client);
 export const realtime = new Realtime(client);
 export { client };
 
+let currentUserCache: { user: any | null; expiresAt: number } | null = null;
+let currentUserInFlight: Promise<any | null> | null = null;
+const CURRENT_USER_CACHE_TTL = 5000;
+
 import { Query } from "appwrite";
 
 export const APPWRITE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.VAULT;
@@ -120,15 +124,36 @@ export function getProfilePicturePreview(fileId: string, width: number = 64, hei
     return getFilePreview("profile_pictures", fileId, width, height);
 }
 
-// --- USER SESSION ---
-
-export async function getCurrentUser(): Promise<any | null> {
-    try {
-        return await account.get();
-    } catch {
-        return null;
+export async function getCurrentUser(force = false): Promise<any | null> {
+    if (!force && currentUserCache && currentUserCache.expiresAt > Date.now()) {
+        return currentUserCache.user;
     }
+
+    if (!force && currentUserInFlight) {
+        return currentUserInFlight;
+    }
+
+    currentUserInFlight = account.get()
+        .then((user) => {
+            currentUserCache = { user, expiresAt: Date.now() + CURRENT_USER_CACHE_TTL };
+            return user;
+        })
+        .catch((error) => {
+            currentUserCache = null;
+            return null;
+        })
+        .finally(() => {
+            currentUserInFlight = null;
+        });
+
+    return currentUserInFlight;
 }
+
+export function invalidateCurrentUserCache() {
+    currentUserCache = null;
+}
+
+// --- USER SESSION ---
 
 // Unified resolver: attempts global session then cookie-based fallback
 export async function resolveCurrentUser(req?: { headers: { get(k: string): string | null } } | null): Promise<any | null> {

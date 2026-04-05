@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { account, tablesDB } from '@/lib/appwrite/client';
+import { tablesDB, getCurrentUser } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Query } from 'appwrite';
 
@@ -19,7 +19,11 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
     const checkSubscription = async () => {
         try {
-            const user = await account.get();
+            const user = await getCurrentUser();
+            if (!user?.$id) {
+                setSubscription(null);
+                return;
+            }
             const response = await tablesDB.listRows<any>({
                 databaseId: APPWRITE_CONFIG.DATABASES.FLOW,
                 tableId: 'subscriptions',

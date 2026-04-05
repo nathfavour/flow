@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useReducer, useCallback, ReactNode, useEffect } from 'react';
 import { ID } from 'appwrite';
 import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/lib/kylrixflow';
-import { account } from '@/lib/appwrite/client';
+import { getCurrentUser } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import { useDataNexus } from './DataNexusContext';
@@ -531,7 +531,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         // Get current user
         let userId = 'guest';
         try {
-          const user = await account.get();
+          const user = await getCurrentUser();
           console.log('[TaskContext] User found', user.$id);
           userId = user.$id;
           dispatch({ type: 'SET_USER', payload: userId });
