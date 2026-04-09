@@ -43,7 +43,9 @@ export const FormsService = {
             databaseId: DATABASE_ID,
             tableId: FORMS_TABLE,
             queries: [
-                Query.equal('$id', formId)
+                Query.equal('$id', formId),
+                Query.limit(1),
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', 'createdAt', '$createdAt'])
             ]
         });
 
@@ -70,7 +72,9 @@ export const FormsService = {
             tableId: FORMS_TABLE,
             queries: [
                 Query.equal('userId', userId),
-                Query.orderDesc('$createdAt')
+                Query.orderDesc('$createdAt'),
+                Query.limit(50),
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', 'createdAt', '$createdAt'])
             ]
         });
     },
@@ -125,7 +129,9 @@ export const FormsService = {
             tableId: SUBMISSIONS_TABLE,
             queries: [
                 Query.equal('formId', formId),
-                Query.equal('submitterId', userId)
+                Query.equal('submitterId', userId),
+                Query.limit(20),
+                Query.select(['$id', 'formId', 'submitterId', 'status', 'metadata', 'createdAt', '$createdAt'])
             ]
         });
 
@@ -146,7 +152,9 @@ export const FormsService = {
             tableId: SUBMISSIONS_TABLE,
             queries: [
                 Query.equal('formId', formId),
-                Query.equal('submitterId', userId)
+                Query.equal('submitterId', userId),
+                Query.limit(20),
+                Query.select(['$id', 'formId', 'submitterId', 'status', 'metadata', 'createdAt', '$createdAt'])
             ]
         });
 
@@ -203,7 +211,11 @@ export const FormsService = {
         const formRes = await tablesDB.listRows<Forms>({
             databaseId: DATABASE_ID,
             tableId: FORMS_TABLE,
-            queries: [Query.equal('$id', formId)]
+            queries: [
+                Query.equal('$id', formId),
+                Query.limit(1),
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', 'createdAt', '$createdAt'])
+            ]
         });
 
         if (formRes.total === 0) {

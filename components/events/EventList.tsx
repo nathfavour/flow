@@ -22,6 +22,7 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { permissions, EventVisibility } from '@/lib/permissions';
 import { CallService } from '@/lib/services/call';
 import toast from 'react-hot-toast';
+import { Query } from 'appwrite';
 
 export default function EventList() {
   const [tabValue, setTabValue] = useState(0);
@@ -41,13 +42,15 @@ export default function EventList() {
       try {
         setIsLoading(true);
         
-        const queries = [];
+        const queries: string[] = [];
         if (userId) {
-          queries.push(`equal("userId", "${userId}")`);
+          queries.push(Query.equal('userId', userId));
         } else if (!isAuthenticated) {
-          // If not authenticated, maybe only show public events or nothing
-          queries.push('equal("visibility", "public")');
+          queries.push(Query.equal('visibility', 'public'));
         }
+
+        queries.push(Query.limit(100));
+        queries.push(Query.select(['$id', 'title', 'description', 'startTime', 'endTime', 'location', 'visibility', 'status', 'coverImageId', 'userId', '$createdAt', '$updatedAt']));
 
         const list = await eventApi.list(queries);
         const mapped = list.rows.map(doc => ({

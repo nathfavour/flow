@@ -1,7 +1,8 @@
 import { tablesDB, account as _account } from '../appwrite/client';
+import { APPWRITE_CONFIG } from '../appwrite/config';
 
-const CONNECT_DATABASE_ID = 'chat';
-const CONNECT_COLLECTION_ID_USERS = 'users';
+const CONNECT_DATABASE_ID = APPWRITE_CONFIG.DATABASES.CHAT;
+const CONNECT_COLLECTION_ID_USERS = APPWRITE_CONFIG.TABLES.CHAT.PROFILES;
 
 const PROFILE_SYNC_KEY = 'kylrix_ecosystem_identity_synced';
 const SESSION_SYNC_KEY = 'kylrix_ecosystem_session_synced';
@@ -103,18 +104,19 @@ export async function searchGlobalUsers(query: string, limit = 10) {
     if (!query || query.length < 2) return [];
 
     try {
-        const res = await tablesDB.listRows({
-            databaseId: CONNECT_DATABASE_ID,
-            tableId: CONNECT_COLLECTION_ID_USERS,
-            queries: [
-                Query.or([
-                    Query.startsWith('username', query.toLowerCase()),
-                    Query.startsWith('displayName', query)
-                ]),
-                Query.contains('appsActive', 'flow'),
-                Query.limit(limit)
-            ]
-        });
+            const res = await tablesDB.listRows({
+                databaseId: CONNECT_DATABASE_ID,
+                tableId: CONNECT_COLLECTION_ID_USERS,
+                queries: [
+                    Query.or([
+                        Query.startsWith('username', query.toLowerCase()),
+                        Query.startsWith('displayName', query)
+                    ]),
+                    Query.contains('appsActive', 'flow'),
+                    Query.limit(limit),
+                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'tier', 'appsActive', 'createdAt', '$createdAt', 'last_username_edit'])
+                ]
+            });
 
         return res.rows.map((doc: any) => ({
             id: doc.$id,

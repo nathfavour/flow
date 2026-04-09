@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode, useEffect } from 'react';
-import { ID } from 'appwrite';
+import { ID, Query } from 'appwrite';
 import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/lib/kylrixflow';
 import { getCurrentUser } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
@@ -541,8 +541,16 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
         // Fetch tasks and calendars (Nexus Optimized)
         const [tasksList, calendarsList] = await Promise.all([
-          fetchOptimized(`f_tasks_${userId}`, () => taskApi.list()),
-          fetchOptimized(`f_calendars_${userId}`, () => calendarApi.list())
+          fetchOptimized(`f_tasks_${userId}`, () => taskApi.list([
+            Query.equal('userId', userId),
+            Query.limit(1000),
+            Query.select(['$id', 'userId', 'title', 'description', 'status', 'priority', 'dueDate', 'tags', 'assigneeIds', 'parentId', 'eventId', 'createdAt', 'updatedAt', 'position'])
+          ])),
+          fetchOptimized(`f_calendars_${userId}`, () => calendarApi.list([
+            Query.equal('userId', userId),
+            Query.limit(100),
+            Query.select(['$id', 'userId', 'name', 'color', 'isDefault', 'createdAt', 'updatedAt'])
+          ]))
         ]);
 
         const tasks = tasksList.rows.map(mapAppwriteTaskToTask);

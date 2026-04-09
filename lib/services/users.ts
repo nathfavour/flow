@@ -35,7 +35,8 @@ export const UsersService = {
                             Query.equal('userId', userId),
                             Query.equal('$id', userId)
                         ]),
-                        Query.limit(1)
+                        Query.limit(1),
+                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'appsActive', 'createdAt', '$createdAt'])
                     ]
                 });
                 return normalizeProfile(res.rows[0]) || null;
@@ -85,14 +86,15 @@ export const UsersService = {
     async isUsernameAvailable(username: string): Promise<boolean> {
         try {
             const { Query } = await import("appwrite");
-            const res = await tablesDB.listRows<any>({
-                databaseId: DATABASE_ID,
-                tableId: TABLE_ID,
-                queries: [
-                    Query.equal('username', username.toLowerCase()),
-                    Query.limit(1)
-                ]
-            });
+                const res = await tablesDB.listRows<any>({
+                    databaseId: DATABASE_ID,
+                    tableId: TABLE_ID,
+                    queries: [
+                        Query.equal('username', username.toLowerCase()),
+                        Query.limit(1),
+                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'appsActive', 'createdAt', '$createdAt'])
+                    ]
+                });
             return res.rows.length === 0;
         } catch (_e) {
             return false;
@@ -104,17 +106,18 @@ export const UsersService = {
         if (cleaned.length < 2) return [];
 
         const { Query } = await import("appwrite");
-        const res = await tablesDB.listRows<any>({
-            databaseId: DATABASE_ID,
-            tableId: TABLE_ID,
-            queries: [
-                Query.or([
-                    Query.startsWith('username', cleaned.toLowerCase()),
-                    Query.startsWith('displayName', cleaned)
-                ]),
-                Query.limit(20)
-            ]
-        });
+            const res = await tablesDB.listRows<any>({
+                databaseId: DATABASE_ID,
+                tableId: TABLE_ID,
+                queries: [
+                    Query.or([
+                        Query.startsWith('username', cleaned.toLowerCase()),
+                        Query.startsWith('displayName', cleaned)
+                    ]),
+                    Query.limit(20),
+                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'appsActive', 'createdAt', '$createdAt'])
+                ]
+            });
 
         return res.rows.map(normalizeProfile).filter(Boolean);
     }
