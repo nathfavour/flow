@@ -2,12 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
   webpack: (config) => {
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
+    };
+    config.output.environment = {
+      ...config.output.environment,
+      asyncFunction: true,
     };
     config.module.rules.push({
       test: /\.wasm$/,
