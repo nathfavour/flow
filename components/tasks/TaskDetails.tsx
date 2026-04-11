@@ -206,7 +206,7 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
       try {
         const res = await noteApi.list([
           Query.or([
-            Query.search('title', noteQuery.trim()),
+            Query.search('searchTitle', noteQuery.trim()),
             Query.search('content', noteQuery.trim()),
           ]),
           Query.limit(6),
