@@ -2,12 +2,11 @@
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode, useEffect } from 'react';
 import { ID, Query } from 'appwrite';
-import { tasks as taskApi, calendars as calendarApi, subscribeToTable } from '@/lib/kylrixflow';
+import { tasks as taskApi, calendars as calendarApi, taskCollaborators, subscribeToTable, buildTaskPermissions } from '@/lib/kylrixflow';
 import { getCurrentUser } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import { useDataNexus } from './DataNexusContext';
-import { Permission, Role } from 'appwrite';
 import {
   Task,
   Project,
@@ -19,6 +18,8 @@ import {
   ViewMode,
   Subtask,
   Comment,
+  TaskCollaborator,
+  CollaboratorPermission,
 } from '@/types';
 
 // Mappers
@@ -97,24 +98,6 @@ const serializeCommentEntry = (comment: Comment) =>
     createdAt: comment.createdAt.toISOString(),
     updatedAt: comment.updatedAt?.toISOString() || null,
   });
-
-const buildTaskPermissions = (creatorId: string | null, assigneeIds: string[] = []) => {
-  const activeAssignees = Array.from(new Set(assigneeIds.filter((id) => id && id !== 'guest')));
-  const permissions = new Set<string>();
-
-  if (creatorId && creatorId !== 'guest') {
-    permissions.add(Permission.read(Role.user(creatorId)));
-    permissions.add(Permission.update(Role.user(creatorId)));
-    permissions.add(Permission.delete(Role.user(creatorId)));
-  }
-
-  activeAssignees.forEach((assigneeId) => {
-    permissions.add(Permission.read(Role.user(assigneeId)));
-    permissions.add(Permission.update(Role.user(assigneeId)));
-  });
-
-  return Array.from(permissions);
-};
 
 const buildTaskHierarchy = (tasks: Task[]) => {
   const cloned = tasks.map((task) => ({
@@ -638,6 +621,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           recurrenceRule: task.recurrence ? JSON.stringify(task.recurrence) : '',
         }, buildTaskPermissions(userId, task.assigneeIds || []));
 
+        await syncTaskAccess(newTask.$id, userId, task.assigneeIds || []);
         invalidate(`f_tasks_${userId}`);
 
         dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(newTask) });
@@ -696,6 +680,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
       const nextAssignees = updates.assigneeIds ?? currentTask.assigneeIds;
       await taskApi.update(id, apiUpdates, buildTaskPermissions(currentTask.creatorId, nextAssignees));
+      await syncTaskAccess(id, currentTask.creatorId, nextAssignees || []);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
     } catch (error: unknown) {
       console.error('Failed to update task', error);
@@ -716,10 +701,14 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
       const descendantIds = collectDescendants(id);
       for (const childId of descendantIds) {
+        const childCollaborators = await taskCollaborators.list(childId);
+        await Promise.all(childCollaborators.map((collaborator) => taskCollaborators.delete(collaborator.id)));
         await taskApi.delete(childId);
         dispatch({ type: 'DELETE_TASK', payload: childId });
       }
 
+      const currentCollaborators = await taskCollaborators.list(id);
+      await Promise.all(currentCollaborators.map((collaborator) => taskCollaborators.delete(collaborator.id)));
       await taskApi.delete(id);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
       dispatch({ type: 'DELETE_TASK', payload: id });
@@ -744,6 +733,37 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const selectTask = useCallback((id: string | null) => {
     dispatch({ type: 'SELECT_TASK', payload: id });
+  }, []);
+
+  const syncTaskAccess = useCallback(async (taskId: string, creatorId: string, assigneeIds: string[]) => {
+    const collaboratorRows = await taskCollaborators.list(taskId);
+    const collaboratorIds = new Set(collaboratorRows.map((row) => row.userId));
+    const normalizedAssigneeIds = Array.from(new Set(assigneeIds.filter((id): id is string => Boolean(id) && id !== 'guest')));
+
+    for (const assigneeId of normalizedAssigneeIds) {
+      if (!collaboratorIds.has(assigneeId)) {
+        const created = await taskCollaborators.create(taskId, assigneeId, 'read', creatorId);
+        collaboratorRows.push(created);
+        collaboratorIds.add(assigneeId);
+      }
+    }
+
+    const permissions = buildTaskPermissions(creatorId, normalizedAssigneeIds, collaboratorRows);
+    await taskApi.update(taskId, { assigneeIds: normalizedAssigneeIds }, permissions);
+
+    await Promise.all(
+      collaboratorRows.map((collaborator) =>
+        taskCollaborators.update(
+          collaborator.id,
+          { permission: collaborator.permission as CollaboratorPermission },
+          creatorId,
+          taskId,
+          permissions
+        )
+      )
+    );
+
+    return collaboratorRows;
   }, []);
 
   // Subtask actions (Local only for now)
@@ -771,6 +791,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         recurrenceRule: '',
       }, buildTaskPermissions(creatorId, parentTask.assigneeIds || []));
 
+      await syncTaskAccess(childTask.$id, creatorId, parentTask.assigneeIds || []);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
       dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(childTask) });
     } catch (error: unknown) {

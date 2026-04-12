@@ -1,9 +1,13 @@
-import { ID, Models } from "appwrite";
+import { ID, Models, Permission, Role, Query } from "appwrite";
 import { tablesDB, realtime } from "./appwrite/client";
 import { APPWRITE_CONFIG } from "./appwrite/config";
 import { Calendar, Task, Event, EventGuest, FocusSession } from "../types/kylrixflow";
+import type { CollaboratorPermission, TaskCollaborator } from "../types";
 
 const { DATABASE_ID, TABLES } = APPWRITE_CONFIG;
+const TASK_COLLABORATOR_RESOURCE_PREFIX = 'task:';
+const TASK_COLLABORATOR_TABLE = TABLES.FLOW.COLLABORATORS;
+const TASK_COLLABORATOR_DATABASE = APPWRITE_CONFIG.NOTE_DATABASE_ID;
 
 export { realtime };
 
@@ -39,6 +43,79 @@ type TableUpdateData<T extends Models.Row> =
 const queryCache = new Map<string, { data: any; expires: number }>();
 const CACHE_TTL = 30000;
 
+const permissionRank: Record<CollaboratorPermission, number> = {
+    read: 1,
+    write: 2,
+    admin: 3,
+};
+
+const taskResourceKey = (taskId: string) => `${TASK_COLLABORATOR_RESOURCE_PREFIX}${taskId}`;
+
+const taskPermissionForLevel = (level: CollaboratorPermission, userId: string) => {
+    if (level === 'admin') {
+        return [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+            Permission.delete(Role.user(userId)),
+        ];
+    }
+
+    if (level === 'write') {
+        return [
+            Permission.read(Role.user(userId)),
+            Permission.update(Role.user(userId)),
+        ];
+    }
+
+    return [Permission.read(Role.user(userId))];
+};
+
+const mergePermissions = (...permissionGroups: string[][]) => {
+    const merged = new Set<string>();
+    permissionGroups.flat().forEach((permission) => merged.add(permission));
+    return Array.from(merged);
+};
+
+const normalizeCollaborator = (row: any): TaskCollaborator => ({
+    id: row.$id,
+    taskId: String(row.noteId || '').replace(TASK_COLLABORATOR_RESOURCE_PREFIX, ''),
+    userId: row.userId,
+    permission: row.permission,
+    invitedAt: row.invitedAt ? new Date(row.invitedAt) : null,
+    accepted: row.accepted ?? null,
+});
+
+const mapPermissionsByUser = (creatorId: string | null, assigneeIds: string[] = [], collaborators: TaskCollaborator[] = []) => {
+    const permissionsByUser = new Map<string, CollaboratorPermission>();
+
+    if (creatorId && creatorId !== 'guest') {
+        permissionsByUser.set(creatorId, 'admin');
+    }
+
+    assigneeIds.filter(Boolean).forEach((userId) => {
+        const current = permissionsByUser.get(userId);
+        if (!current || permissionRank.read > permissionRank[current]) {
+            permissionsByUser.set(userId, 'read');
+        }
+    });
+
+    collaborators.forEach((collaborator) => {
+        const current = permissionsByUser.get(collaborator.userId);
+        if (!current || permissionRank[collaborator.permission] > permissionRank[current]) {
+            permissionsByUser.set(collaborator.userId, collaborator.permission);
+        }
+    });
+
+    return permissionsByUser;
+};
+
+export const buildTaskPermissions = (creatorId: string | null, assigneeIds: string[] = [], collaborators: TaskCollaborator[] = []) => {
+    const permissionsByUser = mapPermissionsByUser(creatorId, assigneeIds, collaborators);
+    return Array.from(permissionsByUser.entries()).flatMap(([userId, permission]) =>
+        taskPermissionForLevel(permission, userId)
+    );
+};
+
 async function listRows<T extends Models.Row>(tableId: string, queries?: string[]): Promise<Models.RowList<T>> {
     const key = `list:${tableId}:${JSON.stringify(queries)}`;
     const cached = queryCache.get(key);
@@ -47,6 +124,101 @@ async function listRows<T extends Models.Row>(tableId: string, queries?: string[
     const res = await tablesDB.listRows<T>({ databaseId: DATABASE_ID, tableId, queries });
     queryCache.set(key, { data: res, expires: Date.now() + CACHE_TTL });
     return res;
+}
+
+async function listTaskCollaborators(taskId: string): Promise<TaskCollaborator[]> {
+    const res = await tablesDB.listRows<any>({
+        databaseId: TASK_COLLABORATOR_DATABASE,
+        tableId: TASK_COLLABORATOR_TABLE,
+        queries: [
+            Query.equal('noteId', taskResourceKey(taskId)),
+        ],
+    });
+
+    return res.rows.map(normalizeCollaborator);
+}
+
+async function createTaskCollaborator(taskId: string, userId: string, permission: CollaboratorPermission, creatorId: string | null, permissions?: string[]) {
+    const existing = await tablesDB.listRows<any>({
+        databaseId: TASK_COLLABORATOR_DATABASE,
+        tableId: TASK_COLLABORATOR_TABLE,
+        queries: [
+            Query.equal('noteId', taskResourceKey(taskId)),
+            Query.equal('userId', userId),
+            Query.limit(1),
+        ],
+    });
+
+    const nextPermissions = permissions ?? mergePermissions(
+        creatorId && creatorId !== 'guest' ? taskPermissionForLevel('admin', creatorId) : [],
+        taskPermissionForLevel(permission, userId)
+    );
+    if (existing.rows.length > 0) {
+        const current = normalizeCollaborator(existing.rows[0]);
+        const nextPermission = permissionRank[permission] > permissionRank[current.permission] ? permission : current.permission;
+        const updated = await tablesDB.updateRow<any>({
+            databaseId: TASK_COLLABORATOR_DATABASE,
+            tableId: TASK_COLLABORATOR_TABLE,
+            rowId: current.id,
+            data: {
+                noteId: taskResourceKey(taskId),
+                userId,
+                permission: nextPermission,
+                invitedAt: current.invitedAt ? current.invitedAt.toISOString() : new Date().toISOString(),
+                accepted: true,
+            },
+            permissions: nextPermissions,
+        });
+        return normalizeCollaborator(updated);
+    }
+
+    const created = await tablesDB.createRow<any>({
+        databaseId: TASK_COLLABORATOR_DATABASE,
+        tableId: TASK_COLLABORATOR_TABLE,
+        rowId: ID.unique(),
+        data: {
+            noteId: taskResourceKey(taskId),
+            userId,
+            permission,
+            invitedAt: new Date().toISOString(),
+            accepted: true,
+        },
+        permissions: nextPermissions,
+    });
+    return normalizeCollaborator(created);
+}
+
+async function updateTaskCollaborator(rowId: string, data: Partial<{ permission: CollaboratorPermission }>, creatorId: string | null, taskId: string, permissions?: string[]) {
+    const current = await tablesDB.getRow<any>({
+        databaseId: TASK_COLLABORATOR_DATABASE,
+        tableId: TASK_COLLABORATOR_TABLE,
+        rowId,
+    });
+    const nextPermission = data.permission ?? current.permission;
+    const updated = await tablesDB.updateRow<any>({
+        databaseId: TASK_COLLABORATOR_DATABASE,
+        tableId: TASK_COLLABORATOR_TABLE,
+        rowId,
+        data: {
+            ...data,
+            noteId: taskResourceKey(taskId),
+            userId: current.userId,
+            permission: nextPermission,
+        },
+        permissions: permissions ?? mergePermissions(
+            creatorId && creatorId !== 'guest' ? taskPermissionForLevel('admin', creatorId) : [],
+            taskPermissionForLevel(nextPermission, current.userId)
+        ),
+    });
+    return normalizeCollaborator(updated);
+}
+
+async function deleteTaskCollaborator(rowId: string) {
+    await tablesDB.deleteRow({
+        databaseId: TASK_COLLABORATOR_DATABASE,
+        tableId: TASK_COLLABORATOR_TABLE,
+        rowId,
+    });
 }
 
 async function createRow<T extends Models.Row>(
@@ -136,6 +308,15 @@ export const tasks = {
             return res;
         }),
     delete: (id: string) => deleteRow(TABLES.TASKS, id)
+};
+
+export const taskCollaborators = {
+    list: (taskId: string) => listTaskCollaborators(taskId),
+    create: (taskId: string, userId: string, permission: CollaboratorPermission, creatorId: string | null, permissions?: string[]) =>
+        createTaskCollaborator(taskId, userId, permission, creatorId, permissions),
+    update: (rowId: string, data: Partial<{ permission: CollaboratorPermission }>, creatorId: string | null, taskId: string, permissions?: string[]) =>
+        updateTaskCollaborator(rowId, data, creatorId, taskId, permissions),
+    delete: (rowId: string) => deleteTaskCollaborator(rowId),
 };
 
 // --- Events ---

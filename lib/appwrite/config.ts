@@ -44,6 +44,7 @@ export const APPWRITE_CONFIG = {
       TASKS: 'tasks',
       EVENTS: 'events',
       GUESTS: 'eventGuests',
+      COLLABORATORS: 'Collaborators',
       FORMS: 'forms',
       FORM_SUBMISSIONS: 'formSubmissions'
     }

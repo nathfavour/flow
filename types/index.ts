@@ -97,6 +97,17 @@ export interface Task {
   linkedCalendarEvents?: string[]; // KylrixCal integration
 }
 
+export type CollaboratorPermission = 'read' | 'write' | 'admin';
+
+export interface TaskCollaborator {
+  id: string;
+  taskId: string;
+  userId: string;
+  permission: CollaboratorPermission;
+  invitedAt: Date | null;
+  accepted: boolean | null;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -343,4 +354,3 @@ export interface FocusSession {
   status: 'active' | 'completed' | 'interrupted';
   notes?: string;
 }
-
