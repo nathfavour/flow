@@ -155,7 +155,6 @@ async function createTaskCollaborator(taskId: string, userId: string, permission
     );
     if (existing.rows.length > 0) {
         const current = normalizeCollaborator(existing.rows[0]);
-        const nextPermission = permissionRank[permission] > permissionRank[current.permission] ? permission : current.permission;
         const updated = await tablesDB.updateRow<any>({
             databaseId: TASK_COLLABORATOR_DATABASE,
             tableId: TASK_COLLABORATOR_TABLE,
@@ -163,7 +162,7 @@ async function createTaskCollaborator(taskId: string, userId: string, permission
             data: {
                 noteId: taskResourceKey(taskId),
                 userId,
-                permission: nextPermission,
+                permission,
                 invitedAt: current.invitedAt ? current.invitedAt.toISOString() : new Date().toISOString(),
                 accepted: true,
             },

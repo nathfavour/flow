@@ -17,6 +17,9 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
   alpha,
   CircularProgress,
 } from '@mui/material';
@@ -42,6 +45,10 @@ import { useAI } from '@/hooks/useAI';
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { notes as noteApi } from '@/lib/kylrixflow';
+import { taskCollaborators } from '@/lib/kylrixflow';
+import UserSearch from '@/components/UserSearch';
+import { UsersService } from '@/lib/services/users';
+import type { CollaboratorPermission, TaskCollaborator } from '@/types';
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
@@ -74,6 +81,10 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
     toggleSubtask,
     deleteSubtask,
     addComment,
+    listTaskCollaborators,
+    addTaskCollaborator,
+    updateTaskCollaborator,
+    deleteTaskCollaborator,
     projects,
     labels,
   } = useTask();
@@ -108,6 +119,10 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
   const [editDescription, setEditDescription] = useState('');
   const [statusAnchor, setStatusAnchor] = useState<null | HTMLElement>(null);
   const [priorityAnchor, setPriorityAnchor] = useState<null | HTMLElement>(null);
+  const [taskParticipantProfiles, setTaskParticipantProfiles] = useState<Record<string, { title: string; subtitle: string; profilePicId?: string | null }>>({});
+  const [taskCollaboratorRows, setTaskCollaboratorRows] = useState<TaskCollaborator[]>([]);
+  const [pendingCollaborators, setPendingCollaborators] = useState<any[]>([]);
+  const [pendingCollaboratorPermission, setPendingCollaboratorPermission] = useState<CollaboratorPermission>('write');
 
   // AI Integration
   const { generate } = useAI();
@@ -250,6 +265,50 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
     };
   }, [task]);
 
+  React.useEffect(() => {
+    let active = true;
+
+    const loadCollaborators = async () => {
+      if (!task) {
+        setTaskCollaboratorRows([]);
+        setTaskParticipantProfiles({});
+        return;
+      }
+
+      const rows = await listTaskCollaborators(task.id);
+      const profiles = await Promise.all(
+        Array.from(new Set([
+          ...task.assigneeIds,
+          ...rows.map((row) => row.userId),
+        ])).map(async (userId) => {
+          const profile = await UsersService.getProfileById(userId);
+          return profile ? [userId, profile] as const : null;
+        })
+      );
+
+      if (!active) return;
+
+      const nextProfiles: Record<string, { title: string; subtitle: string; profilePicId?: string | null }> = {};
+      for (const entry of profiles) {
+        if (!entry) continue;
+        const [userId, profile] = entry;
+        nextProfiles[userId] = {
+          title: profile.title || profile.name || userId,
+          subtitle: profile.subtitle || profile.email || userId,
+          profilePicId: profile.profilePicId || profile.avatar || null,
+        };
+      }
+
+      setTaskCollaboratorRows(rows);
+      setTaskParticipantProfiles(nextProfiles);
+    };
+
+    loadCollaborators();
+    return () => {
+      active = false;
+    };
+  }, [task]);
+
   if (!task) {
     return (
         <Box sx={{ p: 6, textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2 }}>
@@ -274,6 +333,26 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
   const handlePriorityChange = (priority: Priority) => {
     updateTask(task.id, { priority });
     setPriorityAnchor(null);
+  };
+
+  const handleAddCollaborators = async () => {
+    if (!task || pendingCollaborators.length === 0) return;
+    await Promise.all(
+      pendingCollaborators.map((user) =>
+        addTaskCollaborator(task.id, user.id, pendingCollaboratorPermission)
+      )
+    );
+    setPendingCollaborators([]);
+  };
+
+  const handleCollaboratorPermissionChange = async (collaboratorId: string, permission: CollaboratorPermission) => {
+    if (!task) return;
+    await updateTaskCollaborator(task.id, collaboratorId, permission);
+  };
+
+  const handleRemoveCollaborator = async (collaboratorId: string) => {
+    if (!task) return;
+    await deleteTaskCollaborator(task.id, collaboratorId);
   };
 
   return (
@@ -588,6 +667,121 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
                 </Box>
             </Box>
           )}
+
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Assignees</Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {task.assigneeIds.length > 0 ? task.assigneeIds.map((userId) => {
+                const profile = taskParticipantProfiles[userId];
+                return (
+                  <Chip
+                    key={userId}
+                    label={profile?.title || userId}
+                    size="small"
+                    sx={{
+                      bgcolor: alpha('#6366F1', 0.08),
+                      border: `1px solid ${alpha('#6366F1', 0.18)}`,
+                      color: '#D9DBFF',
+                      fontWeight: 700,
+                      borderRadius: '8px',
+                    }}
+                  />
+                );
+              }) : (
+                <Typography variant="body2" sx={{ color: 'text.secondary', opacity: 0.7 }}>
+                  No assignees yet.
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1.5, fontSize: '0.65rem', opacity: 0.5 }}>Collaborators</Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '220px 1fr' }, gap: 1.5, alignItems: 'end', mb: 2 }}>
+              <FormControl size="small" fullWidth>
+                <InputLabel>Permission</InputLabel>
+                <Select
+                  value={pendingCollaboratorPermission}
+                  label="Permission"
+                  onChange={(e) => setPendingCollaboratorPermission(e.target.value as CollaboratorPermission)}
+                >
+                  <MenuItem value="read">Read</MenuItem>
+                  <MenuItem value="write">Read + Update</MenuItem>
+                  <MenuItem value="admin">Admin</MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                variant="outlined"
+                onClick={handleAddCollaborators}
+                disabled={pendingCollaborators.length === 0}
+                sx={{ justifySelf: { xs: 'stretch', md: 'end' } }}
+              >
+                Add collaborator(s)
+              </Button>
+            </Box>
+
+            <UserSearch
+              label="Search collaborators"
+              selectedUsers={pendingCollaborators}
+              onSelect={(user) => setPendingCollaborators((prev) => [...prev, user])}
+              onRemove={(userId) => setPendingCollaborators((prev) => prev.filter((user) => user.id !== userId))}
+              excludeIds={[
+                task.creatorId,
+                ...task.assigneeIds,
+                ...taskCollaboratorRows.map((row) => row.userId),
+              ]}
+            />
+
+            <Box sx={{ mt: 2, display: 'grid', gap: 1.25 }}>
+              {taskCollaboratorRows.filter((row) => !task.assigneeIds.includes(row.userId)).map((row) => {
+                const profile = taskParticipantProfiles[row.userId];
+                return (
+                  <Box
+                    key={row.id}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 2,
+                      p: 1.5,
+                      borderRadius: 2,
+                      bgcolor: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
+                      <Avatar sx={{ width: 30, height: 30, bgcolor: 'rgba(99, 102, 241, 0.18)', color: '#D9DBFF', fontSize: '0.8rem', fontWeight: 800 }}>
+                        {(profile?.title || row.userId).charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {profile?.title || row.userId}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {profile?.subtitle || row.userId}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <FormControl size="small" sx={{ minWidth: 160 }}>
+                        <Select
+                          value={row.permission}
+                          onChange={(e) => handleCollaboratorPermissionChange(row.id, e.target.value as CollaboratorPermission)}
+                        >
+                          <MenuItem value="read">Read</MenuItem>
+                          <MenuItem value="write">Read + Update</MenuItem>
+                          <MenuItem value="admin">Admin</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <IconButton size="small" onClick={() => handleRemoveCollaborator(row.id)} sx={{ color: 'text.secondary' }}>
+                        <DeleteIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
         </Box>
 
         <Divider sx={{ my: 4, opacity: 0.05 }} />

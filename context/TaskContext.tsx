@@ -459,6 +459,10 @@ interface TaskContextType extends TaskState {
   toggleSubtask: (taskId: string, subtaskId: string) => void;
   // Comment actions
   addComment: (taskId: string, content: string) => void;
+  listTaskCollaborators: (taskId: string) => Promise<TaskCollaborator[]>;
+  addTaskCollaborator: (taskId: string, userId: string, permission: CollaboratorPermission) => Promise<TaskCollaborator | null>;
+  updateTaskCollaborator: (taskId: string, collaboratorId: string, permission: CollaboratorPermission) => Promise<TaskCollaborator | null>;
+  deleteTaskCollaborator: (taskId: string, collaboratorId: string) => Promise<void>;
   // Project actions
   addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'position'>) => void;
   updateProject: (id: string, updates: Partial<Project>) => void;
@@ -835,6 +839,71 @@ export function TaskProvider({ children }: TaskProviderProps) {
     });
   }, [state.tasks, state.userId, updateTask]);
 
+  const listTaskCollaborators = useCallback(async (taskId: string) => {
+    return await taskCollaborators.list(taskId);
+  }, []);
+
+  const addTaskCollaborator = useCallback(async (taskId: string, userId: string, permission: CollaboratorPermission) => {
+    const task = state.tasks.find((item) => item.id === taskId);
+    if (!task) return null;
+
+    const created = await taskCollaborators.create(taskId, userId, permission, task.creatorId);
+    const nextAssigneeIds = permission === 'read'
+      ? (task.assigneeIds || [])
+      : (task.assigneeIds || []).filter((id) => id !== userId);
+
+    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds);
+    dispatch({
+      type: 'UPDATE_TASK',
+      payload: {
+        id: taskId,
+        updates: { assigneeIds: nextAssigneeIds },
+      },
+    });
+    return created;
+  }, [state.tasks, syncTaskAccess]);
+
+  const updateTaskCollaborator = useCallback(async (taskId: string, collaboratorId: string, permission: CollaboratorPermission) => {
+    const task = state.tasks.find((item) => item.id === taskId);
+    if (!task) return null;
+
+    const collaborator = await taskCollaborators.update(collaboratorId, { permission }, task.creatorId, taskId);
+    const nextAssigneeIds = permission === 'read'
+      ? (task.assigneeIds || [])
+      : (task.assigneeIds || []).filter((id) => id !== collaborator.userId);
+
+    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds);
+    dispatch({
+      type: 'UPDATE_TASK',
+      payload: {
+        id: taskId,
+        updates: { assigneeIds: nextAssigneeIds },
+      },
+    });
+    return collaborator;
+  }, [state.tasks, syncTaskAccess]);
+
+  const deleteTaskCollaborator = useCallback(async (taskId: string, collaboratorId: string) => {
+    const task = state.tasks.find((item) => item.id === taskId);
+    if (!task) return;
+
+    const collaborator = await taskCollaborators.list(taskId).then((rows) => rows.find((row) => row.id === collaboratorId));
+    await taskCollaborators.delete(collaboratorId);
+
+    const nextAssigneeIds = collaborator
+      ? (task.assigneeIds || []).filter((id) => id !== collaborator.userId)
+      : task.assigneeIds || [];
+
+    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds);
+    dispatch({
+      type: 'UPDATE_TASK',
+      payload: {
+        id: taskId,
+        updates: { assigneeIds: nextAssigneeIds },
+      },
+    });
+  }, [state.tasks, syncTaskAccess]);
+
   // Project actions
   const addProject = useCallback(
     async (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'position'>) => {
@@ -1060,6 +1129,10 @@ export function TaskProvider({ children }: TaskProviderProps) {
     deleteSubtask,
     toggleSubtask,
     addComment,
+    listTaskCollaborators,
+    addTaskCollaborator,
+    updateTaskCollaborator,
+    deleteTaskCollaborator,
     addProject,
     updateProject,
     deleteProject,
