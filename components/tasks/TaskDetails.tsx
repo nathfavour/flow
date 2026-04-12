@@ -45,7 +45,6 @@ import { useAI } from '@/hooks/useAI';
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { notes as noteApi } from '@/lib/kylrixflow';
-import { taskCollaborators } from '@/lib/kylrixflow';
 import UserSearch from '@/components/UserSearch';
 import { UsersService } from '@/lib/services/users';
 import type { CollaboratorPermission, TaskCollaborator } from '@/types';
@@ -269,38 +268,47 @@ export default function TaskDetails({ taskId }: TaskDetailsProps) {
     let active = true;
 
     const loadCollaborators = async () => {
+      setPendingCollaborators([]);
       if (!task) {
         setTaskCollaboratorRows([]);
         setTaskParticipantProfiles({});
         return;
       }
 
-      const rows = await listTaskCollaborators(task.id);
-      const profiles = await Promise.all(
-        Array.from(new Set([
-          ...task.assigneeIds,
-          ...rows.map((row) => row.userId),
-        ])).map(async (userId) => {
-          const profile = await UsersService.getProfileById(userId);
-          return profile ? [userId, profile] as const : null;
-        })
-      );
+      try {
+        const rows = await listTaskCollaborators(task.id);
+        const profiles = await Promise.all(
+          Array.from(new Set([
+            ...task.assigneeIds,
+            ...rows.map((row) => row.userId),
+          ])).map(async (userId) => {
+            const profile = await UsersService.getProfileById(userId);
+            return profile ? [userId, profile] as const : null;
+          })
+        );
 
-      if (!active) return;
+        if (!active) return;
 
-      const nextProfiles: Record<string, { title: string; subtitle: string; profilePicId?: string | null }> = {};
-      for (const entry of profiles) {
-        if (!entry) continue;
-        const [userId, profile] = entry;
-        nextProfiles[userId] = {
-          title: profile.title || profile.name || userId,
-          subtitle: profile.subtitle || profile.email || userId,
-          profilePicId: profile.profilePicId || profile.avatar || null,
-        };
+        const nextProfiles: Record<string, { title: string; subtitle: string; profilePicId?: string | null }> = {};
+        for (const entry of profiles) {
+          if (!entry) continue;
+          const [userId, profile] = entry;
+          nextProfiles[userId] = {
+            title: profile.title || profile.name || userId,
+            subtitle: profile.subtitle || profile.email || userId,
+            profilePicId: profile.profilePicId || profile.avatar || null,
+          };
+        }
+
+        setTaskCollaboratorRows(rows);
+        setTaskParticipantProfiles(nextProfiles);
+      } catch (error) {
+        console.error('Failed to load task collaborators', error);
+        if (active) {
+          setTaskCollaboratorRows([]);
+          setTaskParticipantProfiles({});
+        }
       }
-
-      setTaskCollaboratorRows(rows);
-      setTaskParticipantProfiles(nextProfiles);
     };
 
     loadCollaborators();

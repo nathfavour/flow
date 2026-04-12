@@ -372,7 +372,7 @@ export default function TaskDialog() {
 
             {/* Assignees */}
             <UserSearch
-              label="ASSIGN TO"
+              label="ASSIGNEES"
               selectedUsers={selectedAssignees}
               onSelect={(user) => setSelectedAssignees(prev => [...prev, user])}
               onRemove={(userId) => setSelectedAssignees(prev => prev.filter(u => u.id !== userId))}

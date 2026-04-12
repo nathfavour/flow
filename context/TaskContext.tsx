@@ -529,7 +529,6 @@ export function TaskProvider({ children }: TaskProviderProps) {
         // Fetch tasks and calendars (Nexus Optimized)
         const [tasksList, calendarsList] = await Promise.all([
           fetchOptimized(`f_tasks_${userId}`, () => taskApi.list([
-            Query.equal('userId', userId),
             Query.limit(1000),
             Query.select(['$id', 'userId', 'title', 'description', 'status', 'priority', 'dueDate', 'tags', 'assigneeIds', 'parentId', 'eventId', 'createdAt', 'updatedAt', 'position'])
           ])),
@@ -563,8 +562,6 @@ export function TaskProvider({ children }: TaskProviderProps) {
     const initRealtime = async () => {
       // Subscribe to Tasks
       unsubTasks = await subscribeToTable<AppwriteTask>(APPWRITE_CONFIG.TABLES.TASKS, ({ type, payload }) => {
-        if (payload.userId !== state.userId) return;
-
         if (type === 'create') {
           dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(payload) });
         } else if (type === 'update') {
@@ -683,7 +680,8 @@ export function TaskProvider({ children }: TaskProviderProps) {
       }
 
       const nextAssignees = updates.assigneeIds ?? currentTask.assigneeIds;
-      await taskApi.update(id, apiUpdates, buildTaskPermissions(currentTask.creatorId, nextAssignees));
+      const currentCollaborators = await taskCollaborators.list(id);
+      await taskApi.update(id, apiUpdates, buildTaskPermissions(currentTask.creatorId, nextAssignees, currentCollaborators));
       await syncTaskAccess(id, currentTask.creatorId, nextAssignees || []);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
     } catch (error: unknown) {
@@ -749,6 +747,15 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const created = await taskCollaborators.create(taskId, assigneeId, 'read', creatorId);
         collaboratorRows.push(created);
         collaboratorIds.add(assigneeId);
+      } else {
+        const existing = collaboratorRows.find((row) => row.userId === assigneeId);
+        if (existing && existing.permission !== 'read') {
+          const updated = await taskCollaborators.update(existing.id, { permission: 'read' }, creatorId, taskId);
+          const rowIndex = collaboratorRows.findIndex((row) => row.id === existing.id);
+          if (rowIndex !== -1) {
+            collaboratorRows[rowIndex] = updated;
+          }
+        }
       }
     }
 
