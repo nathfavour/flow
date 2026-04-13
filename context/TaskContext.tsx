@@ -5,8 +5,10 @@ import { ID, Query } from 'appwrite';
 import { tasks as taskApi, calendars as calendarApi, taskCollaborators, subscribeToTable, buildTaskPermissions } from '@/lib/kylrixflow';
 import { getCurrentUser } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
+import { getEcosystemUrl } from '@/lib/constants';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import { useDataNexus } from './DataNexusContext';
+import { sendKylrixEmailNotification } from '@/lib/email-notifications';
 import {
   Task,
   Project,
@@ -59,6 +61,28 @@ const mapAppwriteTaskToTask = (doc: AppwriteTask): Task => {
     isArchived: false,
   };
 };
+
+async function notifyTaskAssignment(params: {
+  taskId: string;
+  taskTitle: string;
+  creatorId: string;
+  recipientIds: string[];
+}) {
+  if (params.recipientIds.length === 0) return;
+
+  await sendKylrixEmailNotification({
+    eventType: 'task_assigned',
+    sourceApp: 'flow',
+    actorName: params.creatorId,
+    recipientIds: params.recipientIds,
+    resourceId: params.taskId,
+    resourceTitle: params.taskTitle,
+    resourceType: 'task',
+    templateKey: 'flow:task-assigned',
+    ctaUrl: `${getEcosystemUrl('flow')}/tasks/${params.taskId}`,
+    ctaText: 'Open task',
+  });
+}
 
 const parseCommentEntry = (entry: any): Comment => {
   if (entry && typeof entry === 'object' && entry.id && entry.content) {
@@ -622,7 +646,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
           recurrenceRule: task.recurrence ? JSON.stringify(task.recurrence) : '',
         }, buildTaskPermissions(userId, task.assigneeIds || []));
 
-        await syncTaskAccess(newTask.$id, userId, task.assigneeIds || []);
+        await syncTaskAccess(newTask.$id, userId, task.assigneeIds || [], task.title, []);
         invalidate(`f_tasks_${userId}`);
 
         dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(newTask) });
@@ -682,7 +706,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       const nextAssignees = updates.assigneeIds ?? currentTask.assigneeIds;
       const currentCollaborators = await taskCollaborators.list(id);
       await taskApi.update(id, apiUpdates, buildTaskPermissions(currentTask.creatorId, nextAssignees, currentCollaborators));
-      await syncTaskAccess(id, currentTask.creatorId, nextAssignees || []);
+      await syncTaskAccess(id, currentTask.creatorId, nextAssignees || [], currentTask.title, currentTask.assigneeIds || []);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
     } catch (error: unknown) {
       console.error('Failed to update task', error);
@@ -737,10 +761,11 @@ export function TaskProvider({ children }: TaskProviderProps) {
     dispatch({ type: 'SELECT_TASK', payload: id });
   }, []);
 
-  const syncTaskAccess = useCallback(async (taskId: string, creatorId: string, assigneeIds: string[]) => {
+  const syncTaskAccess = useCallback(async (taskId: string, creatorId: string, assigneeIds: string[], taskTitle: string, previousAssigneeIds: string[] = []) => {
     const collaboratorRows = await taskCollaborators.list(taskId);
     const collaboratorIds = new Set(collaboratorRows.map((row) => row.userId));
     const normalizedAssigneeIds = Array.from(new Set(assigneeIds.filter((id): id is string => Boolean(id) && id !== 'guest')));
+    const newlyAddedAssignees = normalizedAssigneeIds.filter((id) => !previousAssigneeIds.includes(id));
 
     for (const assigneeId of normalizedAssigneeIds) {
       if (!collaboratorIds.has(assigneeId)) {
@@ -761,6 +786,17 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
     const permissions = buildTaskPermissions(creatorId, normalizedAssigneeIds, collaboratorRows);
     await taskApi.update(taskId, { assigneeIds: normalizedAssigneeIds }, permissions);
+
+    if (newlyAddedAssignees.length > 0) {
+      await notifyTaskAssignment({
+        taskId,
+        taskTitle,
+        creatorId,
+        recipientIds: newlyAddedAssignees,
+      }).catch((error) => {
+        console.error('[TaskContext] Failed to queue task assignment email', error);
+      });
+    }
 
     await Promise.all(
       collaboratorRows.map((collaborator) =>
@@ -802,7 +838,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         recurrenceRule: '',
       }, buildTaskPermissions(creatorId, parentTask.assigneeIds || []));
 
-      await syncTaskAccess(childTask.$id, creatorId, parentTask.assigneeIds || []);
+      await syncTaskAccess(childTask.$id, creatorId, parentTask.assigneeIds || [], parentTask.title, []);
       invalidate(`f_tasks_${state.userId || 'guest'}`);
       dispatch({ type: 'ADD_TASK', payload: mapAppwriteTaskToTask(childTask) });
     } catch (error: unknown) {
@@ -859,7 +895,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       ? (task.assigneeIds || [])
       : (task.assigneeIds || []).filter((id) => id !== userId);
 
-    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds);
+    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds, task.title, task.assigneeIds || []);
     dispatch({
       type: 'UPDATE_TASK',
       payload: {
@@ -879,7 +915,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       ? (task.assigneeIds || [])
       : (task.assigneeIds || []).filter((id) => id !== collaborator.userId);
 
-    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds);
+    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds, task.title, task.assigneeIds || []);
     dispatch({
       type: 'UPDATE_TASK',
       payload: {
@@ -901,7 +937,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
       ? (task.assigneeIds || []).filter((id) => id !== collaborator.userId)
       : task.assigneeIds || [];
 
-    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds);
+    await syncTaskAccess(taskId, task.creatorId, nextAssigneeIds, task.title, task.assigneeIds || []);
     dispatch({
       type: 'UPDATE_TASK',
       payload: {

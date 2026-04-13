@@ -1,7 +1,9 @@
 import { tablesDB, getCurrentUser } from "../appwrite/client";
 import { APPWRITE_CONFIG } from "../appwrite/config";
+import { KYLRIX_AUTH_URI } from "../constants";
 import { ID, Query, Permission, Role } from "appwrite";
 import { Forms, FormSubmissions, ActivityLogCreate, FormSubmissionsStatus, FormsStatus, ActivityLog } from "../../generated/appwrite/types";
+import { sendKylrixEmailNotification } from "../email-notifications";
 
 const DATABASE_ID = APPWRITE_CONFIG.DATABASES.FLOW;
 const FORMS_TABLE = APPWRITE_CONFIG.TABLES.FLOW.FORMS;
@@ -341,6 +343,28 @@ export const FormsService = {
             );
         } catch (e) {
             console.error('Failed to create notification activity log', e);
+        }
+
+        if (form.userId && submitterId) {
+            try {
+                await sendKylrixEmailNotification({
+                    eventType: 'form_response_submitted',
+                    sourceApp: 'flow',
+                    actorName: submitterId,
+                    recipientIds: [form.userId],
+                    resourceId: formId,
+                    resourceTitle: form.title || 'Form',
+                    resourceType: 'form',
+                    templateKey: 'flow:form-response-submitted',
+                    ctaUrl: `${KYLRIX_AUTH_URI}/forms/${formId}`,
+                    ctaText: 'Review submission',
+                    metadata: {
+                        submissionId: submission.$id,
+                    },
+                });
+            } catch (e) {
+                console.error('[Forms] Failed to queue submission email', e);
+            }
         }
 
         return submission;

@@ -1,8 +1,10 @@
 import { ID, Models, Permission, Role, Query } from "appwrite";
 import { tablesDB, realtime } from "./appwrite/client";
 import { APPWRITE_CONFIG } from "./appwrite/config";
+import { getEcosystemUrl } from "./constants";
 import { Calendar, Task, Event, EventGuest, FocusSession } from "../types/kylrixflow";
 import type { CollaboratorPermission, TaskCollaborator } from "../types";
+import { sendKylrixEmailNotification } from "./email-notifications";
 
 const { DATABASE_ID, TABLES } = APPWRITE_CONFIG;
 const TASK_COLLABORATOR_RESOURCE_PREFIX = 'task:';
@@ -333,7 +335,33 @@ export const events = {
 
 export const eventGuests = {
     list: (queries?: string[]) => listRows<EventGuest>(TABLES.EVENT_GUESTS, queries),
-    create: (data: TableCreateData<EventGuest>) => createRow<EventGuest>(TABLES.EVENT_GUESTS, data),
+    create: async (data: TableCreateData<EventGuest>) => {
+        const row = await createRow<EventGuest>(TABLES.EVENT_GUESTS, data);
+        try {
+            const event = await events.get(String((data as any).eventId || '')).catch(() => null);
+            const ownerId = String(event?.userId || '').trim();
+            if (ownerId) {
+                await sendKylrixEmailNotification({
+                    eventType: 'event_registered',
+                    sourceApp: 'flow',
+                    actorName: String((data as any).email || (data as any).userId || 'Someone'),
+                    recipientIds: [ownerId],
+                    resourceId: String((data as any).eventId || ''),
+                    resourceTitle: event?.title || 'Event',
+                    resourceType: 'event',
+                    templateKey: 'flow:event-registered',
+                    ctaUrl: `${getEcosystemUrl('flow')}/events/${String((data as any).eventId || '')}`,
+                    ctaText: 'Open event',
+                    metadata: {
+                        guestId: row.$id,
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('[Flow] Failed to queue event registration email', error);
+        }
+        return row;
+    },
     get: (id: string) => getRow<EventGuest>(TABLES.EVENT_GUESTS, id),
     update: (id: string, data: TableUpdateData<EventGuest>) => updateRow<EventGuest>(TABLES.EVENT_GUESTS, id, data),
     delete: (id: string) => deleteRow(TABLES.EVENT_GUESTS, id)
