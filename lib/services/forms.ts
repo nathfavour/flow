@@ -1,6 +1,6 @@
 import { tablesDB, getCurrentUser } from "../appwrite/client";
 import { APPWRITE_CONFIG } from "../appwrite/config";
-import { KYLRIX_AUTH_URI } from "../constants";
+import { getEcosystemUrl } from "../constants";
 import { ID, Query, Permission, Role } from "appwrite";
 import { Forms, FormSubmissions, ActivityLogCreate, FormSubmissionsStatus, FormsStatus, ActivityLog } from "../../generated/appwrite/types";
 import { sendKylrixEmailNotification } from "../email-notifications";
@@ -345,18 +345,18 @@ export const FormsService = {
             console.error('Failed to create notification activity log', e);
         }
 
-        if (form.userId && submitterId) {
+        if (form.userId) {
             try {
                 await sendKylrixEmailNotification({
                     eventType: 'form_response_submitted',
                     sourceApp: 'flow',
-                    actorName: submitterId,
+                    actorName: submitterId || 'Anonymous',
                     recipientIds: [form.userId],
                     resourceId: formId,
                     resourceTitle: form.title || 'Form',
                     resourceType: 'form',
                     templateKey: 'flow:form-response-submitted',
-                    ctaUrl: `${KYLRIX_AUTH_URI}/forms/${formId}`,
+                    ctaUrl: `${getEcosystemUrl('flow')}/forms/${formId}`,
                     ctaText: 'Review submission',
                     metadata: {
                         submissionId: submission.$id,
