@@ -247,11 +247,15 @@ export const FormsService = {
         const allowAnonymousFill = settings.allowAnonymousFill ?? false;
         
         let submitterId = userId;
+        let submitterLabel = 'Anonymous';
         if (!submitterId) {
             const currentUser = await getCurrentUser();
             if (currentUser?.$id) {
                 submitterId = currentUser.$id;
+                submitterLabel = currentUser.name || currentUser.email || currentUser.$id;
             }
+        } else {
+            submitterLabel = submitterId;
         }
 
         if (!submitterId && !allowAnonymousFill) {
@@ -350,7 +354,7 @@ export const FormsService = {
                 await sendKylrixEmailNotification({
                     eventType: 'form_response_submitted',
                     sourceApp: 'flow',
-                    actorName: submitterId || 'Anonymous',
+                    actorName: submitterLabel,
                     recipientIds: [form.userId],
                     resourceId: formId,
                     resourceTitle: form.title || 'Form',
