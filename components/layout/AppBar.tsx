@@ -173,7 +173,7 @@ export default function AppBar() {
       elevation={0}
       sx={{
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: 'rgba(11, 9, 8, 0.95)',
+        backgroundColor: '#000000',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       }}
     >
