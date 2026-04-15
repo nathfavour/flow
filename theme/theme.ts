@@ -2,6 +2,9 @@
 
 import { createTheme, ThemeOptions, alpha } from '@mui/material/styles';
 
+const SURFACE_BACKGROUND = '#000000';
+const SURFACE = '#161514';
+
 const getDesignTokens = (): ThemeOptions => ({
   palette: {
     mode: 'dark',
@@ -13,8 +16,8 @@ const getDesignTokens = (): ThemeOptions => ({
       main: '#10B981', // Atomic Emerald
     },
     background: {
-      default: '#0A0908', // Deep Void Ash
-      paper: '#161412',   // Elevated Surface
+      default: SURFACE_BACKGROUND,
+      paper: SURFACE,
     },
     text: {
       primary: '#F2F2F2',   // Titanium
@@ -112,9 +115,8 @@ const getDesignTokens = (): ThemeOptions => ({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#0A0908',
-          backgroundImage: `radial-gradient(circle at 50% -20%, ${alpha('#6366F1', 0.12)} 0%, transparent 70%), 
-                           linear-gradient(180deg, ${alpha('#161412', 0.4)} 0%, transparent 100%)`,
+          backgroundColor: SURFACE_BACKGROUND,
+          backgroundImage: `radial-gradient(circle at 50% -20%, ${alpha('#6366F1', 0.1)} 0%, transparent 70%),\n                           linear-gradient(180deg, ${alpha(SURFACE, 0.35)} 0%, transparent 100%)`,
           backgroundAttachment: 'fixed',
           color: '#F2F2F2',
           fontFamily: 'var(--font-satoshi), "Satoshi", sans-serif',
@@ -226,7 +228,7 @@ const getDesignTokens = (): ThemeOptions => ({
       styleOverrides: {
         root: {
           borderRadius: 24,
-          backgroundColor: '#161412',
+          backgroundColor: SURFACE,
           backgroundImage: 'none',
           border: '1px solid rgba(255, 255, 255, 0.05)',
           position: 'relative',
@@ -254,7 +256,7 @@ const getDesignTokens = (): ThemeOptions => ({
       styleOverrides: {
         paper: {
           borderRadius: 24,
-          backgroundColor: '#161412',
+          backgroundColor: SURFACE,
           border: '1px solid rgba(255, 255, 255, 0.08)',
           backgroundImage: 'none',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(0, 0, 0, 0.4)',
@@ -279,4 +281,3 @@ export const darkTheme = createTheme(getDesignTokens());
 export const lightTheme = darkTheme; // No light mode
 
 export default darkTheme;
-

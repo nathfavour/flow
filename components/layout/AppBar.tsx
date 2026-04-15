@@ -171,11 +171,11 @@ export default function AppBar() {
     <MuiAppBar
       position="fixed"
       elevation={0}
-      sx={{
-        zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: '#000000',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-      }}
+        sx={{
+          zIndex: theme.zIndex.drawer + 1,
+          backgroundColor: 'var(--color-surface)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
     >
       <Toolbar sx={{ gap: 2, minHeight: '88px' }}>
         {/* Menu Toggle - only on desktop */}

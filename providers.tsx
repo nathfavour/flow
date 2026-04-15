@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { TaskProvider } from '@/context/TaskContext';
 import { AuthProvider } from '@/context/auth/AuthContext';
@@ -19,6 +20,15 @@ interface AppProvidersProps {
 function EcosystemHandler() {
   useEcosystemIntents();
   useEcosystemNode('flow');
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const mood = pathname?.startsWith('/form/') ? 'serious' : 'ambient';
+    document.body.dataset.uiMood = mood;
+    return () => {
+      document.body.dataset.uiMood = 'ambient';
+    };
+  }, [pathname]);
   return null;
 }
 

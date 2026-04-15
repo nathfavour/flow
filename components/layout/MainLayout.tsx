@@ -56,7 +56,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       sx={{
         display: 'flex',
         minHeight: '100vh',
-        background: '#000000',
+        background: 'var(--background)',
         position: 'relative',
         overflow: 'hidden',
       }}
