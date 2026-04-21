@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Image from 'next/image';
 import { APP_CONFIG } from '@/lib/constants';
-import { getCurrentUser, invalidateCurrentUserCache } from '@/lib/appwrite/client';
+import { getCurrentUser, getCurrentUserSnapshot, invalidateCurrentUserCache } from '@/lib/appwrite/client';
 
 interface AuthState {
   user: Models.User<Models.Preferences> | null;
@@ -69,8 +69,9 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const initialUser = getCurrentUserSnapshot();
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(initialUser);
+  const [isLoading, setIsLoading] = useState(!initialUser);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
@@ -99,7 +100,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (event.data?.type === 'idm:auth-status' && event.data.status === 'authenticated') {
           console.log('Silent auth discovered active session in kylrixflow');
-          if (checkSessionRef.current) checkSessionRef.current();
+          if (checkSessionRef.current) checkSessionRef.current(true);
           cleanup();
           resolve();
         } else if (event.data?.type === 'idm:auth-status') {
@@ -121,10 +122,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
   }, []);
 
-  const checkSession = useCallback(async (retryCount = 0) => {
+  const checkSession = useCallback(async (forceRefresh = false, retryCount = 0) => {
     console.log('[Auth] checkSession called', { retryCount });
     try {
-      const currentUser = await getCurrentUser();
+      const currentUser = await getCurrentUser(forceRefresh);
       if (!currentUser?.$id) throw new Error('No active session');
       console.log('[Auth] account.get() success', currentUser.$id);
       setUser(currentUser);
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (hasAuthSignal && retryCount < 3) {
         console.log(`Auth signal detected but session not found. Retrying... (${retryCount + 1})`);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        return checkSession(retryCount + 1);
+        return checkSession(true, retryCount + 1);
       }
 
       // First try silent recovery
@@ -186,7 +187,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [checkSession]);
 
   useEffect(() => {
-    checkSession();
+    checkSession(true);
   }, [checkSession]);
 
   // Listen for postMessage from IDM window
@@ -197,7 +198,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (event.data?.type === 'idm:auth-success') {
         console.log('Received auth success via postMessage in kylrixflow');
-        checkSession();
+        checkSession(true);
         setIsAuthenticating(false);
         if (authWindow && !authWindow.closed) {
           authWindow.close();
