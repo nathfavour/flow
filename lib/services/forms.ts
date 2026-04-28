@@ -47,7 +47,7 @@ export const FormsService = {
             queries: [
                 Query.equal('$id', formId),
                 Query.limit(1),
-                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', 'createdAt', '$createdAt'])
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', '$createdAt'])
             ]
         });
 
@@ -76,7 +76,7 @@ export const FormsService = {
                 Query.equal('userId', userId),
                 Query.orderDesc('$createdAt'),
                 Query.limit(50),
-                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', 'createdAt', '$createdAt'])
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', '$createdAt'])
             ]
         });
     },
@@ -133,7 +133,7 @@ export const FormsService = {
                 Query.equal('formId', formId),
                 Query.equal('submitterId', userId),
                 Query.limit(20),
-                Query.select(['$id', 'formId', 'submitterId', 'status', 'metadata', 'createdAt', '$createdAt'])
+                Query.select(['$id', 'formId', 'submitterId', 'status', 'metadata', '$createdAt'])
             ]
         });
 
@@ -156,7 +156,7 @@ export const FormsService = {
                 Query.equal('formId', formId),
                 Query.equal('submitterId', userId),
                 Query.limit(20),
-                Query.select(['$id', 'formId', 'submitterId', 'status', 'metadata', 'createdAt', '$createdAt'])
+                Query.select(['$id', 'formId', 'submitterId', 'status', 'metadata', '$createdAt'])
             ]
         });
 
@@ -216,7 +216,7 @@ export const FormsService = {
             queries: [
                 Query.equal('$id', formId),
                 Query.limit(1),
-                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', 'createdAt', '$createdAt'])
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'allowAnonymousFill', '$createdAt'])
             ]
         });
 

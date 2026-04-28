@@ -43,9 +43,6 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                 const baseData = {
                     username,
                     displayName: user.name || username,
-                    appsActive: ['flow'],
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
                     bio: '',
                     avatar,
                     privacySettings: JSON.stringify({ public: true })
@@ -74,18 +71,6 @@ export async function ensureGlobalIdentity(user: any, force = false) {
             }
         }
 
-        if (profile && Array.isArray(profile.appsActive) && !profile.appsActive.includes('flow')) {
-            await tablesDB.updateRow({
-                databaseId: CONNECT_DATABASE_ID,
-                tableId: CONNECT_COLLECTION_ID_USERS,
-                rowId: user.$id,
-                data: {
-                    appsActive: [...profile.appsActive, 'flow'],
-                    updatedAt: new Date().toISOString()
-                }
-            });
-        }
-
         if (typeof window !== 'undefined') {
             localStorage.setItem(PROFILE_SYNC_KEY, Date.now().toString());
             sessionStorage.setItem(SESSION_SYNC_KEY, '1');
@@ -112,9 +97,8 @@ export async function searchGlobalUsers(query: string, limit = 10) {
                         Query.startsWith('username', query.toLowerCase()),
                         Query.startsWith('displayName', query)
                     ]),
-                    Query.contains('appsActive', 'flow'),
                     Query.limit(limit),
-                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'tier', 'appsActive', 'createdAt', '$createdAt', 'last_username_edit'])
+                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'tier', 'last_username_edit', '$createdAt'])
                 ]
             });
 
@@ -124,13 +108,13 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             subtitle: `@${doc.username}`,
             avatar: doc.avatar,
             profilePicId: doc.profilePicId,
-            createdAt: doc.$createdAt || doc.createdAt || null,
+            createdAt: doc.$createdAt || null,
             lastUsernameEdit: doc.last_username_edit || null,
             username: doc.username || null,
             bio: doc.bio || null,
             tier: doc.tier || null,
             publicKey: doc.publicKey || null,
-            apps: doc.appsActive || []
+            apps: []
         }));
     } catch (error: unknown) {
         console.error('[Identity] Global search failed:', error);

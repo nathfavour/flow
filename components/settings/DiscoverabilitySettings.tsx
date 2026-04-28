@@ -97,16 +97,9 @@ export const DiscoverabilitySettings = () => {
 
         setSaving(true);
         try {
-            const currentApps = profile.appsActive || [];
-            let appsActive;
-            if (checked) {
-                appsActive = Array.from(new Set([...currentApps, 'flow']));
-            } else {
-                appsActive = currentApps.filter((a: string) => a !== 'flow');
-            }
-
-            await UsersService.updateProfile(user.$id, { appsActive });
-            setProfile({ ...profile, appsActive });
+            const status = checked ? 'online' : 'hidden';
+            await UsersService.updateProfile(user.$id, { status });
+            setProfile({ ...profile, status });
             toast.success(checked ? "You are now discoverable in Flow" : "Discovery disabled for Flow");
         } catch (_e) {
             toast.error("Failed to update preference");
@@ -137,7 +130,6 @@ export const DiscoverabilitySettings = () => {
                 // Creation with intelligent defaults
                 const p = await UsersService.createProfile(user.$id, normalized, {
                     displayName: user.name || normalized,
-                    appsActive: ['flow'],
                     publicKey: publicKeyStr
                 });
                 setProfile(p);
@@ -159,7 +151,7 @@ export const DiscoverabilitySettings = () => {
         </Box>
     );
 
-    const isDiscoverable = profile?.appsActive?.includes('flow');
+    const isDiscoverable = profile?.status !== 'hidden';
 
     return (
         <Box>

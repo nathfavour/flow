@@ -36,7 +36,7 @@ export const UsersService = {
                             Query.equal('$id', userId)
                         ]),
                         Query.limit(1),
-                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'appsActive', 'createdAt', '$createdAt'])
+                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'status', '$createdAt'])
                     ]
                 });
                 return normalizeProfile(res.rows[0]) || null;
@@ -69,11 +69,9 @@ export const UsersService = {
                 userId,
                 username,
                 displayName: data.displayName || username,
-                appsActive: data.appsActive || ['flow'],
                 publicKey: data.publicKey || null,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                bio: data.bio || ''
+                bio: data.bio || '',
+                status: data.status || 'online'
             },
             [
                 Permission.read(Role.any()),
@@ -92,7 +90,7 @@ export const UsersService = {
                     queries: [
                         Query.equal('username', username.toLowerCase()),
                         Query.limit(1),
-                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'appsActive', 'createdAt', '$createdAt'])
+                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'status', '$createdAt'])
                     ]
                 });
             return res.rows.length === 0;
@@ -115,7 +113,7 @@ export const UsersService = {
                         Query.startsWith('displayName', cleaned)
                     ]),
                     Query.limit(20),
-                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'appsActive', 'createdAt', '$createdAt'])
+                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'status', '$createdAt'])
                 ]
             });
 
