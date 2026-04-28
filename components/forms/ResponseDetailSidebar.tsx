@@ -46,11 +46,13 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
       PaperProps={{
         sx: {
           width: { xs: '100%', sm: 480 },
-          bgcolor: 'rgba(10, 10, 15, 0.8)',
+          bgcolor: '#000000',
           backdropFilter: 'blur(20px)',
           borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
           p: 0,
           boxShadow: '-20px 0 50px rgba(0,0,0,0.5)',
+          marginTop: { xs: '64px', sm: '64px' },
+          height: 'calc(100% - 64px)',
         }
       }}
     >
@@ -60,15 +62,17 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        background: 'linear-gradient(to bottom, rgba(99, 102, 241, 0.05), transparent)'
+        background: 'linear-gradient(to bottom, rgba(99, 102, 241, 0.05), transparent)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
         <Stack direction="row" spacing={2} alignItems="center">
           <IconButton 
             onClick={onClose} 
             size="small"
             sx={{ 
-              bgcolor: 'rgba(255,255,255,0.03)',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' }
+              bgcolor: 'rgba(99, 102, 241, 0.15)',
+              color: '#6366F1',
+              '&:hover': { bgcolor: 'rgba(99, 102, 241, 0.25)' }
             }}
           >
             <BackIcon fontSize="small" />
@@ -81,7 +85,7 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            color: 'var(--color-primary)',
+            color: '#6366F1',
             border: '1px solid rgba(99, 102, 241, 0.2)'
           }}>
             <DataIcon />
@@ -93,7 +97,7 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
             </Typography>
           </Box>
         </Stack>
-        <IconButton onClick={onClose} sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}>
+        <IconButton onClick={onClose} sx={{ bgcolor: 'rgba(255,255,255,0.03)', color: 'text.secondary' }}>
           <CloseIcon fontSize="small" />
         </IconButton>
       </Box>
@@ -106,7 +110,7 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
           <Box>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 1, display: 'block', letterSpacing: '0.1em' }}>METADATA</Typography>
             <Stack spacing={1.5}>
-              <Paper sx={{ p: 2, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#161514', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <TimeIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
                   <Box>
@@ -116,7 +120,7 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
                 </Stack>
               </Paper>
 
-              <Paper sx={{ p: 2, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#161514', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <UserIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
                   <Box>
@@ -155,7 +159,7 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
                   <Paper sx={{ 
                     p: 2, 
                     borderRadius: 3, 
-                    bgcolor: 'rgba(255,255,255,0.03)', 
+                    bgcolor: '#161514', 
                     border: '1px solid rgba(255,255,255,0.08)',
                     transition: 'all 0.2s',
                     '&:hover': {
@@ -183,18 +187,18 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
       </Box>
 
       {/* Footer / Raw JSON */}
-      <Box sx={{ mt: 'auto', p: 3, bgcolor: 'rgba(0,0,0,0.2)' }}>
+      <Box sx={{ mt: 'auto', p: 3, bgcolor: '#000000', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, mb: 2, display: 'block', letterSpacing: '0.1em' }}>RAW TELEMETRY</Typography>
         <Box component="pre" sx={{ 
           p: 2, 
           borderRadius: 2, 
-          bgcolor: 'rgba(0,0,0,0.3)', 
+          bgcolor: '#161514', 
           color: alpha('#6366F1', 0.8),
           fontSize: '0.7rem', 
           overflow: 'auto', 
           maxHeight: 150,
           fontFamily: 'var(--font-jetbrains)',
-          border: '1px solid rgba(255,255,255,0.03)'
+          border: '1px solid rgba(255,255,255,0.05)'
         }}>
           {JSON.stringify(data, null, 2)}
         </Box>

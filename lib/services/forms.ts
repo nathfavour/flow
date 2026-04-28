@@ -47,7 +47,7 @@ export const FormsService = {
             queries: [
                 Query.equal('$id', formId),
                 Query.limit(1),
-                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', '$createdAt'])
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'schema', '$createdAt'])
             ]
         });
 
@@ -76,7 +76,7 @@ export const FormsService = {
                 Query.equal('userId', userId),
                 Query.orderDesc('$createdAt'),
                 Query.limit(50),
-                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', '$createdAt'])
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'schema', '$createdAt'])
             ]
         });
     },
@@ -216,7 +216,7 @@ export const FormsService = {
             queries: [
                 Query.equal('$id', formId),
                 Query.limit(1),
-                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', '$createdAt'])
+                Query.select(['$id', 'userId', 'status', 'settings', 'title', 'description', 'schema', '$createdAt'])
             ]
         });
 
