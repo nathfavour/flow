@@ -554,7 +554,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const [tasksList, calendarsList] = await Promise.all([
           fetchOptimized(`f_tasks_${userId}`, () => taskApi.list([
             Query.limit(1000),
-            Query.select(['$id', 'userId', 'title', 'description', 'status', 'priority', 'dueDate', 'tags', 'assigneeIds', 'parentId', 'eventId', '$createdAt', '$updatedAt', 'position'])
+            Query.select(['$id', 'userId', 'title', 'description', 'status', 'priority', 'dueDate', 'tags', 'assigneeIds', 'parentId', 'eventId', '$createdAt', '$updatedAt'])
           ])),
           fetchOptimized(`f_calendars_${userId}`, () => calendarApi.list([
             Query.equal('userId', userId),

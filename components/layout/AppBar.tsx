@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -44,6 +44,15 @@ import { searchGlobalUsers } from '@/lib/ecosystem/identity';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
+type IslandNotification = {
+  app?: string;
+  type?: string;
+  title?: string;
+  message?: string;
+  duration?: number;
+  majestic?: boolean;
+};
+
 const AICommandModal = dynamic(() => import('@/components/ai/AICommandModal'), { ssr: false });
 const EcosystemPortal = dynamic(() => import('@/components/common/EcosystemPortal'), { ssr: false });
 const WalletSidebar = dynamic(() => import('@/components/overlays/WalletSidebar').then(mod => mod.WalletSidebar), { ssr: false });
@@ -71,6 +80,9 @@ export default function AppBar() {
   const [walletOpen, setWalletOpen] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string | null>(null);
   const [profileRecord, setProfileRecord] = useState<any>(null);
+  const [islandNotification, setIslandNotification] = useState<IslandNotification | null>(null);
+  const [islandAnchorEl, setIslandAnchorEl] = useState<null | HTMLElement>(null);
+  const islandTimerRef = React.useRef<number | null>(null);
   const profileUsername = String((user?.prefs as any)?.username || user?.name || '').trim();
 
   const router = useRouter();
@@ -127,6 +139,45 @@ export default function AppBar() {
     return () => { mounted = false; };
   }, [profileUsername]);
 
+  useEffect(() => {
+    const handleExternalNotification = (event: Event) => {
+      const detail = (event as CustomEvent<IslandNotification>).detail;
+      if (!detail) return;
+
+      setIslandNotification(detail);
+
+      if (islandTimerRef.current) {
+        window.clearTimeout(islandTimerRef.current);
+      }
+
+      const duration = typeof detail.duration === 'number' ? detail.duration : 6500;
+      if (duration > 0) {
+        islandTimerRef.current = window.setTimeout(() => {
+          setIslandNotification(null);
+          islandTimerRef.current = null;
+        }, duration);
+      }
+    };
+
+    window.addEventListener('kylrix:island-notification', handleExternalNotification as EventListener);
+    return () => {
+      window.removeEventListener('kylrix:island-notification', handleExternalNotification as EventListener);
+      if (islandTimerRef.current) {
+        window.clearTimeout(islandTimerRef.current);
+      }
+    };
+  }, []);
+
+  const shouldCollapseChrome = Boolean(islandNotification);
+  const islandColor = useMemo(() => {
+    const key = String(islandNotification?.app || islandNotification?.type || '').toLowerCase();
+    if (key === 'note') return '#EC4899';
+    if (key === 'connect') return '#F59E0B';
+    if (key === 'root' || key === 'accounts') return '#6366F1';
+    return '#A855F7';
+  }, [islandNotification]);
+  const islandApp = islandNotification?.app || 'flow';
+
   const identitySignals = computeIdentityFlags({
     createdAt: profileRecord?.createdAt || (user as any)?.$createdAt || (user as any)?.createdAt || null,
     lastUsernameEdit: profileRecord?.lastUsernameEdit || (user?.prefs as any)?.last_username_edit || null,
@@ -144,6 +195,10 @@ export default function AppBar() {
 
   const handleNotifClick = (event: React.MouseEvent<HTMLElement>) => {
     setNotifAnchorEl(event.currentTarget);
+  };
+
+  const handleIslandClick = (event: React.MouseEvent<HTMLElement>) => {
+    setIslandAnchorEl(event.currentTarget);
   };
 
   const [portalOpen, setPortalOpen] = useState(false);
@@ -164,6 +219,7 @@ export default function AppBar() {
     setAnchorEl(null);
     setAppsAnchorEl(null);
     setNotifAnchorEl(null);
+    setIslandAnchorEl(null);
   };
 
 
@@ -178,91 +234,126 @@ export default function AppBar() {
         }}
     >
       <Toolbar sx={{ gap: 2, minHeight: '88px' }}>
-        {/* Menu Toggle - only on desktop */}
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="toggle sidebar"
-          onClick={toggleSidebar}
-          sx={{
-            color: '#F2F2F2',
-            display: { xs: 'none', md: 'flex' },
-            bgcolor: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)' }
-          }}
-        >
-          <LucideMenu size={20} strokeWidth={1.5} />
-        </IconButton>
-
-        {/* Logo */}
-        <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
-          <Logo size={32} variant="full" app="flow" sx={{ fontFamily: 'var(--font-clash)', fontWeight: 900, letterSpacing: '-0.04em' }} />
-        </Box>
-        <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
-          <Logo size={28} variant="icon" app="flow" />
-        </Box>
-
-        {/* Search */}
-        <Box
-          sx={{
-            position: 'relative',
-            borderRadius: '14px',
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              borderColor: alpha('#6366F1', 0.4),
-              boxShadow: '0 0 15px rgba(99, 102, 241, 0.1)'
-            },
-            '&:focus-within': {
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              borderColor: '#6366F1',
-              boxShadow: '0 0 20px rgba(99, 102, 241, 0.15)'
-            },
-            width: { xs: 0, sm: 300, md: 400 },
-            maxWidth: '100%',
-            display: { xs: 'none', sm: 'block' },
-            transition: 'all 0.2s ease',
-          }}
-        >
-          <Box
-            sx={{
-              padding: theme.spacing(0, 2),
-              height: '100%',
-              position: 'absolute',
-              pointerEvents: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Search size={18} strokeWidth={1.5} color="#A1A1AA" />
+        {shouldCollapseChrome ? (
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              onClick={handleIslandClick}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                px: 2,
+                py: 1.1,
+                borderRadius: '999px',
+                bgcolor: 'rgba(11, 9, 8, 0.92)',
+                border: `1px solid ${alpha(islandColor, 0.35)}`,
+                boxShadow: `0 0 0 1px ${alpha(islandColor, 0.08)}, 0 0 22px ${alpha(islandColor, 0.18)}`,
+                cursor: 'pointer',
+                maxWidth: 'min(92vw, 640px)',
+              }}
+            >
+              <Box sx={{ flexShrink: 0, width: 28, height: 28 }}>
+                <Logo size={28} variant="icon" app={islandApp as any} />
+              </Box>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 800, lineHeight: 1.1 }}>
+                  {islandNotification?.title || 'Notification'}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.68)', display: 'block', lineHeight: 1.15, maxWidth: '52ch' }} noWrap>
+                  {islandNotification?.message || 'Tap to expand'}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
-          <InputBase
-            placeholder="Search tasks... (Ctrl+K)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{
-              color: '#F2F2F2',
-              width: '100%',
-              fontFamily: 'var(--font-mono)',
-              '& .MuiInputBase-input': {
-                padding: theme.spacing(1.5, 1.5, 1.5, 0),
-                paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-                width: '100%',
-                fontSize: '0.85rem',
-                fontWeight: 500,
-              },
-            }}
-          />
-        </Box>
+        ) : (
+          <>
+            {/* Menu Toggle - only on desktop */}
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="toggle sidebar"
+              onClick={toggleSidebar}
+              sx={{
+                color: '#F2F2F2',
+                display: { xs: 'none', md: 'flex' },
+                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)' }
+              }}
+            >
+              <LucideMenu size={20} strokeWidth={1.5} />
+            </IconButton>
+
+            {/* Logo */}
+            <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
+              <Logo size={32} variant="full" app="flow" sx={{ fontFamily: 'var(--font-clash)', fontWeight: 900, letterSpacing: '-0.04em' }} />
+            </Box>
+            <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
+              <Logo size={28} variant="icon" app="flow" />
+            </Box>
+
+            {/* Search */}
+            <Box
+              sx={{
+                position: 'relative',
+                borderRadius: '14px',
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  borderColor: alpha('#6366F1', 0.4),
+                  boxShadow: '0 0 15px rgba(99, 102, 241, 0.1)'
+                },
+                '&:focus-within': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  borderColor: '#6366F1',
+                  boxShadow: '0 0 20px rgba(99, 102, 241, 0.15)'
+                },
+                width: { xs: 0, sm: 300, md: 400 },
+                maxWidth: '100%',
+                display: { xs: 'none', sm: 'block' },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Box
+                sx={{
+                  padding: theme.spacing(0, 2),
+                  height: '100%',
+                  position: 'absolute',
+                  pointerEvents: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Search size={18} strokeWidth={1.5} color="#A1A1AA" />
+              </Box>
+              <InputBase
+                placeholder="Search tasks... (Ctrl+K)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{
+                  color: '#F2F2F2',
+                  width: '100%',
+                  fontFamily: 'var(--font-mono)',
+                  '& .MuiInputBase-input': {
+                    padding: theme.spacing(1.5, 1.5, 1.5, 0),
+                    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+                    width: '100%',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                  },
+                }}
+              />
+            </Box>
+          </>
+        )}
 
         <Box sx={{ flexGrow: 1 }} />
 
-          {/* Actions */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
+        {!shouldCollapseChrome ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
           {/* AI Assistant Button */}
           <Tooltip title="AI Assistant">
             <IconButton
@@ -411,7 +502,8 @@ export default function AppBar() {
               Connect
             </Button>
           )}
-        </Box>
+          </Box>
+        ) : null}
 
         {/* Profile Menu */}
         <Menu
@@ -690,6 +782,40 @@ export default function AppBar() {
       <AICommandModal open={aiModalOpen} onClose={() => setAiModalOpen(false)} />
       <EcosystemPortal open={portalOpen} onClose={() => setPortalOpen(false)} />
       <WalletSidebar isOpen={walletOpen} onClose={() => setWalletOpen(false)} />
+
+      <Menu
+        anchorEl={islandAnchorEl}
+        open={Boolean(islandAnchorEl && islandNotification)}
+        onClose={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            width: 420,
+            mt: 2,
+            borderRadius: '28px',
+            bgcolor: 'rgba(11, 9, 8, 0.98)',
+            border: `1px solid ${alpha(islandColor, 0.25)}`,
+            backgroundImage: 'none',
+            color: 'white',
+            p: 1,
+            boxShadow: `0 0 28px ${alpha(islandColor, 0.12)}`,
+          },
+        }}
+        transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+      >
+        <Box sx={{ px: 2.5, py: 2.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+            <Logo size={28} variant="icon" app={islandApp as any} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
+              {islandNotification?.title || 'Notification'}
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
+            {islandNotification?.message || 'No message provided.'}
+          </Typography>
+        </Box>
+      </Menu>
     </MuiAppBar>
   );
 }

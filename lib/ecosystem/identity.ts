@@ -98,7 +98,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
                         Query.startsWith('displayName', query)
                     ]),
                     Query.limit(limit),
-                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'tier', 'last_username_edit', '$createdAt'])
+                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'publicKey', 'tier', 'last_username_edit', '$createdAt'])
                 ]
             });
 
@@ -107,7 +107,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             title: doc.displayName || doc.username,
             subtitle: `@${doc.username}`,
             avatar: doc.avatar,
-            profilePicId: doc.profilePicId,
+            profilePicId: doc.avatar,
             createdAt: doc.$createdAt || null,
             lastUsernameEdit: doc.last_username_edit || null,
             username: doc.username || null,

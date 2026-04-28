@@ -12,7 +12,7 @@ const normalizeProfile = (profile: any) => {
         title: profile.displayName || profile.username,
         subtitle: `@${profile.username}`,
         avatar: profile.avatar,
-        profilePicId: profile.profilePicId || profile.avatar,
+                profilePicId: profile.avatar,
     };
 };
 
@@ -36,7 +36,7 @@ export const UsersService = {
                             Query.equal('$id', userId)
                         ]),
                         Query.limit(1),
-                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'status', '$createdAt'])
+                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'publicKey', 'status', '$createdAt'])
                     ]
                 });
                 return normalizeProfile(res.rows[0]) || null;
@@ -90,7 +90,7 @@ export const UsersService = {
                     queries: [
                         Query.equal('username', username.toLowerCase()),
                         Query.limit(1),
-                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'status', '$createdAt'])
+                        Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'publicKey', 'status', '$createdAt'])
                     ]
                 });
             return res.rows.length === 0;
@@ -113,7 +113,7 @@ export const UsersService = {
                         Query.startsWith('displayName', cleaned)
                     ]),
                     Query.limit(20),
-                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'profilePicId', 'publicKey', 'status', '$createdAt'])
+                    Query.select(['$id', 'userId', 'username', 'displayName', 'bio', 'avatar', 'publicKey', 'status', '$createdAt'])
                 ]
             });
 
