@@ -133,7 +133,7 @@ export default function TaskList() {
   };
 
   return (
-    <Box sx={{ animation: 'fadeIn 0.4s ease-out' }}>
+    <Box sx={{ animation: 'fadeIn 0.4s ease-out', minHeight: '100vh', bgcolor: '#000000', p: { xs: 2, md: 4 } }}>
       {/* Header */}
       <Box
         sx={{
@@ -170,7 +170,7 @@ export default function TaskList() {
           <Box 
             sx={{ 
                 display: 'flex', 
-                bgcolor: 'rgba(255, 255, 255, 0.03)', 
+                bgcolor: '#161514', 
                 p: 0.5, 
                 borderRadius: 2,
                 border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -190,7 +190,7 @@ export default function TaskList() {
                         px: isMobile ? 1 : 1.5,
                         color: viewMode === mode.id ? '#10B981' : 'text.disabled',
                         bgcolor: viewMode === mode.id ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
-                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' }
+                        '&:hover': { bgcolor: '#1F1D1B' }
                     }}
                 >
                     <mode.icon sx={{ fontSize: isMobile ? 18 : 20 }} />

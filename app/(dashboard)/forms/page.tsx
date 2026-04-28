@@ -180,7 +180,12 @@ export default function FormsDashboard() {
     const filteredForms = forms; // Active forms (published/draft on server)
 
     return (
-        <Box sx={{ animation: 'fadeIn 0.4s ease-out', p: { xs: 2, md: 4 } }}>
+        <Box sx={{ 
+            animation: 'fadeIn 0.4s ease-out', 
+            p: { xs: 2, md: 4 },
+            minHeight: '100vh',
+            bgcolor: '#000000'
+        }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Box>
                     <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: '-0.04em', fontFamily: 'var(--font-clash)' }}>
@@ -233,19 +238,19 @@ export default function FormsDashboard() {
                 <Grid container spacing={3}>
                     {[1, 2, 3].map((i) => (
                         <Grid size={{ xs: 12, md: 6, lg: 4 }} key={i}>
-                            <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
+                            <Card sx={{ bgcolor: '#161514', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: 3 }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                        <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 1, bgcolor: 'rgba(255,255,255,0.05)' }} />
-                                        <Skeleton variant="circular" width={24} height={24} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                        <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 1, bgcolor: '#1F1D1B' }} />
+                                        <Skeleton variant="circular" width={24} height={24} sx={{ bgcolor: '#1F1D1B' }} />
                                     </Box>
-                                    <Skeleton variant="text" width="80%" height={32} sx={{ mb: 1, bgcolor: 'rgba(255,255,255,0.05)' }} />
-                                    <Skeleton variant="text" width="100%" height={20} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
-                                    <Skeleton variant="text" width="60%" height={20} sx={{ mb: 4, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    <Skeleton variant="text" width="80%" height={32} sx={{ mb: 1, bgcolor: '#1F1D1B' }} />
+                                    <Skeleton variant="text" width="100%" height={20} sx={{ bgcolor: '#1F1D1B' }} />
+                                    <Skeleton variant="text" width="60%" height={20} sx={{ mb: 4, bgcolor: '#1F1D1B' }} />
                                     <Divider sx={{ opacity: 0.05, mb: 3 }} />
                                     <Box sx={{ display: 'flex', gap: 1 }}>
-                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
-                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: '#1F1D1B' }} />
+                                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: '#1F1D1B' }} />
                                         <Box sx={{ flexGrow: 1 }} />
                                         <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
                                     </Box>
@@ -260,7 +265,7 @@ export default function FormsDashboard() {
                     {tabValue === 0 && (
                         <>
                             {filteredForms.length === 0 ? (
-                                <Paper sx={{ py: 12, textAlign: 'center', bgcolor: 'rgba(255, 255, 255, 0.01)', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
+                                <Paper sx={{ py: 12, textAlign: 'center', bgcolor: '#161514', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
                                     <FormIcon sx={{ fontSize: 64, opacity: 0.1, mb: 2 }} />
                                     <Typography variant="h6" sx={{ opacity: 0.6, mb: 4 }}>No active forms.</Typography>
                                     <Button variant="outlined" startIcon={<AddIcon />} onClick={handleCreate}>Start Building</Button>
@@ -273,14 +278,14 @@ export default function FormsDashboard() {
                                                 <Card 
                                                     onClick={() => router.push(`/forms/${form.$id}`)}
                                                     sx={{ 
-                                                        bgcolor: 'rgba(255, 255, 255, 0.02)', 
+                                                        bgcolor: '#161514', 
                                                         border: '1px solid rgba(255, 255, 255, 0.05)', 
                                                         borderRadius: 3,
                                                         cursor: 'pointer',
                                                         transition: 'all 0.2s ease-in-out',
                                                         '&:hover': {
-                                                            bgcolor: 'rgba(255, 255, 255, 0.04)',
-                                                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                                                            bgcolor: '#1F1D1B',
+                                                            borderColor: 'rgba(99, 102, 241, 0.3)',
                                                             transform: 'translateY(-2px)'
                                                         }
                                                     }}
@@ -317,7 +322,7 @@ export default function FormsDashboard() {
                                                                     href={`/form/${form.$id}`} 
                                                                     target="_blank" 
                                                                     onClick={(e) => e.stopPropagation()}
-                                                                    sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)' }}
+                                                                    sx={{ bgcolor: '#161514' }}
                                                                 >
                                                                     <LaunchIcon sx={{ fontSize: 18 }} />
                                                                 </IconButton>
@@ -356,7 +361,7 @@ export default function FormsDashboard() {
 
                     {/* TEMPLATES TAB */}
                     {tabValue === 1 && (
-                        <Paper sx={{ py: 12, textAlign: 'center', bgcolor: 'rgba(255, 255, 255, 0.01)', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
+                        <Paper sx={{ py: 12, textAlign: 'center', bgcolor: '#161514', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
                             <TemplateIcon sx={{ fontSize: 64, opacity: 0.1, mb: 2 }} />
                             <Typography variant="h6" sx={{ opacity: 0.6 }}>Templates coming soon.</Typography>
                         </Paper>
@@ -366,7 +371,7 @@ export default function FormsDashboard() {
                     {tabValue === 2 && (
                         <>
                             {offlineDrafts.length === 0 ? (
-                                <Paper sx={{ py: 12, textAlign: 'center', bgcolor: 'rgba(255, 255, 255, 0.01)', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
+                                <Paper sx={{ py: 12, textAlign: 'center', bgcolor: '#161514', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 4 }}>
                                     <HistoryIcon sx={{ fontSize: 64, opacity: 0.1, mb: 2 }} />
                                     <Typography variant="h6" sx={{ opacity: 0.6 }}>No offline drafts found.</Typography>
                                 </Paper>
@@ -375,7 +380,7 @@ export default function FormsDashboard() {
                                     {offlineDrafts.map((draft) => (
                                         <Grid size={{ xs: 12, md: 6, lg: 4 }} key={draft.id}>
                                             <Fade in={true}>
-                                                <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 176, 32, 0.1)', borderRadius: 3 }}>
+                                                <Card sx={{ bgcolor: '#161514', border: '1px solid rgba(255, 176, 32, 0.1)', borderRadius: 3 }}>
                                                     <CardContent sx={{ p: 3 }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                                                             <Chip label="LOCAL DRAFT" size="small" sx={{ fontSize: '10px', fontWeight: 900, bgcolor: alpha('#FFB020', 0.1), color: '#FFB020', border: '1px solid rgba(255, 176, 32, 0.2)' }} />

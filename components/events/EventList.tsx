@@ -161,7 +161,7 @@ export default function EventList() {
   }
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: '#000000', minHeight: '100vh', p: { xs: 2, md: 4 } }}>
       <Box
         sx={{
           display: 'flex',
@@ -231,7 +231,7 @@ export default function EventList() {
 
       <Box sx={{ 
         mb: 4, 
-        bgcolor: 'rgba(255, 255, 255, 0.02)', 
+        bgcolor: '#161514', 
         borderRadius: '16px', 
         p: 0.5,
         width: 'fit-content',
