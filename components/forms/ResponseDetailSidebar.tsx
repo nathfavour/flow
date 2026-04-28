@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import {
   Close as CloseIcon,
+  ArrowBack as BackIcon,
   Event as TimeIcon,
   Person as UserIcon,
   Flag as FlagIcon,
@@ -62,6 +63,16 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
         background: 'linear-gradient(to bottom, rgba(99, 102, 241, 0.05), transparent)'
       }}>
         <Stack direction="row" spacing={2} alignItems="center">
+          <IconButton 
+            onClick={onClose} 
+            size="small"
+            sx={{ 
+              bgcolor: 'rgba(255,255,255,0.03)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' }
+            }}
+          >
+            <BackIcon fontSize="small" />
+          </IconButton>
           <Box sx={{ 
             width: 40, 
             height: 40, 
@@ -138,9 +149,9 @@ export default function ResponseDetailSidebar({ open, onClose, submission, schem
             <Stack spacing={2}>
               {Object.entries(data).map(([key, value]: [string, any]) => (
                 <Box key={key}>
-                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 800, mb: 0.5, textTransform: 'capitalize' }}>
-                    {schemaMap?.[key] || key.replace(/_/g, ' ')}
-                  </Typography>
+                     <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 800, mb: 0.5, textTransform: 'capitalize' }}>
+                     {schemaMap?.[key] || key.split(/(?=[A-Z])/).join(' ').replace(/_/g, ' ') || 'Field'}
+                   </Typography>
                   <Paper sx={{ 
                     p: 2, 
                     borderRadius: 3, 
