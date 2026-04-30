@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -34,6 +35,7 @@ import { useTask } from '@/context/TaskContext';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
 import { Logo } from '@/components/common/Logo';
+import { getTopbarLogoHref } from '@/lib/sdk';
 import { ECOSYSTEM_APPS, getEcosystemUrl } from '@/lib/constants';
 import dynamic from 'next/dynamic';
 import { fetchProfilePreview, getCachedProfilePreview } from '@/lib/profile-preview';
@@ -286,10 +288,10 @@ export default function AppBar() {
             </IconButton>
 
             {/* Logo */}
-            <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
+            <Box component={Link} href={getTopbarLogoHref('flow')} sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'none', sm: 'flex' } }}>
               <Logo size={32} variant="full" app="flow" sx={{ fontFamily: 'var(--font-clash)', fontWeight: 900, letterSpacing: '-0.04em' }} />
             </Box>
-            <Box sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
+            <Box component={Link} href={getTopbarLogoHref('flow')} sx={{ mr: { xs: 0, md: 2 }, display: { xs: 'flex', sm: 'none' } }}>
               <Logo size={28} variant="icon" app="flow" />
             </Box>
 
