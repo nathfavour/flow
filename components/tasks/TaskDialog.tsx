@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import {
-  Dialog,
+  Drawer,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -19,6 +19,8 @@ import {
   Divider,
   alpha,
   Autocomplete,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -54,6 +56,8 @@ const statusOptions: { value: TaskStatus; label: string }[] = [
 ];
 
 export default function TaskDialog() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const {
     taskDialogOpen,
     setTaskDialogOpen,
@@ -128,19 +132,26 @@ export default function TaskDialog() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Dialog
+      <Drawer
+        anchor={isMobile ? 'bottom' : 'right'}
         open={taskDialogOpen}
         onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
+        ModalProps={{ keepMounted: true }}
         PaperProps={{
           sx: {
-            borderRadius: 4,
+            width: isMobile ? '100%' : 'min(100vw, 640px)',
+            maxWidth: '100%',
+            height: isMobile ? '92dvh' : '100%',
+            maxHeight: '100dvh',
+            borderTopLeftRadius: isMobile ? 4 : 0,
+            borderTopRightRadius: isMobile ? 4 : 0,
             backgroundImage: 'none',
             backgroundColor: '#050505',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderLeft: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
             boxShadow: '0 24px 48px rgba(0, 0, 0, 0.8)',
             overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           },
         }}
       >
@@ -419,7 +430,7 @@ export default function TaskDialog() {
             CREATE TASK
           </Button>
         </DialogActions>
-      </Dialog>
+      </Drawer>
     </LocalizationProvider>
   );
 }
