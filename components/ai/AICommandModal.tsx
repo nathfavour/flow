@@ -2,10 +2,7 @@
 
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Drawer,
   TextField,
   Button,
   Box,
@@ -15,6 +12,8 @@ import {
   CardContent,
   IconButton,
   Chip,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   Sparkles,
@@ -58,6 +57,8 @@ interface AIResponse {
 }
 
 export default function AICommandModal({ open, onClose }: AICommandModalProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { generate } = useAI();
   const { addTask, projects, userId } = useTask();
   const { user } = useAuth();
@@ -187,23 +188,28 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
   };
 
   return (
-    <Dialog
+    <Drawer
+      anchor={isMobile ? 'bottom' : 'right'}
       open={open}
       onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
+      ModalProps={{ keepMounted: true }}
       PaperProps={{
         sx: {
-          borderRadius: '24px',
+          width: isMobile ? '100%' : 'min(100vw, 600px)',
+          maxWidth: '100%',
+          height: isMobile ? '92dvh' : '100%',
+          maxHeight: '100dvh',
+          borderRadius: isMobile ? '24px 24px 0 0' : '0',
           backgroundImage: 'none',
           backgroundColor: 'rgba(22, 20, 18, 0.98)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 32px 64px rgba(0, 0, 0, 0.7)',
-          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
         },
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 3, pt: 3 }}>
+      {/* Header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 3, pt: 3, pb: 2, borderBottom: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
         <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(0, 240, 255, 0.1)', color: '#00F0FF', display: 'flex' }}>
           <Sparkles size={20} strokeWidth={1.5} />
         </Box>
@@ -214,9 +220,10 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
         <IconButton onClick={handleClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)', color: 'rgba(255, 255, 255, 0.4)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.08)' } }}>
           <X size={18} strokeWidth={1.5} />
         </IconButton>
-      </DialogTitle>
+      </Box>
 
-      <DialogContent sx={{ px: 3, py: 2 }}>
+      {/* Content */}
+      <Box sx={{ px: 3, py: 2, flex: 1, overflowY: 'auto' }}>
         {!result ? (
           <Box sx={{ mt: 1 }}>
             <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', mb: 2, fontWeight: 500 }}>
@@ -317,9 +324,10 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
             </Typography>
           </Box>
         )}
-      </DialogContent>
+      </Box>
 
-      <DialogActions sx={{ px: 3, pb: 3, gap: 2 }}>
+      {/* Footer */}
+      <Box sx={{ px: 3, pb: 3, gap: 2, display: 'flex', flexDirection: 'column', borderTop: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
         {!result ? (
           <Button
             variant="contained"
@@ -374,7 +382,7 @@ export default function AICommandModal({ open, onClose }: AICommandModalProps) {
             </Button>
           </Box>
         )}
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </Drawer>
   );
 }
