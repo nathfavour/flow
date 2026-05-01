@@ -3,9 +3,6 @@
 import React, { useState } from 'react';
 import {
   Drawer,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Button,
   Box,
@@ -155,7 +152,7 @@ export default function TaskDialog() {
           },
         }}
       >
-        <DialogTitle
+        <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -163,6 +160,8 @@ export default function TaskDialog() {
             px: 3,
             pt: 3,
             pb: 2,
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            flexShrink: 0,
           }}
         >
           <Box>
@@ -176,9 +175,9 @@ export default function TaskDialog() {
           <IconButton onClick={handleClose} size="small" sx={{ color: 'text.disabled', '&:hover': { color: '#F2F2F2' } }}>
             <CloseIcon sx={{ fontSize: 20 }} />
           </IconButton>
-        </DialogTitle>
+        </Box>
 
-        <DialogContent sx={{ px: 3, py: 2 }}>
+        <Box sx={{ px: 3, py: 2, flex: 1, overflowY: 'auto' }}>
           <Box
             component="form"
             onKeyDown={handleKeyDown}
@@ -390,9 +389,9 @@ export default function TaskDialog() {
               excludeIds={creatorId ? [creatorId] : []}
             />
           </Box>
-        </DialogContent>
+        </Box>
 
-        <DialogActions sx={{ px: 3, py: 3, gap: 1 }}>
+        <Box sx={{ px: 3, py: 3, gap: 1, display: 'flex', borderTop: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
           <Button 
             onClick={handleClose} 
             sx={{ 
@@ -429,7 +428,7 @@ export default function TaskDialog() {
           >
             CREATE TASK
           </Button>
-        </DialogActions>
+        </Box>
       </Drawer>
     </LocalizationProvider>
   );

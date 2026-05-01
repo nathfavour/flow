@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Drawer,
   Button,
   Box,
   Typography,
@@ -18,6 +15,8 @@ import {
   alpha,
   Alert,
   Snackbar,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -36,6 +35,8 @@ interface FormSettingsDialogProps {
 }
 
 export default function FormSettingsDialog({ open, onClose, form, onSaved }: FormSettingsDialogProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft');
   const [allowAnonymousView, setAllowAnonymousView] = useState(false);
@@ -92,22 +93,27 @@ export default function FormSettingsDialog({ open, onClose, form, onSaved }: For
 
   return (
     <>
-      <Dialog 
+      <Drawer 
+        anchor={isMobile ? 'bottom' : 'right'}
         open={open} 
-        onClose={onClose} 
-        fullWidth 
-        maxWidth="xs"
+        onClose={onClose}
         PaperProps={{
           sx: { 
+            width: isMobile ? '100%' : 'min(100vw, 500px)',
+            maxWidth: '100%',
+            height: isMobile ? 'auto' : '100%',
+            maxHeight: isMobile ? '92dvh' : '100%',
             bgcolor: 'rgba(10, 10, 10, 0.95)', 
             backdropFilter: 'blur(40px) saturate(200%)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '24px',
+            borderRadius: isMobile ? '24px 24px 0 0' : '0',
             backgroundImage: 'none',
+            display: 'flex',
+            flexDirection: 'column',
           }
         }}
       >
-        <DialogTitle sx={{ p: 3, pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ p: 3, pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
               Portal Configuration
@@ -119,9 +125,9 @@ export default function FormSettingsDialog({ open, onClose, form, onSaved }: For
           <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)' }}>
             <CloseIcon fontSize="small" />
           </IconButton>
-        </DialogTitle>
+        </Box>
 
-        <DialogContent sx={{ p: 3, pt: 2 }}>
+        <Box sx={{ p: 3, pt: 2, flex: 1, overflowY: 'auto' }}>
           <Stack spacing={3.5}>
             {/* PUBLISH STATE */}
             <Box>
@@ -222,9 +228,9 @@ export default function FormSettingsDialog({ open, onClose, form, onSaved }: For
               )}
             </Box>
           </Stack>
-        </DialogContent>
+        </Box>
 
-        <DialogActions sx={{ p: 3, pt: 0 }}>
+        <Box sx={{ p: 3, pt: 0, display: 'flex', gap: 1, borderTop: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
           <Button onClick={onClose} sx={{ fontWeight: 800, color: 'text.secondary' }}>Cancel</Button>
           <Button 
             variant="contained" 
@@ -241,8 +247,8 @@ export default function FormSettingsDialog({ open, onClose, form, onSaved }: For
           >
             Update Configuration
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </Drawer>
 
       <Snackbar
         open={showCopySuccess}

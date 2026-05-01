@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Drawer,
   Button,
   TextField,
   Box,
@@ -24,6 +21,8 @@ import {
   Tooltip,
   Alert,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -339,6 +338,8 @@ function SortableField({
 }
 
 export default function FormDialog({ open, onClose, form, initialDraft, onSaved }: FormDialogProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const { invalidate } = useDataNexus();
@@ -565,29 +566,35 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
   const isChoiceType = (type: string) => ['select', 'radio', 'checkbox'].includes(type);
 
   return (
-    <Dialog 
+    <Drawer 
+      anchor={isMobile ? 'bottom' : 'right'}
       open={open} 
-      onClose={onClose} 
-      fullWidth 
-      maxWidth="md"
-      scroll="paper"
+      onClose={onClose}
       PaperProps={{
         sx: { 
+          width: isMobile ? '100%' : 'min(100vw, 800px)',
+          maxWidth: '100%',
+          height: isMobile ? 'auto' : '100%',
+          maxHeight: isMobile ? '92dvh' : '100%',
           bgcolor: 'rgba(10, 10, 10, 0.9)', 
           backdropFilter: 'blur(30px) saturate(200%)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '28px',
+          borderRadius: isMobile ? '28px 28px 0 0' : '0',
           backgroundImage: 'none',
           boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
+          display: 'flex',
+          flexDirection: 'column',
         }
       }}
     >
-      <DialogTitle sx={{ 
+      <Box sx={{ 
+        px: 4, 
+        py: 3, 
         display: 'flex', 
         justifyContent: 'space-between', 
-        alignItems: 'center', 
-        p: 4,
-        pb: 2
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+        flexShrink: 0,
       }}>
         <Box>
             <Stack direction="row" spacing={1.5} alignItems="center">
@@ -639,9 +646,9 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
                 <CloseIcon fontSize="small" />
             </IconButton>
         </Box>
-      </DialogTitle>
+      </Box>
 
-      <DialogContent sx={{ p: 4, pt: 1 }}>
+      <Box sx={{ p: 4, pt: 1, flex: 1, overflowY: 'auto' }}>
         <Stack spacing={5}>
           {isRestored && (
             <Alert 
@@ -745,9 +752,10 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
             </Stack>
           </Box>
         </Stack>
-      </DialogContent>
+      </Box>
+      </Box>
 
-      <DialogActions sx={{ p: 4, pt: 2, gap: 2 }}>
+      <Box sx={{ p: 4, pt: 2, gap: 2, display: 'flex', borderTop: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
         <Box sx={{ flexGrow: 1 }}>
             {hasUnsavedChanges && (
                 <Typography variant="caption" sx={{ color: '#FFB020', fontWeight: 700, ml: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -773,7 +781,7 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
         >
           {loading ? 'Encrypting...' : (form ? 'Commit Changes' : 'Initialize Portal')}
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </Drawer>
   );
 }
