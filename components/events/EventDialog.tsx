@@ -2,10 +2,7 @@
 
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Drawer,
   TextField,
   Button,
   Box,
@@ -17,6 +14,8 @@ import {
   ToggleButton,
   alpha,
   Switch,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -49,6 +48,8 @@ interface EventDialogProps {
 }
 
 export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmit }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState<Date | null>(new Date());
@@ -99,31 +100,37 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Dialog
+      <Drawer
+        anchor={isMobile ? 'bottom' : 'right'}
         open={open}
         onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
+        ModalProps={{ keepMounted: true }}
         PaperProps={{
           sx: {
-            borderRadius: '28px',
+            width: isMobile ? '100%' : 'min(100vw, 600px)',
+            maxWidth: '100%',
+            height: isMobile ? '92dvh' : '100%',
+            maxHeight: '100dvh',
             bgcolor: 'rgba(10, 10, 10, 0.9)',
             backdropFilter: 'blur(25px) saturate(180%)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             backgroundImage: 'none',
-            boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
-            overflow: 'hidden'
+            borderRadius: isMobile ? '24px 24px 0 0' : '0',
+            display: 'flex',
+            flexDirection: 'column'
           },
         }}
       >
-        <DialogTitle
+        {/* Header */}
+        <Box
           sx={{
             p: 3,
             pb: 2,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            flexShrink: 0
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -148,9 +155,29 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
           <IconButton onClick={handleClose} sx={{ color: 'rgba(255, 255, 255, 0.3)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}>
             <CloseIcon sx={{ fontSize: 20 }} />
           </IconButton>
-        </DialogTitle>
+        </Box>
 
-        <DialogContent sx={{ p: 3, mt: 1 }}>
+        {/* Content */}
+        <Box sx={{ 
+          p: 3, 
+          mt: 1,
+          flex: 1,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          '&::-webkit-scrollbar': {
+            width: '6px'
+          },
+          '&::-webkit-scrollbar-track': {
+            bgcolor: 'transparent'
+          },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '3px',
+            '&:hover': {
+              bgcolor: 'rgba(255, 255, 255, 0.2)'
+            }
+          }
+        }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Title */}
             <TextField
@@ -396,15 +423,27 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
               onRemove={(userId) => setSelectedGuests(prev => prev.filter(u => u.id !== userId))}
             />
           </Box>
-        </DialogContent>
+        </Box>
 
-        <DialogActions sx={{ p: 3, pt: 1, gap: 1.5 }}>
+        {/* Footer */}
+        <Box sx={{ 
+          p: 3, 
+          pt: 1, 
+          gap: 1.5,
+          display: 'flex',
+          flexDirection: 'column',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          flexShrink: 0
+        }}>
           <Button 
             onClick={handleClose} 
+            fullWidth
             sx={{ 
               color: 'rgba(255, 255, 255, 0.5)', 
               fontWeight: 700, 
               textTransform: 'none',
+              borderRadius: '12px',
+              py: 1.5,
               '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' }
             }}
           >
@@ -412,12 +451,13 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
           </Button>
           <Button
             onClick={handleSubmit}
+            fullWidth
             variant="contained"
             disabled={!title.trim() || !startTime || !endTime}
             sx={{
               borderRadius: '12px',
               px: 4,
-              py: 1,
+              py: 1.5,
               fontWeight: 800,
               textTransform: 'none',
               bgcolor: '#6366F1',
@@ -435,8 +475,8 @@ export const EventDialog: React.FC<EventDialogProps> = ({ open, onClose, onSubmi
           >
             Create Event
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </Drawer>
     </LocalizationProvider>
   );
 }
