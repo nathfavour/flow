@@ -24,6 +24,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { secrets as secretsApi } from '@/lib/kylrixflow';
+import toast from 'react-hot-toast';
 
 interface Secret {
   $id: string;
@@ -41,7 +42,6 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
   const [secrets, setSecrets] = useState<Secret[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-
   useEffect(() => {
     if (isOpen) {
       const fetchSecrets = async () => {
@@ -93,7 +93,7 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
         <Tabs value={0} onChange={() => {}} sx={{ display: 'none' }}>
           <Tab label="Credentials" />
         </Tabs>
-        <Box sx={{ minHeight: '300px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ minHeight: 0, display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
           <TextField
             fullWidth
             size="small"
@@ -113,16 +113,16 @@ export function SecretSelectorModal({ isOpen, onClose, onSelect }: SecretSelecto
           />
 
           {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 0 }}>
               <CircularProgress size={24} sx={{ color: '#6366F1' }} />
             </Box>
           ) : filtered.length === 0 ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, opacity: 0.2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: 0, opacity: 0.2, textAlign: 'center' }}>
               <Key size={48} strokeWidth={1} />
               <Typography variant="body2" sx={{ mt: 1, fontWeight: 600 }}>No secrets found</Typography>
             </Box>
           ) : (
-            <List sx={{ flex: 1, overflowY: 'auto' }}>
+          <List sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
               {filtered.map((item) => (
                 <ListItemButton
                   key={item.$id}
