@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
   Box,
   Typography,
   IconButton,
@@ -15,11 +12,16 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
+  Drawer,
+  Divider,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   X,
   Search as SearchIcon,
   Key,
+  Shield,
 } from 'lucide-react';
 import { secrets as secretsApi } from '@/lib/kylrixflow';
 

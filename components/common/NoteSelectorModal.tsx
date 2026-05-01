@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
   Box,
   Typography,
   IconButton,
@@ -15,6 +12,8 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
+  Drawer,
+  Divider,
 } from '@mui/material';
 import {
   X,
@@ -63,23 +62,24 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
   );
 
   return (
-    <Dialog
+    <Drawer
+      anchor="bottom"
       open={isOpen}
       onClose={onClose}
-      maxWidth="sm"
-      fullWidth
       PaperProps={{
         sx: {
-          borderRadius: '24px',
+          borderRadius: '24px 24px 0 0',
           backgroundImage: 'none',
           backgroundColor: 'rgba(15, 13, 12, 0.95)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 24px 48px rgba(0, 0, 0, 0.8)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 -24px 48px rgba(0, 0, 0, 0.8)',
+          maxHeight: { xs: '88dvh', sm: '72vh' },
         },
       }}
     >
-      <DialogTitle sx={{ px: 3, pt: 3, pb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ px: 3, pt: 3, pb: 2, display: 'flex', flexDirection: 'column', gap: 2, maxHeight: '72vh' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 900, letterSpacing: '-0.02em', color: 'white', fontFamily: 'var(--font-space-grotesk)' }}>
             ATTACH NOTE
@@ -91,10 +91,9 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
         <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)', color: 'rgba(255, 255, 255, 0.4)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.08)' } }}>
           <X size={18} strokeWidth={1.5} />
         </IconButton>
-      </DialogTitle>
-
-      <DialogContent sx={{ px: 3, py: 2 }}>
-        <Box sx={{ minHeight: '300px', maxHeight: '500px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        </Box>
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)' }} />
+        <Box sx={{ minHeight: '300px', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             fullWidth
             size="small"
@@ -163,7 +162,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
             </List>
           )}
         </Box>
-      </DialogContent>
-    </Dialog>
+      </Box>
+    </Drawer>
   );
 }

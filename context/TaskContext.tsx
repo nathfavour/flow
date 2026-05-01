@@ -6,6 +6,7 @@ import { tasks as taskApi, calendars as calendarApi, taskCollaborators, subscrib
 import { getCurrentUser } from '@/lib/appwrite/client';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 import { getEcosystemUrl } from '@/lib/constants';
+import { buildSourceNoteTags } from '@/lib/sdk';
 import { Task as AppwriteTask, Calendar as AppwriteCalendar } from '@/types/kylrixflow';
 import { useDataNexus } from './DataNexusContext';
 import { sendKylrixEmailNotification } from '@/lib/email-notifications';
@@ -627,6 +628,9 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const userId = state.userId || 'guest';
         // Prepare tags with project ID
         const tags = [...(task.labels || [])];
+        if (task.linkedNotes?.length) {
+          tags.push(...buildSourceNoteTags(task.linkedNotes));
+        }
         if (task.projectId && task.projectId !== 'inbox') {
           tags.push(`project:${task.projectId}`);
         }
