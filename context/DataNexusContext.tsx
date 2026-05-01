@@ -24,6 +24,7 @@ interface DataNexusContextType {
 const DataNexusContext = createContext<DataNexusContextType | undefined>(undefined);
 
 const DEFAULT_TTL = 1000 * 60 * 60; // 1 hour default TTL for Flow data (Tasks/Calendars)
+const STALE_TTL = DEFAULT_TTL * 8;
 
 export function DataNexusProvider({ children }: { children: ReactNode }) {
     // In-memory cache for ultra-fast access
@@ -99,6 +100,23 @@ export function DataNexusProvider({ children }: { children: ReactNode }) {
         // 1. Check if we already have valid data
         const cached = getCachedData<T>(key, ttl);
         if (cached) return cached;
+
+        const stale = getCachedData<T>(key, STALE_TTL);
+        if (stale) {
+            if (!activeRequests.current.has(key)) {
+                const request = (async () => {
+                    try {
+                        const data = await fetcher();
+                        setCachedData(key, data, ttl);
+                        return data;
+                    } finally {
+                        activeRequests.current.delete(key);
+                    }
+                })();
+                activeRequests.current.set(key, request);
+            }
+            return stale;
+        }
 
         // 2. Deduplication: Check if an identical request is already in flight
         const existingRequest = activeRequests.current.get(key);
