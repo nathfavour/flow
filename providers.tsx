@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useLastActiveApp } from '@/lib/sdk/ecosystem';
+import { useLastActiveApp } from '@/lib/sdk/routing';
 import { usePathname } from 'next/navigation';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { TaskProvider } from '@/context/TaskContext';

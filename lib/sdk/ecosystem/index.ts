@@ -2,8 +2,6 @@
  * Shared ecosystem discovery helpers.
  */
 
-export * from './useLastActiveApp';
-
 export const ECOSYSTEM_CONFIG = {
   DOMAIN: 'kylrix.space',
   SUBDOMAINS: {
