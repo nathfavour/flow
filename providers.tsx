@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { useLastActiveApp } from '@/lib/sdk/ecosystem';
 import { usePathname } from 'next/navigation';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { TaskProvider } from '@/context/TaskContext';
@@ -33,6 +34,8 @@ function EcosystemHandler() {
 }
 
 export function AppProviders({ children }: AppProvidersProps) {
+  useLastActiveApp();
+  
   return (
     <SubscriptionProvider>
       <ThemeProvider>

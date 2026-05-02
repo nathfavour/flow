@@ -540,7 +540,15 @@ export default function AppBar() {
             </Box>
           )}
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', my: 1 }} />
-          <MenuItem sx={{ py: 1.5, px: 2.5, borderRadius: '14px', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' } }}>
+          <MenuItem 
+            sx={{ py: 1.5, px: 2.5, borderRadius: '14px', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' } }}
+            onClick={() => {
+              if (profileUsername) {
+                window.location.href = `${getEcosystemUrl('connect')}/u/${encodeURIComponent(profileUsername)}?transition=profile`;
+              }
+              handleClose();
+            }}
+          >
             <ListItemIcon>
               <User size={18} strokeWidth={1.5} color="rgba(255, 255, 255, 0.6)" />
             </ListItemIcon>
