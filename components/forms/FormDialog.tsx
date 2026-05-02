@@ -753,7 +753,6 @@ export default function FormDialog({ open, onClose, form, initialDraft, onSaved 
           </Box>
         </Stack>
       </Box>
-      </Box>
 
       <Box sx={{ p: 4, pt: 2, gap: 2, display: 'flex', borderTop: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
         <Box sx={{ flexGrow: 1 }}>
