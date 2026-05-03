@@ -9,8 +9,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Image from 'next/image';
 import { APP_CONFIG } from '@/lib/constants';
+import { Logo } from '@/components/common/Logo';
 import { getCurrentUser, getCurrentUserSnapshot, invalidateCurrentUserCache } from '@/lib/appwrite/client';
 
 interface AuthState {
@@ -357,20 +357,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
               sx={{
                 width: 80,
                 height: 80,
-                borderRadius: 3,
-                overflow: 'hidden',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                borderRadius: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
                 mb: 1,
+                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
               }}
             >
-              <Image
-                src={APP_CONFIG.logo.url}
-                alt={APP_CONFIG.logo.alt}
-                width={80}
-                height={80}
-                style={{ objectFit: 'cover' }}
-                priority
-              />
+              <Logo size={56} variant="icon" app="flow" />
             </Box>
             <Typography variant="h4" fontWeight="bold">
               Welcome to {APP_CONFIG.name}
